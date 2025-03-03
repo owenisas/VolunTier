@@ -4,8 +4,19 @@ from fastapi.security import OAuth2PasswordBearer
 from pydantic import BaseModel
 from datetime import datetime, timedelta
 import jwt
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
+
+# Add this right after initializing your FastAPI app.
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # For production, restrict this to your specific domains
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # JWT configuration (replace SECRET_KEY with a secure key in production)
 SECRET_KEY = "your_secret_key"
@@ -277,6 +288,30 @@ def get_event(event_id: int, db: sqlite3.Connection = Depends(get_db)):
     if row is None:
         raise HTTPException(status_code=404, detail="Event not found")
     return Event(**row)
+
+
+def update_event_statuses():
+    with sqlite3.connect(DATABASE) as conn:
+        cursor = conn.cursor()
+        # Update events whose end time is in the past.
+        cursor.execute(
+            """
+            UPDATE events
+            SET status = 0
+            WHERE datetime(time, '+' || duration || ' minutes') < datetime('now')
+              AND status = 1;
+            """
+        )
+        conn.commit()
+        print(f"Updated event statuses at {datetime.utcnow()}")
+
+
+@app.on_event("startup")
+async def startup_event():
+    scheduler = AsyncIOScheduler()
+    # Run the update function every minute.
+    scheduler.add_job(update_event_statuses, 'interval', minutes=1)
+    scheduler.start()
 
 
 if __name__ == "__main__":

@@ -1,8 +1,12 @@
-fastapi
-uvicorn
+fastapi~=0.115.10
+uvicorn~=0.34.0
 python-jose
 passlib[bcrypt]
-requests
+requests~=2.32.3
 python-multipart
 python-dotenv
 sqlalchemy
+
+PyJWT~=2.10.1
+pydantic~=2.10.6
+APScheduler~=3.11.0

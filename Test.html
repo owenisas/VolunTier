@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Event Management Frontend</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 2em; }
+    form { margin-bottom: 2em; padding: 1em; border: 1px solid #ccc; }
+    input, textarea, button { display: block; margin: 0.5em 0; }
+    label { display: block; margin-top: 0.5em; }
+  </style>
+</head>
+<body>
+  <h1>Event Management Frontend</h1>
+
+  <section>
+    <h2>Register</h2>
+    <form id="registerForm">
+      <input type="text" id="reg_username" placeholder="Username" required>
+      <input type="email" id="reg_email" placeholder="Email" required>
+      <input type="password" id="reg_password" placeholder="Password" required>
+      <input type="text" id="reg_full_name" placeholder="Full Name" required>
+      <input type="text" id="reg_profile" placeholder="Profile (optional)">
+      <input type="number" id="reg_age" placeholder="Age (optional)">
+      <button type="submit">Register</button>
+    </form>
+  </section>
+
+  <section>
+    <h2>Login</h2>
+    <form id="loginForm">
+      <input type="email" id="login_email" placeholder="Email" required>
+      <input type="password" id="login_password" placeholder="Password" required>
+      <button type="submit">Login</button>
+    </form>
+  </section>
+
+  <section>
+    <h2>Create Event</h2>
+    <form id="createEventForm">
+      <input type="text" id="event_title" placeholder="Title" required>
+      <textarea id="event_details" placeholder="Details" required></textarea>
+      <label for="event_time">Event Time:</label>
+      <input type="datetime-local" id="event_time" required>
+      <input type="text" id="event_picture" placeholder="Picture URL (optional)">
+      <input type="text" id="event_link" placeholder="Event Link (optional)">
+      <input type="text" id="event_location" placeholder="Location (optional)">
+      <input type="number" id="event_certificate" placeholder="Certificate (0 or 1)" min="0" max="1">
+      <input type="text" id="event_requirements" placeholder="Requirements (optional)">
+      <input type="text" id="event_contact_methods" placeholder="Contact Methods (optional)">
+      <input type="text" id="event_instructions" placeholder="Instructions (optional)">
+      <input type="number" id="event_max_participants" placeholder="Max Participants (optional)">
+      <input type="number" id="event_duration" placeholder="Duration in minutes (optional)">
+      <label>
+        <input type="checkbox" id="event_status" checked>
+        Active
+      </label>
+      <button type="submit">Create Event</button>
+    </form>
+  </section>
+
+  <section>
+    <h2>Join Event</h2>
+    <form id="joinEventForm">
+      <input type="number" id="join_event_id" placeholder="Event ID" required>
+      <button type="submit">Join Event</button>
+    </form>
+  </section>
+
+  <section>
+    <h2>Message</h2>
+    <div id="message" style="padding: 1em; border: 1px solid #ccc; background-color: #f9f9f9;"></div>
+  </section>
+
+  <script>
+    const backendUrl = 'http://127.0.0.1:8000';
+    let accessToken = '';
+
+    const showMessage = (msg) => {
+      document.getElementById('message').innerText = msg;
+    };
+
+    // Handle registration
+    document.getElementById('registerForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const data = {
+        username: document.getElementById('reg_username').value,
+        email: document.getElementById('reg_email').value,
+        hash_password: document.getElementById('reg_password').value,
+        full_name: document.getElementById('reg_full_name').value,
+        profile: document.getElementById('reg_profile').value,
+        age: document.getElementById('reg_age').value ? parseInt(document.getElementById('reg_age').value) : null
+      };
+      try {
+        const response = await fetch(backendUrl + '/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.detail || 'Registration failed');
+        }
+        const result = await response.json();
+        accessToken = result.access_token;
+        showMessage('Registration successful! Token stored.');
+      } catch (error) {
+        showMessage('Error: ' + error.message);
+      }
+    });
+
+    // Handle login
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const data = {
+        email: document.getElementById('login_email').value,
+        password: document.getElementById('login_password').value
+      };
+      try {
+        const response = await fetch(backendUrl + '/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.detail || 'Login failed');
+        }
+        const result = await response.json();
+        accessToken = result.access_token;
+        showMessage('Login successful! Token stored.');
+      } catch (error) {
+        showMessage('Error: ' + error.message);
+      }
+    });
+
+    // Handle event creation
+    document.getElementById('createEventForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!accessToken) {
+        showMessage('Please login first.');
+        return;
+      }
+      const data = {
+        title: document.getElementById('event_title').value,
+        details: document.getElementById('event_details').value,
+        time: new Date(document.getElementById('event_time').value).toISOString(),
+        picture: document.getElementById('event_picture').value,
+        event_link: document.getElementById('event_link').value,
+        location: document.getElementById('event_location').value,
+        certificate: document.getElementById('event_certificate').value ? parseInt(document.getElementById('event_certificate').value) : 0,
+        requirements: document.getElementById('event_requirements').value,
+        contact_methods: document.getElementById('event_contact_methods').value,
+        instructions: document.getElementById('event_instructions').value,
+        max_participants: document.getElementById('event_max_participants').value ? parseInt(document.getElementById('event_max_participants').value) : null,
+        duration: document.getElementById('event_duration').value ? parseInt(document.getElementById('event_duration').value) : null,
+        status: document.getElementById('event_status').checked
+      };
+      try {
+        const response = await fetch(backendUrl + '/events/create', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + accessToken
+          },
+          body: JSON.stringify(data)
+        });
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.detail || 'Event creation failed');
+        }
+        const result = await response.json();
+        showMessage('Event created successfully with ID: ' + result.event_id);
+      } catch (error) {
+        showMessage('Error: ' + error.message);
+      }
+    });
+
+    // Handle joining an event
+    document.getElementById('joinEventForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!accessToken) {
+        showMessage('Please login first.');
+        return;
+      }
+      const eventId = document.getElementById('join_event_id').value;
+      try {
+        const response = await fetch(backendUrl + '/events/' + eventId + '/join', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + accessToken
+          }
+        });
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.detail || 'Joining event failed');
+        }
+        const result = await response.json();
+        showMessage(result.message);
+      } catch (error) {
+        showMessage('Error: ' + error.message);
+      }
+    });
+  </script>
+</body>
+</html>
