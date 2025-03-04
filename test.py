@@ -77,8 +77,9 @@ if __name__ == "__main__":
     # Register the user and capture token from registration response.
     reg_response = test_register()
     user = reg_response.get("user")
-    token = reg_response.get("access_token")
-    user_id = user.get("user_id")
+    print(user)
+    token = test_login()
+    user_id = 1
     # Since we already have a token from registration, no need to login again.
     # Create an event (user provides a start time in 'time')
     event = test_create_event(token)

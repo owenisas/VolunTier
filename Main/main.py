@@ -6,6 +6,8 @@ from datetime import datetime, timedelta
 import jwt
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from fastapi.middleware.cors import CORSMiddleware
+from typing import Optional
+from ver_mail import send_verification_email
 
 app = FastAPI()
 
@@ -36,6 +38,13 @@ def get_db():
 
 # Use OAuth2 to extract the token from the Authorization header.
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login")
+
+
+def create_verification_token(user_id: int):
+    expire = datetime.utcnow() + timedelta(hours=24)  # token valid for 24 hours
+    token_data = {"sub": str(user_id), "exp": expire}
+    token = jwt.encode(token_data, SECRET_KEY, algorithm="HS256")
+    return token
 
 
 def get_current_user(token: str = Depends(oauth2_scheme), db: sqlite3.Connection = Depends(get_db)):
@@ -119,17 +128,17 @@ class Event(BaseModel):
     time: datetime  # Returned as a datetime
     title: str
     details: str
-    picture: str = None
-    organizer: str = None
-    organization_name: str = None
-    event_link: str = None
-    location: str = None
+    picture: Optional[str] = None
+    organizer: Optional[str] = None
+    organization_name: Optional[str] = None  # Allow None as a valid value
+    event_link: Optional[str] = None
+    location: Optional[str] = None
     certificate: int
-    requirements: str = None
-    contact_methods: str = None
-    instructions: str = None
-    max_participants: int = None
-    duration: int = None
+    requirements: Optional[str] = None
+    contact_methods: Optional[str] = None
+    instructions: Optional[str] = None
+    max_participants: Optional[int] = None
+    duration: Optional[int] = None
     status: bool  # True for upcoming/active, False for ended
 
     class Config:
@@ -139,6 +148,21 @@ class Event(BaseModel):
 # --------------------------
 # Endpoints
 # --------------------------
+@app.get("/verify")
+def verify_email(token: str, db: sqlite3.Connection = Depends(get_db)):
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
+        user_id = int(payload.get("sub"))
+    except Exception:
+        raise HTTPException(status_code=400, detail="Invalid or expired token")
+
+    cursor = db.cursor()
+    # Update the user's verification status, set to 1 for verified
+    cursor.execute("UPDATE User SET verification = 1 WHERE user_id = ?", (user_id,))
+    db.commit()
+
+    return {"message": "Email verified successfully."}
+
 
 @app.post("/register", response_model=RegisterResponse)
 def register(user: UserCreate, db: sqlite3.Connection = Depends(get_db)):
@@ -170,6 +194,11 @@ def register(user: UserCreate, db: sqlite3.Connection = Depends(get_db)):
         raise HTTPException(status_code=404, detail="User not found after registration")
 
     user_obj = User(**row)
+    # Generate JWT token for email verification
+    verification_token = create_verification_token(user_obj.user_id)
+    # Send verification email
+    send_verification_email(user_obj.email, verification_token)
+
     # Generate JWT token for the newly registered user.
     expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     token_data = {"sub": str(user_obj.user_id), "exp": expire}
