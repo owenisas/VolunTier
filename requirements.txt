@@ -10,3 +10,5 @@ sqlalchemy
 PyJWT~=2.10.1
 pydantic~=2.10.6
 APScheduler~=3.11.0
+
+resend~=2.6.0

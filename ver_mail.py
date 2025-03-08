@@ -1,19 +1,17 @@
-import requests
+import resend
+
+resend.api_key = "re_FcHh1yZ4_NjgDaVXGA9DXmySvuGRLEUHT"
+domain_name = "http://127.0.0.1:8000"
+
 
 def send_verification_email(user_email: str, token: str):
-    api_key = "re_FcHh1yZ4_NjgDaVXGA9DXmySvuGRLEUHT"  # Replace with your Resend API key
-    url = "https://api.resend.com/emails"
-    headers = {
-        "Authorization": f"Bearer {api_key}",
-        "Content-Type": "application/json"
-    }
-    # Construct a verification link (adjust the domain as needed)
     verification_link = f"http://yourdomain.com/verify?token={token}"
-    data = {
-        "from": "noreply@yourdomain.com",
+    params: resend.Emails.SendParams = {
+        "from": "DO NOT REPLY! <verify@volun-tier.com>",
         "to": user_email,
-        "subject": "Verify your email",
+        "subject": "Please Click this Link below to verify your email, The Link is valid for 10 minutes",
         "html": f"Click <a href='{verification_link}'>here</a> to verify your email."
     }
-    response = requests.post(url, headers=headers, json=data)
-    return response.json()
+
+    email = resend.Emails.send(params)
+    return email
