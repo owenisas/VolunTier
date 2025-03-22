@@ -1,18 +1,36 @@
-body {
+/* style.css */
+
+/* Reset & Font */
+* {
+    box-sizing: border-box;
     margin: 0;
-    font-family: 'Lexend', sans-serif;
-    background-color: #ffffff;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
+    padding: 0;
   }
   
+  body {
+    font-family: 'Lexend', sans-serif;
+    background-color: #ffffff;
+    color: #000;
+  }
+  
+  /* Center Wrapper (for laptop/desktop view) */
+  .center-wrapper {
+    max-width: 500px;
+    margin: 0 auto;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 20px 0;
+  }
+  
+  /* Container for the welcome page center layout, etc. */
   .container {
     text-align: center;
     padding: 0 20px;
   }
   
+  /* Logo & Titles */
   .logo {
     width: 80px;
     height: auto;
@@ -21,7 +39,8 @@ body {
   
   .app-name {
     font-size: 2rem;
-    margin: 0;
+    text-align: center;
+    margin: 20px 0;
   }
   
   .highlight {
@@ -30,10 +49,11 @@ body {
   
   .tagline {
     font-size: 1rem;
-    color: #000000;
     margin: 15px 0 40px;
+    color: #000000;
   }
   
+  /* Buttons */
   .button-group {
     display: flex;
     flex-direction: column;
@@ -49,29 +69,242 @@ body {
     max-width: 300px;
     margin: 0 auto;
     font-weight: bold;
+    transition: all 0.2s ease;
+    box-sizing: border-box; 
+    border: 2px solid transparent;
+    text-align: center;
   }
   
+  /* Primary - Filled Orange */
   .primary {
     background-color: #FF6721;
     color: white;
-    border: none;
+    border-color: #FF6721;
   }
   
+  .primary:active,
+  .primary.clicked {
+    background-color: #e85d1d;
+    border-color: #e85d1d;
+    color: #fff;
+  }
+  
+  /* Secondary - Outline Orange */
   .secondary {
     background-color: transparent;
     color: #FF6721;
+    border-color: #FF6721;
+  }
+  
+  .secondary:active,
+  .secondary.clicked {
+    background-color: #FF6721;
+    color: white;
     border: 2px solid #FF6721;
+  }
+  
+  /* top-nav for back arrow or logout link, plus top-right logo */
+  .top-nav {
+    position: relative;
+    width: 100%;
+    height: 60px;
+    background-color: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 16px;
+  }
+  
+  .back-link, .logout-link {
+    text-decoration: none;
+    color: #FF6721;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+  }
+  
+  .icon-back {
+    width: 24px;
+    height: 24px;
+  }
+  
+  /* content-center = main area for forms, etc. */
+  .content-center {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 16px;
+    text-align: center;
+  }
+  
+  /* bottom-links for Terms, Privacy at the bottom */
+  .bottom-links {
+    text-align: center;
+    padding: 10px 0;
+    font-size: 0.9rem;
+  }
+  
+  .bottom-links a {
+    color: #FF6721;
+    text-decoration: none;
+    margin: 0 5px;
+  }
+  .bottom-links a:hover {
+    text-decoration: underline;
+  }
+  
+  /* Forms */
+  .form-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 320px;
+    margin: 0 auto;
+  }
+  
+  .input-group {
+    margin-bottom: 16px;
+  }
+  
+  .input-group label {
+    display: block;
+    margin-bottom: 4px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-align: left;
+  }
+  
+  .input-group input {
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    outline: none;
+    border: 1px solid #ccc;
+    font-size: 1rem;
+  }
+  
+  /* Outlined style: black border, rounded corners */
+  .outlined input {
+    border: 2px solid #000;
+    border-radius: 12px;
+  }
+  
+  /* Utility for full-width button */
+  .full-width {
+    width: 100%;
+  }
+  
+  /* Error message */
+  .error-message {
+    color: red;
+    margin-top: -8px;
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+    min-height: 1.2em; 
+  }
+  
+  /* Subtext or disclaimers */
+  .subtext {
+    font-size: 1rem;
+    color: #333;
+    margin: 10px 0;
+  }
+  
+  /* 4-digit verification circles */
+  .verify-code-wrapper {
+    display: flex;
+    gap: 16px;
+    margin: 24px 0;
+    justify-content: center;
+  }
+  
+  .verify-circle {
+    width: 40px;
+    height: 40px;
+    border: 2px solid #000;
+    border-radius: 50%;
+    text-align: center;
+    font-size: 1.2rem;
+    outline: none;
+    background-color: #fff;
+    font-weight: bold;
+    text-transform: uppercase;
+  }
+  
+  /* Resend code link */
+  .resend-link a {
+    font-size: 0.9rem;
+    color: #FF6721;
+    text-decoration: none;
+  }
+  .resend-link a:hover {
+    text-decoration: underline;
+  }
+  
+  /* Recovery code list */
+  .recovery-list {
+    text-align: left;
+    margin: 24px 0;
+    font-size: 1.1rem;
+  }
+  
+  /* Button group for vertical stacking */
+  .button-group-vertical {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    align-items: center;
+  }
+  
+  /* Profile upload */
+  .profile-upload-section {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+  
+  .profile-placeholder {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 2px solid #ccc;
+  }
+  
+  .upload-label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    color: #FF6721;
+    font-size: 0.8rem;
+  }
+  
+  /* Red notes */
+  .note-section {
+    margin-bottom: 16px;
+  }
+  
+  .red-note {
+    color: red;
+    font-size: 0.9rem;
+    margin: 4px 0;
+  }
+  
+  /* disclaimer at bottom of form */
+  .disclaimer {
+    font-size: 0.8rem;
+    color: #555;
+    margin-top: 12px;
+    text-align: center;
+  }
+  
+  .disclaimer a {
+    color: #FF6721;
+    text-decoration: none;
+  }
+  .disclaimer a:hover {
+    text-decoration: underline;
   }  
-
-  .btn:active,
-.btn.clicked {
-  background-color: #e85d1d; /* dimmed/darkened orange */
-  color: white;
-  border: none;
-}
-
-.btn.secondary.clicked {
-  background-color: #FF6721;
-  color: white;
-  border: none;
-}

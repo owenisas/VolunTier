@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <title>VolunTier - Verify Email</title>
+  <link rel="stylesheet" href="style.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Lexend&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="center-wrapper">
+    <header class="top-nav">
+      <a href="register.html" class="back-link">
+        <img src="assets/arrow-back.png" alt="Back Arrow" class="icon-back"/>
+      </a>
+      <img src="assets/logo.png" alt="VolunTier Logo" class="top-logo"/>
+    </header>
+
+    <main class="content-center">
+      <h2>Verify your email</h2>
+      <p id="emailNotice" class="subtext">
+        We sent an email to <span id="userEmail"></span>.
+      </p>
+
+      <div class="verify-code-wrapper">
+        <input type="text" maxlength="1" class="verify-circle" id="code1">
+        <input type="text" maxlength="1" class="verify-circle" id="code2">
+        <input type="text" maxlength="1" class="verify-circle" id="code3">
+        <input type="text" maxlength="1" class="verify-circle" id="code4">
+      </div>
+
+      <p class="resend-link">
+        <a href="#" id="resendCode">Resend code</a>
+      </p>
+
+      <p id="verifyError" class="error-message"></p>
+
+      <button id="verifyBtn" class="btn primary">Verify</button>
+    </main>
+
+    <footer class="bottom-links">
+      <a href="#">Terms of Use</a> | <a href="#">Privacy Policy</a>
+    </footer>
+  </div>
+
+  <script>
+    const apiBase = "http://127.0.0.1:8000";
+    const urlParams = new URLSearchParams(window.location.search);
+    const emailParam = urlParams.get('email') || "";
+    document.getElementById('userEmail').textContent = emailParam;
+
+    const verifyBtn = document.getElementById('verifyBtn');
+    const verifyError = document.getElementById('verifyError');
+
+    // Example token from sessionStorage or elsewhere
+    let verificationToken = sessionStorage.getItem("authToken") || "dummyToken";
+
+    verifyBtn.addEventListener('click', async () => {
+      const code1 = document.getElementById('code1').value.trim();
+      const code2 = document.getElementById('code2').value.trim();
+      const code3 = document.getElementById('code3').value.trim();
+      const code4 = document.getElementById('code4').value.trim();
+      const fullCode = code1 + code2 + code3 + code4;
+
+      if (fullCode.length < 4) {
+        verifyError.textContent = "Please enter the 4-digit code.";
+        return;
+      }
+
+      // If you want to compare with a server-coded method:
+      // We'll assume your backend requires GET /verify?token=someToken
+      // Or you might actually post the code somewhere. This is an example:
+      try {
+        const res = await fetch(`${apiBase}/verify?token=${verificationToken}`);
+        const data = await res.json();
+
+        if (res.ok) {
+          // Then proceed to next step
+          window.location.href = "recoveryCode.html";
+        } else {
+          verifyError.textContent = data.detail || "Verification failed. Wrong code?";
+        }
+      } catch (err) {
+        console.error(err);
+        verifyError.textContent = "Network error. Please try again.";
+      }
+    });
+
+    // Resend code
+    document.getElementById('resendCode').addEventListener('click', (e) => {
+      e.preventDefault();
+      alert("Verification code resent to " + emailParam);
+      // or call an endpoint like /resend?email=...
+    });
+  </script>
+</body>
+</html>
