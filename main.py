@@ -22,29 +22,6 @@ app.include_router(events.router)
 app.include_router(verification.router)
 app.include_router(images.router)
 
-# Background task: update event statuses based on time/duration
-def update_event_statuses():
-    try:
-        with sqlite3.connect(DATABASE) as conn:
-            cursor = conn.cursor()
-            cursor.execute(
-                """
-                UPDATE events
-                SET status = 0
-                WHERE datetime(time, '+' || duration || ' minutes') < datetime('now')
-                  AND status = 1;
-                """
-            )
-            conn.commit()
-            print(f"Updated event statuses at {datetime.utcnow()}")
-    except Exception as e:
-        print("Error updating event statuses:", e)
-
-@app.on_event("startup")
-async def startup_event():
-    scheduler = AsyncIOScheduler()
-    scheduler.add_job(update_event_statuses, 'interval', minutes=1)
-    scheduler.start()
 
 if __name__ == "__main__":
     import uvicorn

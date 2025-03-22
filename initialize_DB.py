@@ -30,24 +30,25 @@ CREATE TABLE IF NOT EXISTS User_Skills (
     FOREIGN KEY (user_id) REFERENCES User(user_id)
 );
 
--- Enhanced Events Table
+-- Enhanced Events Table with end_time
 CREATE TABLE IF NOT EXISTS Events (
     event_id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     time TIMESTAMP NOT NULL,
+    end_time TIMESTAMP,  -- New column to store computed end time
     title TEXT NOT NULL,
     details TEXT NOT NULL,
-    picture TEXT,                      -- URL or path to an event image
-    organizer TEXT,                    -- Organizer name (could be extended to a user reference)
-    organization_name TEXT,            -- Optional organization name
-    event_link TEXT,                   -- Link for more details or social/website link
-    location TEXT,                     -- Event location/address or online meeting link
-    certificate INTEGER DEFAULT 0,     -- 0: no, 1: yes (indicates if certificate is provided)
-    requirements TEXT,                 -- Event requirements (e.g., volunteer proof, age, skills, etc.)
-    contact_methods TEXT,              -- How to contact the organizer
-    instructions TEXT,                 -- Additional instructions for the event
-    max_participants INTEGER,          -- Maximum number of participants
+    picture TEXT,
+    organizer TEXT,
+    organization_name TEXT,
+    event_link TEXT,
+    location TEXT,
+    certificate INTEGER DEFAULT 0,
+    requirements TEXT,
+    contact_methods TEXT,
+    instructions TEXT,
+    max_participants INTEGER,
     duration INTEGER,  -- Duration in minutes
-    status INTEGER DEFAULT 1  -- 0: unavailable/ended, 1: upcoming/active
+    status INTEGER DEFAULT 1  -- 0: ended/unavailable, 1: upcoming/active
 );
 
 -- Event_Users Table to map users to events with a role field
@@ -55,6 +56,8 @@ CREATE TABLE IF NOT EXISTS Event_Users (
     user_id INTEGER NOT NULL,
     event_id INTEGER NOT NULL,
     role TEXT DEFAULT 'participant',   -- roles can be participant, host, co-host, saved, etc.
+    volunteer_state TEXT DEFAULT 'registered',  -- Additional state: registered, waitlisted, saved, etc.
+    checked_in INTEGER DEFAULT 0,               -- 0: not checked in, 1: checked in
     PRIMARY KEY (user_id, event_id),
     FOREIGN KEY (user_id) REFERENCES User(user_id),
     FOREIGN KEY (event_id) REFERENCES events(event_id)
