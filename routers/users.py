@@ -1,13 +1,61 @@
 # routers/users.py
 from fastapi import APIRouter, Depends, HTTPException, status
 from database import get_db
-from schemas import UserCreate, User, RegisterResponse, LoginRequest, TokenResponse
+from schemas import UserCreate, User, RegisterResponse, LoginRequest, TokenResponse, UserEdit
 from utils import create_access_token, create_verification_token, send_verification_email
 import sqlite3
 from datetime import timedelta
+from events import get_current_user
 
 router = APIRouter()
 
+
+@router.put("/users/edit", response_model=User)
+def edit_user(
+    user_edit: UserEdit,
+    current_user: dict = Depends(get_current_user),
+    db: sqlite3.Connection = Depends(get_db)
+):
+    cursor = db.cursor()
+
+    # If a new username is provided and it's different, ensure it's not already taken.
+    if user_edit.username and user_edit.username != current_user["username"]:
+        cursor.execute("SELECT * FROM User WHERE username = ?", (user_edit.username,))
+        if cursor.fetchone() is not None:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Username already taken")
+    
+    # Build the update query dynamically based on the provided fields.
+    update_fields = []
+    params = []
+
+    if user_edit.username is not None:
+        update_fields.append("username = ?")
+        params.append(user_edit.username)
+    if user_edit.profile is not None:
+        update_fields.append("profile = ?")
+        params.append(user_edit.profile)
+    if user_edit.age is not None:
+        update_fields.append("age = ?")
+        params.append(user_edit.age)
+    
+    if not update_fields:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No fields provided for update")
+    
+    query = f"UPDATE User SET {', '.join(update_fields)} WHERE user_id = ?"
+    params.append(current_user["user_id"])
+    try:
+        cursor.execute(query, tuple(params))
+        db.commit()
+    except sqlite3.Error as e:
+        raise HTTPException(status_code=500, detail=f"Error updating user: {str(e)}")
+    
+    # Retrieve and return the updated user.
+    cursor.execute("SELECT * FROM User WHERE user_id = ?", (current_user["user_id"],))
+    row = cursor.fetchone()
+    if row is None:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    return User(**row)
 
 @router.post("/register", response_model=RegisterResponse)
 def register(user: UserCreate, db: sqlite3.Connection = Depends(get_db)):

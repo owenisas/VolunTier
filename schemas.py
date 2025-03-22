@@ -13,6 +13,11 @@ class UserCreate(BaseModel):
     profile_pic: Optional[str] = None  # URL or file path
     age: Optional[int] = None
 
+class UserEdit(BaseModel):
+    username: Optional[str] = None
+    profile: Optional[str] = None
+    age: Optional[int] = None
+    
 class User(BaseModel):
     user_id: int
     username: str
