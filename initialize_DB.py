@@ -49,6 +49,7 @@ CREATE TABLE IF NOT EXISTS Events (
     instructions TEXT,
     max_participants INTEGER,
     duration INTEGER,  -- Duration in minutes
+    event_pic TEXT,
     status INTEGER DEFAULT 1  -- 0: ended/unavailable, 1: upcoming/active
 );
 

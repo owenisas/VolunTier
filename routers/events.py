@@ -16,6 +16,29 @@ router = APIRouter()
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login")
 
+from typing import Optional
+from fastapi.security import OAuth2PasswordBearer
+
+# Create an OAuth2 scheme that doesn't automatically error when no token is provided.
+optional_oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login", auto_error=False)
+
+def get_current_user_optional(
+    token: Optional[str] = Depends(optional_oauth2_scheme),
+    db: sqlite3.Connection = Depends(get_db)
+) -> Optional[dict]:
+    if token is None:
+        return None
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        user_id = int(payload.get("sub"))
+    except Exception:
+        return None
+    cursor = db.cursor()
+    cursor.execute("SELECT * FROM User WHERE user_id = ?", (user_id,))
+    row = cursor.fetchone()
+    if row is None:
+        return None
+    return dict(row)
 
 def get_current_user(token: str = Depends(oauth2_scheme), db: sqlite3.Connection = Depends(get_db)):
     try:
@@ -166,20 +189,19 @@ def join_event(
             )
 
     # If event is not full, add the user as a participant.
-    default_role = "participant"
     cursor.execute(
-        "INSERT INTO Event_Users (user_id, event_id, role) VALUES (?, ?, ?)",
-        (current_user["user_id"], event_id, default_role)
+        "INSERT INTO Event_Users (user_id, event_id, role) VALUES (?, ?)",
+        (current_user["user_id"], event_id)
     )
     db.commit()
-    return {"message": "You have successfully joined the event.", "role": default_role}
+    return {"message": "You have successfully joined the event.", "role": "participant"}
 
 
 @router.get("/events/{event_id}", response_model=Event)
 def get_event(
     event_id: int,
     db: sqlite3.Connection = Depends(get_db),
-    current_user: dict = Depends(get_current_user)
+    current_user: Optional[dict] = Depends(get_current_user_optional)
 ):
     cursor = db.cursor()
     # Retrieve the event
@@ -187,9 +209,9 @@ def get_event(
     row = cursor.fetchone()
     if row is None:
         raise HTTPException(status_code=404, detail="Event not found")
-
+    
     event_data = dict(row)
-
+    
     # Update event status based on current time and end_time
     try:
         event_end_time = datetime.fromisoformat(event_data["end_time"])
@@ -201,16 +223,17 @@ def get_event(
         db.commit()
         event_data["status"] = 0
 
-    # Check the current user's role for the event
-    cursor.execute(
-        "SELECT role FROM Event_Users WHERE event_id = ? AND user_id = ?",
-        (event_id, current_user["user_id"])
-    )
-    role_row = cursor.fetchone()
-
-    # If the user is not the organizer, remove contact_methods from the output.
-    if role_row is None or role_row["role"] != "organizer":
+    # Check the user's role; if not authenticated or not the organizer, remove contact_methods
+    if not current_user:
         event_data.pop("contact_methods", None)
+    else:
+        cursor.execute(
+            "SELECT role FROM Event_Users WHERE event_id = ? AND user_id = ?",
+            (event_id, current_user["user_id"])
+        )
+        role_row = cursor.fetchone()
+        if not role_row or role_row["role"] != "organizer":
+            event_data.pop("contact_methods", None)
 
     return Event(**event_data)
 
@@ -231,7 +254,7 @@ def edit_event(
     role_row = cursor.fetchone()
     if not role_row or role_row["role"] != "organizer":
         raise HTTPException(status_code=403, detail="Only the organizer can edit this event.")
-    end_time = updated_event.time + timedelta(minutes=event.duration)
+    end_time = updated_event.time + timedelta(minutes=updated_event.duration)
     # Update the event with the new information, has to input unchanged information
     cursor.execute(
         """

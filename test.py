@@ -6,8 +6,8 @@ BASE_URL = "http://127.0.0.1:8000"
 def test_register():
     url = f"{BASE_URL}/register"
     user_data = {
-        "username": "testuser",
-        "email": "testuser@example.com",
+        "username": "testuserkokokk",
+        "email": "justcs123only@gmail.com",
         "hash_password": "testpassword",  # In production, use hashed passwords.
         "full_name": "Test User",
         "profile": "This is a test profile",
@@ -20,7 +20,7 @@ def test_register():
 def test_login():
     url = f"{BASE_URL}/login"
     login_data = {
-        "email": "testuser@example.com",
+        "email": "justcs123only@gmail.com",
         "password": "testpassword"
     }
     response = requests.post(url, json=login_data)
