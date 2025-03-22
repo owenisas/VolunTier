@@ -1,0 +1,52 @@
+<!-- registerEmail.html -->
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Sign Up - Email & Password</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <h2>Create Account</h2>
+    <p>Step 1: Enter Email & Password</p>
+    <div id="errorMsg" class="error"></div>
+
+    <label for="email">Email</label>
+    <input type="email" id="email" placeholder="Your email" required />
+
+    <label for="password">Password</label>
+    <input type="password" id="password" placeholder="At least 6 characters" required />
+
+    <label for="confirm">Confirm Password</label>
+    <input type="password" id="confirm" placeholder="Re-type password" required />
+
+    <button class="btn" onclick="handleContinue()">Continue</button>
+    <hr />
+    <button class="btn" onclick="location.href='welcome.html'">Back to Welcome</button>
+  </div>
+
+  <script>
+    function handleContinue() {
+      const email = document.getElementById('email').value.trim();
+      const pass1 = document.getElementById('password').value;
+      const pass2 = document.getElementById('confirm').value;
+      const errorMsg = document.getElementById('errorMsg');
+
+      if (!email || !pass1 || !pass2) {
+        errorMsg.innerText = "Please fill in all fields.";
+        errorMsg.style.display = "block";
+        return;
+      }
+      if (pass1 !== pass2) {
+        errorMsg.innerText = "Passwords do not match.";
+        errorMsg.style.display = "block";
+        return;
+      }
+
+      // TODO: Possibly call your /register route here or store partial info 
+      window.location.href = "verifyEmail.html";
+    }
+  </script>
+</body>
+</html>

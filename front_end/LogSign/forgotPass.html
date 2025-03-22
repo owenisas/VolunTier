@@ -1,0 +1,38 @@
+<!-- forgotPass.html -->
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Volunteer App - Forgot Password</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>Forgot Password</h1>
+    <p>Enter your email to receive a reset link or code.</p>
+
+    <div id="errorMsg" class="error"></div>
+
+    <label for="email">Email</label>
+    <input type="email" id="email" placeholder="Your email" />
+
+    <button class="btn" onclick="handleForgot()">Send Verification</button>
+    <hr />
+    <button class="btn" onclick="location.href='login.html'">Back to Login</button>
+  </div>
+
+  <script>
+    function handleForgot() {
+      const email = document.getElementById('email').value.trim();
+      if (!email) {
+        const errorMsg = document.getElementById('errorMsg');
+        errorMsg.innerText = "Please enter your email.";
+        errorMsg.style.display = 'block';
+        return;
+      }
+      alert("Verification email or code would be sent. (fake)");
+      window.location.href = "resetPass.html";
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,40 @@
+<!-- verifyEmail.html -->
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Sign Up - Verify Email</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <h2>Email Verification</h2>
+    <p>We've sent a 4-digit code to your email. Enter it below to verify.</p>
+
+    <div id="errorMsg" class="error"></div>
+    <label for="code">Verification Code</label>
+    <input type="text" id="code" placeholder="4-digit code" maxlength="4" />
+
+    <button class="btn" onclick="handleVerify()">Verify</button>
+    <p class="small-text">
+      If you haven't received the code, check your spam folder or 
+      <a class="link" href="#">resend</a>.
+    </p>
+  </div>
+
+  <script>
+    function handleVerify() {
+      const code = document.getElementById('code').value.trim();
+      const errorMsg = document.getElementById('errorMsg');
+
+      if (!code || code.length < 4) {
+        errorMsg.innerText = "Please enter the 4-digit code.";
+        errorMsg.style.display = 'block';
+        return;
+      }
+      alert("Email verified successfully! (fake)");
+      window.location.href = "recoveryCode.html";
+    }
+  </script>
+</body>
+</html>

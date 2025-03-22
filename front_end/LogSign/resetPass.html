@@ -1,0 +1,44 @@
+<!-- resetPass.html -->
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Volunteer App - Reset Password</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>Reset Password</h1>
+    <div id="errorMsg" class="error"></div>
+
+    <label for="newPass">New Password</label>
+    <input type="password" id="newPass" placeholder="Enter new password" />
+
+    <label for="confirmPass">Confirm New Password</label>
+    <input type="password" id="confirmPass" placeholder="Confirm password" />
+
+    <button class="btn" onclick="handleReset()">Reset</button>
+  </div>
+
+  <script>
+    function handleReset() {
+      const pass1 = document.getElementById('newPass').value;
+      const pass2 = document.getElementById('confirmPass').value;
+      const errorMsg = document.getElementById('errorMsg');
+
+      if (!pass1 || !pass2) {
+        errorMsg.innerText = "Please fill in both password fields.";
+        errorMsg.style.display = "block";
+        return;
+      }
+      if (pass1 !== pass2) {
+        errorMsg.innerText = "Passwords do not match.";
+        errorMsg.style.display = "block";
+        return;
+      }
+      alert("Password reset successful. (fake)");
+      window.location.href = "login.html";
+    }
+  </script>
+</body>
+</html>

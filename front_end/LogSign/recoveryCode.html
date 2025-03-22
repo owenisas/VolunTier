@@ -1,0 +1,38 @@
+<!-- recoveryCode.html -->
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Sign Up - Recovery Code</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <h2>Recovery Code</h2>
+    <p>This code can be used if you ever lose access to your email.</p>
+
+    <div id="recoveryCodeContainer" style="text-align:center; margin:20px 0;">
+      <strong id="recoveryCode">ABC123XYZ789</strong>
+    </div>
+
+    <button class="btn" onclick="saveScreenshot()">Save to Photos</button>
+    <button class="btn" style="margin-top:10px;" onclick="handleContinue()">Continue</button>
+
+    <script>
+      // Generate random code on the fly
+      document.getElementById('recoveryCode').innerText = "RC-" + 
+        Math.random().toString(36).substring(2,8).toUpperCase();
+
+      function saveScreenshot() {
+        // Stub: pretend to take screenshot
+        alert("Pretend we took a screenshot and saved it...");
+      }
+
+      function handleContinue() {
+        // Possibly require user to have clicked "Save"
+        window.location.href = "registerInfo.html";
+      }
+    </script>
+  </div>
+</body>
+</html>
