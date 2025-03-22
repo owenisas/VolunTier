@@ -10,6 +10,7 @@ from config import SECRET_KEY, ALGORITHM
 from utils import create_access_token
 from datetime import datetime
 from typing import List, Optional
+from datetime import timedelta
 
 router = APIRouter()
 
@@ -72,17 +73,20 @@ def search_events(
 def create_event(event: EventCreate, current_user: dict = Depends(get_current_user),
                  db: sqlite3.Connection = Depends(get_db)):
     try:
+        end_time = event.time + timedelta(minutes=event.duration)
+
         cursor = db.cursor()
         cursor.execute(
             """
             INSERT INTO events (
-                time, title, details, event_pic, organizer, organization_name, event_link, location,
+                time, end_time, title, details, event_pic, organizer, organization_name, event_link, location,
                 certificate, requirements, contact_methods, instructions, max_participants, duration, status
             )
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """,
             (
                 event.time.isoformat(),
+                end_time.isoformat(),
                 event.title,
                 event.details,
                 event.event_pic,
@@ -173,9 +177,9 @@ def join_event(
 
 @router.get("/events/{event_id}", response_model=Event)
 def get_event(
-        event_id: int,
-        db: sqlite3.Connection = Depends(get_db),
-        current_user: dict = Depends(get_current_user)
+    event_id: int,
+    db: sqlite3.Connection = Depends(get_db),
+    current_user: dict = Depends(get_current_user)
 ):
     cursor = db.cursor()
     # Retrieve the event
@@ -186,13 +190,25 @@ def get_event(
 
     event_data = dict(row)
 
+    # Update event status based on current time and end_time
+    try:
+        event_end_time = datetime.fromisoformat(event_data["end_time"])
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Invalid end_time format: {str(e)}")
+    now = datetime.utcnow()
+    if now > event_end_time and event_data["status"] == 1:
+        cursor.execute("UPDATE events SET status = 0 WHERE event_id = ?", (event_id,))
+        db.commit()
+        event_data["status"] = 0
+
     # Check the current user's role for the event
-    cursor.execute("SELECT role FROM Event_Users WHERE event_id = ? AND user_id = ?",
-                   (event_id, current_user["user_id"]))
+    cursor.execute(
+        "SELECT role FROM Event_Users WHERE event_id = ? AND user_id = ?",
+        (event_id, current_user["user_id"])
+    )
     role_row = cursor.fetchone()
 
     # If the user is not the organizer, remove contact_methods from the output.
-    # You could also customize further for other roles.
     if role_row is None or role_row["role"] != "organizer":
         event_data.pop("contact_methods", None)
 
@@ -215,12 +231,13 @@ def edit_event(
     role_row = cursor.fetchone()
     if not role_row or role_row["role"] != "organizer":
         raise HTTPException(status_code=403, detail="Only the organizer can edit this event.")
-
+    end_time = updated_event.time + timedelta(minutes=event.duration)
     # Update the event with the new information, has to input unchanged information
     cursor.execute(
         """
         UPDATE events
         SET time = ?,
+            end_time = ?,
             title = ?,
             details = ?,
             event_pic = ?,
@@ -237,6 +254,7 @@ def edit_event(
         """,
         (
             updated_event.time.isoformat(),
+            end_time.isoformat(),
             updated_event.title,
             updated_event.details,
             updated_event.event_pic,

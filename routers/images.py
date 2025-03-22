@@ -63,6 +63,7 @@ async def upload_image(
     image_url = f"/images/{type}/{unique_filename}"
 
     # Update the database record based on type.
+    db.close()
     cursor = db.cursor()
     if type == "profile":
         # Update the current user's profile_pic field.
