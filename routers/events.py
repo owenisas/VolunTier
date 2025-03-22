@@ -9,10 +9,12 @@ import jwt
 from config import SECRET_KEY, ALGORITHM
 from utils import create_access_token
 from datetime import datetime
+from typing import List, Optional
 
 router = APIRouter()
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login")
+
 
 def get_current_user(token: str = Depends(oauth2_scheme), db: sqlite3.Connection = Depends(get_db)):
     try:
@@ -27,8 +29,48 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: sqlite3.Connection
         raise HTTPException(status_code=404, detail="User not found")
     return dict(row)
 
+
+@router.get("/events/search", response_model=List[Event])
+def search_events(
+        title: Optional[str] = None,
+        start: Optional[datetime] = None,
+        end: Optional[datetime] = None,
+        db: sqlite3.Connection = Depends(get_db)
+):
+    """
+    Search events by title and/or by a date range.
+    - title: searches for events containing this substring in the title.
+    - start: earliest event time (inclusive).
+    - end: latest event time (inclusive).
+    """
+    query = "SELECT * FROM events WHERE 1=1"
+    params = []
+
+    if title:
+        query += " AND title LIKE ?"
+        params.append(f"%{title}%")
+
+    if start:
+        query += " AND datetime(time) >= datetime(?)"
+        params.append(start.isoformat())
+
+    if end:
+        query += " AND datetime(time) <= datetime(?)"
+        params.append(end.isoformat())
+
+    cursor = db.cursor()
+    try:
+        cursor.execute(query, tuple(params))
+        rows = cursor.fetchall()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+
+    return [Event(**row) for row in rows]
+
+
 @router.post("/events/create", response_model=Event)
-def create_event(event: EventCreate, current_user: dict = Depends(get_current_user), db: sqlite3.Connection = Depends(get_db)):
+def create_event(event: EventCreate, current_user: dict = Depends(get_current_user),
+                 db: sqlite3.Connection = Depends(get_db)):
     try:
         cursor = db.cursor()
         cursor.execute(
@@ -75,23 +117,146 @@ def create_event(event: EventCreate, current_user: dict = Depends(get_current_us
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"An error occurred: {str(e)}")
 
+
 @router.post("/events/{event_id}/join", response_model=dict)
-def join_event(event_id: int, current_user: dict = Depends(get_current_user), db: sqlite3.Connection = Depends(get_db)):
+def join_event(
+        event_id: int,
+        current_user: dict = Depends(get_current_user),
+        db: sqlite3.Connection = Depends(get_db)
+):
     cursor = db.cursor()
-    cursor.execute("SELECT role FROM Event_Users WHERE event_id = ? AND user_id = ?", (event_id, current_user["user_id"]))
+    # Check if user already has a role in this event.
+    cursor.execute(
+        "SELECT role FROM Event_Users WHERE event_id = ? AND user_id = ?",
+        (event_id, current_user["user_id"])
+    )
     row = cursor.fetchone()
     if row:
-        return {"message": f"You already joined this event with role: {row['role']}", "role": row["role"]}
+        return {
+            "message": f"You already joined this event with role: {row['role']}",
+            "role": row["role"]
+        }
+
+    # Retrieve event details to check max_participants.
+    cursor.execute(
+        "SELECT max_participants FROM events WHERE event_id = ?",
+        (event_id,)
+    )
+    event_row = cursor.fetchone()
+    if event_row is None:
+        raise HTTPException(status_code=404, detail="Event not found")
+
+    max_participants = event_row["max_participants"]
+    if max_participants is not None:
+        # Count current participants in the event.
+        cursor.execute(
+            "SELECT COUNT(*) as count FROM Event_Users WHERE event_id = ?",
+            (event_id,)
+        )
+        count_row = cursor.fetchone()
+        current_count = count_row["count"] if count_row else 0
+        if current_count >= max_participants:
+            raise HTTPException(
+                status_code=400,
+                detail="Event is full, cannot join."
+            )
+
+    # If event is not full, add the user as a participant.
     default_role = "participant"
-    cursor.execute("INSERT INTO Event_Users (user_id, event_id, role) VALUES (?, ?, ?)", (current_user["user_id"], event_id, default_role))
+    cursor.execute(
+        "INSERT INTO Event_Users (user_id, event_id, role) VALUES (?, ?, ?)",
+        (current_user["user_id"], event_id, default_role)
+    )
     db.commit()
     return {"message": "You have successfully joined the event.", "role": default_role}
 
+
 @router.get("/events/{event_id}", response_model=Event)
-def get_event(event_id: int, db: sqlite3.Connection = Depends(get_db)):
+def get_event(
+        event_id: int,
+        db: sqlite3.Connection = Depends(get_db),
+        current_user: dict = Depends(get_current_user)
+):
     cursor = db.cursor()
+    # Retrieve the event
     cursor.execute("SELECT * FROM events WHERE event_id = ?", (event_id,))
     row = cursor.fetchone()
     if row is None:
         raise HTTPException(status_code=404, detail="Event not found")
-    return Event(**row)
+
+    event_data = dict(row)
+
+    # Check the current user's role for the event
+    cursor.execute("SELECT role FROM Event_Users WHERE event_id = ? AND user_id = ?",
+                   (event_id, current_user["user_id"]))
+    role_row = cursor.fetchone()
+
+    # If the user is not the organizer, remove contact_methods from the output.
+    # You could also customize further for other roles.
+    if role_row is None or role_row["role"] != "organizer":
+        event_data.pop("contact_methods", None)
+
+    return Event(**event_data)
+
+
+@router.put("/events/{event_id}/edit", response_model=Event)
+def edit_event(
+        event_id: int,
+        updated_event: EventCreate,
+        current_user: dict = Depends(get_current_user),
+        db: sqlite3.Connection = Depends(get_db)
+):
+    cursor = db.cursor()
+    # Verify that the current user is the organizer for the event.
+    cursor.execute(
+        "SELECT role FROM Event_Users WHERE event_id = ? AND user_id = ?",
+        (event_id, current_user["user_id"])
+    )
+    role_row = cursor.fetchone()
+    if not role_row or role_row["role"] != "organizer":
+        raise HTTPException(status_code=403, detail="Only the organizer can edit this event.")
+
+    # Update the event with the new information, has to input unchanged information
+    cursor.execute(
+        """
+        UPDATE events
+        SET time = ?,
+            title = ?,
+            details = ?,
+            event_pic = ?,
+            event_link = ?,
+            location = ?,
+            certificate = ?,
+            requirements = ?,
+            contact_methods = ?,
+            instructions = ?,
+            max_participants = ?,
+            duration = ?,
+            status = ?
+        WHERE event_id = ?
+        """,
+        (
+            updated_event.time.isoformat(),
+            updated_event.title,
+            updated_event.details,
+            updated_event.event_pic,
+            updated_event.event_link,
+            updated_event.location,
+            updated_event.certificate,
+            updated_event.requirements,
+            updated_event.contact_methods,
+            updated_event.instructions,
+            updated_event.max_participants,
+            updated_event.duration,
+            int(updated_event.status),
+            event_id
+        )
+    )
+    db.commit()
+
+    # Retrieve and return the updated event.
+    cursor.execute("SELECT * FROM events WHERE event_id = ?", (event_id,))
+    updated_row = cursor.fetchone()
+    if updated_row is None:
+        raise HTTPException(status_code=404, detail="Event not found after update")
+    return Event(**updated_row)

@@ -5,8 +5,16 @@ from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from datetime import datetime
 import sqlite3
 from config import DATABASE
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],         # Allow any origin
+    allow_credentials=True,      # Note: if you allow credentials, using "*" is not recommended
+    allow_methods=["*"],         # Allow all HTTP methods
+    allow_headers=["*"],         # Allow all headers
+)
 
 # Include routers
 app.include_router(users.router)

@@ -2,204 +2,371 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Event Management Frontend</title>
+  <title>API Test Dashboard</title>
   <style>
-    body { font-family: Arial, sans-serif; margin: 2em; }
-    form { margin-bottom: 2em; padding: 1em; border: 1px solid #ccc; }
-    input, textarea, button { display: block; margin: 0.5em 0; }
-    label { display: block; margin-top: 0.5em; }
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    form { border: 1px solid #ccc; padding: 10px; margin-bottom: 20px; }
+    h2 { color: #333; }
+    .result { background: #f7f7f7; padding: 10px; margin-top: 10px; white-space: pre-wrap; }
   </style>
 </head>
 <body>
-  <h1>Event Management Frontend</h1>
+  <h1>API Test Dashboard</h1>
+  <p>This dashboard lets you test various endpoints of your FastAPI application.</p>
 
-  <section>
-    <h2>Register</h2>
-    <form id="registerForm">
-      <input type="text" id="reg_username" placeholder="Username" required>
-      <input type="email" id="reg_email" placeholder="Email" required>
-      <input type="password" id="reg_password" placeholder="Password" required>
-      <input type="text" id="reg_full_name" placeholder="Full Name" required>
-      <input type="text" id="reg_profile" placeholder="Profile (optional)">
-      <input type="number" id="reg_age" placeholder="Age (optional)">
-      <button type="submit">Register</button>
-    </form>
-  </section>
+  <!-- Registration Form -->
+  <h2>Register</h2>
+  <form id="registerForm">
+    <label>Username: <input type="text" name="username" required></label><br>
+    <label>Email: <input type="email" name="email" required></label><br>
+    <label>Password: <input type="password" name="hash_password" required></label><br>
+    <label>Full Name: <input type="text" name="full_name" required></label><br>
+    <label>Profile: <input type="text" name="profile"></label><br>
+    <label>Profile Pic URL: <input type="text" name="profile_pic"></label><br>
+    <label>Age: <input type="number" name="age"></label><br>
+    <button type="submit">Register</button>
+  </form>
+  <div id="registerResult" class="result"></div>
 
-  <section>
-    <h2>Login</h2>
-    <form id="loginForm">
-      <input type="email" id="login_email" placeholder="Email" required>
-      <input type="password" id="login_password" placeholder="Password" required>
-      <button type="submit">Login</button>
-    </form>
-  </section>
+  <!-- Login Form -->
+  <h2>Login</h2>
+  <form id="loginForm">
+    <label>Email: <input type="email" name="email" required></label><br>
+    <label>Password: <input type="password" name="password" required></label><br>
+    <button type="submit">Login</button>
+  </form>
+  <div id="loginResult" class="result"></div>
 
-  <section>
-    <h2>Create Event</h2>
-    <form id="createEventForm">
-      <input type="text" id="event_title" placeholder="Title" required>
-      <textarea id="event_details" placeholder="Details" required></textarea>
-      <label for="event_time">Event Time:</label>
-      <input type="datetime-local" id="event_time" required>
-      <input type="text" id="event_picture" placeholder="Picture URL (optional)">
-      <input type="text" id="event_link" placeholder="Event Link (optional)">
-      <input type="text" id="event_location" placeholder="Location (optional)">
-      <input type="number" id="event_certificate" placeholder="Certificate (0 or 1)" min="0" max="1">
-      <input type="text" id="event_requirements" placeholder="Requirements (optional)">
-      <input type="text" id="event_contact_methods" placeholder="Contact Methods (optional)">
-      <input type="text" id="event_instructions" placeholder="Instructions (optional)">
-      <input type="number" id="event_max_participants" placeholder="Max Participants (optional)">
-      <input type="number" id="event_duration" placeholder="Duration in minutes (optional)">
-      <label>
-        <input type="checkbox" id="event_status" checked>
-        Active
-      </label>
-      <button type="submit">Create Event</button>
-    </form>
-  </section>
+  <!-- Get User Info Form -->
+  <h2>Get User Info</h2>
+  <form id="getUserForm">
+    <label>User ID: <input type="number" name="user_id" required></label><br>
+    <button type="submit">Get User</button>
+  </form>
+  <div id="getUserResult" class="result"></div>
 
-  <section>
-    <h2>Join Event</h2>
-    <form id="joinEventForm">
-      <input type="number" id="join_event_id" placeholder="Event ID" required>
-      <button type="submit">Join Event</button>
-    </form>
-  </section>
+  <!-- Search Events Form -->
+  <h2>Search Events</h2>
+  <form id="searchEventsForm">
+    <label>Title Contains: <input type="text" name="title"></label><br>
+    <label>Start Time (ISO): <input type="text" name="start" placeholder="YYYY-MM-DDTHH:MM:SS"></label><br>
+    <label>End Time (ISO): <input type="text" name="end" placeholder="YYYY-MM-DDTHH:MM:SS"></label><br>
+    <button type="submit">Search Events</button>
+  </form>
+  <div id="searchEventsResult" class="result"></div>
 
-  <section>
-    <h2>Message</h2>
-    <div id="message" style="padding: 1em; border: 1px solid #ccc; background-color: #f9f9f9;"></div>
-  </section>
+  <!-- Create Event Form -->
+  <h2>Create Event</h2>
+  <form id="createEventForm">
+    <label>Authorization Token: <input type="text" name="token" required></label><br>
+    <label>Time (ISO): <input type="text" name="time" placeholder="YYYY-MM-DDTHH:MM:SS" required></label><br>
+    <label>Title: <input type="text" name="title" required></label><br>
+    <label>Details: <textarea name="details" required></textarea></label><br>
+    <!-- Removed the image URL input to enforce file uploads -->
+    <label>Event Link: <input type="text" name="event_link"></label><br>
+    <label>Location: <input type="text" name="location"></label><br>
+    <label>Certificate (0 or 1): <input type="number" name="certificate" min="0" max="1"></label><br>
+    <label>Requirements: <textarea name="requirements"></textarea></label><br>
+    <label>Contact Methods: <textarea name="contact_methods"></textarea></label><br>
+    <label>Instructions: <textarea name="instructions"></textarea></label><br>
+    <label>Max Participants: <input type="number" name="max_participants"></label><br>
+    <label>Duration (minutes): <input type="number" name="duration"></label><br>
+    <label>Status (true/false): <input type="text" name="status" required></label><br>
+    <button type="submit">Create Event</button>
+  </form>
+  <div id="createEventResult" class="result"></div>
+
+  <!-- Join Event Form -->
+  <h2>Join Event</h2>
+  <form id="joinEventForm">
+    <label>Authorization Token: <input type="text" name="token" required></label><br>
+    <label>Event ID: <input type="number" name="event_id" required></label><br>
+    <button type="submit">Join Event</button>
+  </form>
+  <div id="joinEventResult" class="result"></div>
+
+  <!-- Get Event Details Form -->
+  <h2>Get Event Details</h2>
+  <form id="getEventForm">
+    <label>Authorization Token: <input type="text" name="token" required></label><br>
+    <label>Event ID: <input type="number" name="event_id" required></label><br>
+    <button type="submit">Get Event</button>
+  </form>
+  <div id="getEventResult" class="result"></div>
+
+  <!-- Edit Event Form -->
+  <h2>Edit Event</h2>
+  <form id="editEventForm">
+    <label>Authorization Token: <input type="text" name="token" required></label><br>
+    <label>Event ID: <input type="number" name="event_id" required></label><br>
+    <label>Time (ISO): <input type="text" name="time" placeholder="YYYY-MM-DDTHH:MM:SS" required></label><br>
+    <label>Title: <input type="text" name="title" required></label><br>
+    <label>Details: <textarea name="details" required></textarea></label><br>
+    <!-- Removed the image URL input to enforce file uploads -->
+    <label>Event Link: <input type="text" name="event_link"></label><br>
+    <label>Location: <input type="text" name="location"></label><br>
+    <label>Certificate (0 or 1): <input type="number" name="certificate" min="0" max="1"></label><br>
+    <label>Requirements: <textarea name="requirements"></textarea></label><br>
+    <label>Contact Methods: <textarea name="contact_methods"></textarea></label><br>
+    <label>Instructions: <textarea name="instructions"></textarea></label><br>
+    <label>Max Participants: <input type="number" name="max_participants"></label><br>
+    <label>Duration (minutes): <input type="number" name="duration"></label><br>
+    <label>Status (true/false): <input type="text" name="status" required></label><br>
+    <button type="submit">Edit Event</button>
+  </form>
+  <div id="editEventResult" class="result"></div>
+
+  <!-- Upload Image Form -->
+  <h2>Upload Image</h2>
+  <form id="uploadImageForm" enctype="multipart/form-data">
+    <label>Authorization Token: <input type="text" name="token" required></label><br>
+    <label>Type:
+      <select name="type" required>
+        <option value="profile">Profile</option>
+        <option value="event">Event</option>
+      </select>
+    </label><br>
+    <label>Event ID (if type is event): <input type="number" name="event_id"></label><br>
+    <label>Select File: <input type="file" name="file" required></label><br>
+    <button type="submit">Upload Image</button>
+  </form>
+  <div id="uploadImageResult" class="result"></div>
+
+  <!-- Verify Email Form -->
+  <h2>Verify Email</h2>
+  <form id="verifyEmailForm">
+    <label>Verification Token: <input type="text" name="token" required></label><br>
+    <button type="submit">Verify Email</button>
+  </form>
+  <div id="verifyEmailResult" class="result"></div>
 
   <script>
-    const backendUrl = 'http://127.0.0.1:8000';
-    let accessToken = '';
+    const apiBase = "http://127.0.0.1:8000";
 
-    const showMessage = (msg) => {
-      document.getElementById('message').innerText = msg;
-    };
+    // Helper function to display results in a designated div
+    function displayResult(id, data) {
+      document.getElementById(id).innerText = JSON.stringify(data, null, 2);
+    }
 
-    // Handle registration
-    document.getElementById('registerForm').addEventListener('submit', async (e) => {
+    // Register
+    document.getElementById("registerForm").addEventListener("submit", async (e) => {
       e.preventDefault();
-      const data = {
-        username: document.getElementById('reg_username').value,
-        email: document.getElementById('reg_email').value,
-        hash_password: document.getElementById('reg_password').value,
-        full_name: document.getElementById('reg_full_name').value,
-        profile: document.getElementById('reg_profile').value,
-        age: document.getElementById('reg_age').value ? parseInt(document.getElementById('reg_age').value) : null
+      const form = e.target;
+      const payload = {
+        username: form.username.value,
+        email: form.email.value,
+        hash_password: form.hash_password.value,
+        full_name: form.full_name.value,
+        profile: form.profile.value,
+        profile_pic: form.profile_pic.value,
+        age: form.age.value ? parseInt(form.age.value) : null
       };
       try {
-        const response = await fetch(backendUrl + '/register', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(data)
+        const res = await fetch(apiBase + "/register", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
         });
-        if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.detail || 'Registration failed');
-        }
-        const result = await response.json();
-        accessToken = result.access_token;
-        showMessage('Registration successful! Token stored.');
-      } catch (error) {
-        showMessage('Error: ' + error.message);
+        const data = await res.json();
+        displayResult("registerResult", data);
+      } catch (err) {
+        displayResult("registerResult", err);
       }
     });
 
-    // Handle login
-    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+    // Login
+    document.getElementById("loginForm").addEventListener("submit", async (e) => {
       e.preventDefault();
-      const data = {
-        email: document.getElementById('login_email').value,
-        password: document.getElementById('login_password').value
+      const form = e.target;
+      const payload = {
+        email: form.email.value,
+        password: form.password.value
       };
       try {
-        const response = await fetch(backendUrl + '/login', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(data)
+        const res = await fetch(apiBase + "/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
         });
-        if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.detail || 'Login failed');
-        }
-        const result = await response.json();
-        accessToken = result.access_token;
-        showMessage('Login successful! Token stored.');
-      } catch (error) {
-        showMessage('Error: ' + error.message);
+        const data = await res.json();
+        displayResult("loginResult", data);
+      } catch (err) {
+        displayResult("loginResult", err);
       }
     });
 
-    // Handle event creation
-    document.getElementById('createEventForm').addEventListener('submit', async (e) => {
+    // Get User Info
+    document.getElementById("getUserForm").addEventListener("submit", async (e) => {
       e.preventDefault();
-      if (!accessToken) {
-        showMessage('Please login first.');
-        return;
+      const userId = e.target.user_id.value;
+      try {
+        const res = await fetch(apiBase + "/users/" + userId);
+        const data = await res.json();
+        displayResult("getUserResult", data);
+      } catch (err) {
+        displayResult("getUserResult", err);
       }
-      const data = {
-        title: document.getElementById('event_title').value,
-        details: document.getElementById('event_details').value,
-        time: new Date(document.getElementById('event_time').value).toISOString(),
-        picture: document.getElementById('event_picture').value,
-        event_link: document.getElementById('event_link').value,
-        location: document.getElementById('event_location').value,
-        certificate: document.getElementById('event_certificate').value ? parseInt(document.getElementById('event_certificate').value) : 0,
-        requirements: document.getElementById('event_requirements').value,
-        contact_methods: document.getElementById('event_contact_methods').value,
-        instructions: document.getElementById('event_instructions').value,
-        max_participants: document.getElementById('event_max_participants').value ? parseInt(document.getElementById('event_max_participants').value) : null,
-        duration: document.getElementById('event_duration').value ? parseInt(document.getElementById('event_duration').value) : null,
-        status: document.getElementById('event_status').checked
+    });
+
+    // Search Events
+    document.getElementById("searchEventsForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const form = e.target;
+      const params = new URLSearchParams();
+      if (form.title.value) params.append("title", form.title.value);
+      if (form.start.value) params.append("start", form.start.value);
+      if (form.end.value) params.append("end", form.end.value);
+      try {
+        const res = await fetch(apiBase + "/events/search?" + params.toString());
+        const data = await res.json();
+        displayResult("searchEventsResult", data);
+      } catch (err) {
+        displayResult("searchEventsResult", err);
+      }
+    });
+
+    // Create Event
+    document.getElementById("createEventForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const form = e.target;
+      const token = form.token.value;
+      const payload = {
+        time: form.time.value,
+        title: form.title.value,
+        details: form.details.value,
+        // Removed event_pic from payload; use the Upload Image form instead.
+        event_link: form.event_link.value,
+        location: form.location.value,
+        certificate: form.certificate.value ? parseInt(form.certificate.value) : 0,
+        requirements: form.requirements.value,
+        contact_methods: form.contact_methods.value,
+        instructions: form.instructions.value,
+        max_participants: form.max_participants.value ? parseInt(form.max_participants.value) : null,
+        duration: form.duration.value ? parseInt(form.duration.value) : null,
+        status: form.status.value.toLowerCase() === "true"
       };
       try {
-        const response = await fetch(backendUrl + '/events/create', {
-          method: 'POST',
+        const res = await fetch(apiBase + "/events/create", {
+          method: "POST",
           headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer ' + accessToken
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token
           },
-          body: JSON.stringify(data)
+          body: JSON.stringify(payload)
         });
-        if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.detail || 'Event creation failed');
-        }
-        const result = await response.json();
-        showMessage('Event created successfully with ID: ' + result.event_id);
-      } catch (error) {
-        showMessage('Error: ' + error.message);
+        const data = await res.json();
+        displayResult("createEventResult", data);
+      } catch (err) {
+        displayResult("createEventResult", err);
       }
     });
 
-    // Handle joining an event
-    document.getElementById('joinEventForm').addEventListener('submit', async (e) => {
+    // Join Event
+    document.getElementById("joinEventForm").addEventListener("submit", async (e) => {
       e.preventDefault();
-      if (!accessToken) {
-        showMessage('Please login first.');
-        return;
-      }
-      const eventId = document.getElementById('join_event_id').value;
+      const form = e.target;
+      const token = form.token.value;
+      const eventId = form.event_id.value;
       try {
-        const response = await fetch(backendUrl + '/events/' + eventId + '/join', {
-          method: 'POST',
+        const res = await fetch(apiBase + "/events/" + eventId + "/join", {
+          method: "POST",
           headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer ' + accessToken
+            "Authorization": "Bearer " + token
           }
         });
-        if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.detail || 'Joining event failed');
-        }
-        const result = await response.json();
-        showMessage(result.message);
-      } catch (error) {
-        showMessage('Error: ' + error.message);
+        const data = await res.json();
+        displayResult("joinEventResult", data);
+      } catch (err) {
+        displayResult("joinEventResult", err);
+      }
+    });
+
+    // Get Event Details
+    document.getElementById("getEventForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const form = e.target;
+      const token = form.token.value;
+      const eventId = form.event_id.value;
+      try {
+        const res = await fetch(apiBase + "/events/" + eventId, {
+          headers: { "Authorization": "Bearer " + token }
+        });
+        const data = await res.json();
+        displayResult("getEventResult", data);
+      } catch (err) {
+        displayResult("getEventResult", err);
+      }
+    });
+
+    // Edit Event
+    document.getElementById("editEventForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const form = e.target;
+      const token = form.token.value;
+      const eventId = form.event_id.value;
+      const payload = {
+        time: form.time.value,
+        title: form.title.value,
+        details: form.details.value,
+        // Removed event_pic from payload; use the Upload Image form instead.
+        event_link: form.event_link.value,
+        location: form.location.value,
+        certificate: form.certificate.value ? parseInt(form.certificate.value) : 0,
+        requirements: form.requirements.value,
+        contact_methods: form.contact_methods.value,
+        instructions: form.instructions.value,
+        max_participants: form.max_participants.value ? parseInt(form.max_participants.value) : null,
+        duration: form.duration.value ? parseInt(form.duration.value) : null,
+        status: form.status.value.toLowerCase() === "true"
+      };
+      try {
+        const res = await fetch(apiBase + "/events/" + eventId + "/edit", {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token
+          },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        displayResult("editEventResult", data);
+      } catch (err) {
+        displayResult("editEventResult", err);
+      }
+    });
+
+    // Upload Image
+    document.getElementById("uploadImageForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const form = e.target;
+      const token = form.token.value;
+      const formData = new FormData(form);
+      try {
+        const res = await fetch(apiBase + "/images/upload?" + new URLSearchParams({
+          type: form.type.value,
+          event_id: form.event_id.value
+        }), {
+          method: "POST",
+          headers: { "Authorization": "Bearer " + token },
+          body: formData
+        });
+        const data = await res.json();
+        displayResult("uploadImageResult", data);
+      } catch (err) {
+        displayResult("uploadImageResult", err);
+      }
+    });
+
+    // Verify Email
+    document.getElementById("verifyEmailForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const tokenParam = e.target.token.value;
+      try {
+        const res = await fetch(apiBase + "/verify?token=" + tokenParam);
+        const data = await res.json();
+        displayResult("verifyEmailResult", data);
+      } catch (err) {
+        displayResult("verifyEmailResult", err);
       }
     });
   </script>
