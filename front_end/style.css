@@ -1,0 +1,77 @@
+body {
+    margin: 0;
+    font-family: 'Lexend', sans-serif;
+    background-color: #ffffff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+  
+  .container {
+    text-align: center;
+    padding: 0 20px;
+  }
+  
+  .logo {
+    width: 80px;
+    height: auto;
+    margin-bottom: 20px;
+  }
+  
+  .app-name {
+    font-size: 2rem;
+    margin: 0;
+  }
+  
+  .highlight {
+    color: #FF6721;
+  }
+  
+  .tagline {
+    font-size: 1rem;
+    color: #000000;
+    margin: 15px 0 40px;
+  }
+  
+  .button-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .btn {
+    font-size: 1rem;
+    padding: 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    width: 100%;
+    max-width: 300px;
+    margin: 0 auto;
+    font-weight: bold;
+  }
+  
+  .primary {
+    background-color: #FF6721;
+    color: white;
+    border: none;
+  }
+  
+  .secondary {
+    background-color: transparent;
+    color: #FF6721;
+    border: 2px solid #FF6721;
+  }  
+
+  .btn:active,
+.btn.clicked {
+  background-color: #e85d1d; /* dimmed/darkened orange */
+  color: white;
+  border: none;
+}
+
+.btn.secondary.clicked {
+  background-color: #FF6721;
+  color: white;
+  border: none;
+}

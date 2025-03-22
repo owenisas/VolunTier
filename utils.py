@@ -22,7 +22,7 @@ domain_name = "http://127.0.0.1:8000"
 
 
 def send_verification_email(user_email: str, token: str):
-    verification_link = f"http://yourdomain.com/verify?token={token}"
+    verification_link = f"{domain_name}.com/verify?token={token}"
     params: resend.Emails.SendParams = {
         "from": "DO NOT REPLY! <verify@volun-tier.com>",
         "to": user_email,
