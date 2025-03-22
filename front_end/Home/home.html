@@ -1,24 +1,336 @@
-<!-- home.html -->
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <title>Volunteer App - Home</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8">
+  <title>VolunTier - Home</title>
+  <!-- Link to the CSS file -->
+  <link rel="stylesheet" href="home.css">
+  <!-- Optional font -->
+  <link href="https://fonts.googleapis.com/css2?family=Lexend&display=swap" rel="stylesheet">
 </head>
 <body>
-  <div class="container">
-    <h1>Home Page</h1>
-    <p>Welcome! You’ve made it to the home page. Implement your volunteer feed or events here.</p>
-    <button class="btn" onclick="handleLogout()">Logout</button>
+
+  <!-- Header -->
+  <header class="home-header">
+    <!-- Left side: App name or logo -->
+    <div class="header-left">
+      <h1 class="app-name">Volun<span class="highlight">Tier</span></h1>
+    </div>
+    <!-- Right side: Saved & Notifications icons -->
+    <div class="header-right">
+      <button class="icon-btn" id="savedEventsBtn" title="Saved Events">
+        <img src="../assets/bookmark-icon.png" alt="bookmark icon" class="header-icon">
+      </button>
+      <button class="icon-btn" id="notificationsBtn" title="Notifications">
+        <img src="../assets/bell-icon.png" alt="notification icon" class="header-icon">
+      </button>
+    </div>
+  </header>
+
+  <!-- Tabs: Registered / Waitlisted -->
+  <nav class="toggle-section">
+    <button class="tab-button active" id="registeredTab">Registered</button>
+    <button class="tab-button" id="waitlistedTab">Waitlisted</button>
+  </nav>
+
+  <!-- A note shown only on Waitlist tab -->
+  <p class="waitlist-note" id="waitlistNote">
+    You will be automatically registered if others drop out of the event.
+  </p>
+
+  <!-- Main container for events, populated by JS -->
+  <main class="home-content" id="homeContent"></main>
+
+  <!-- Bottom Nav -->
+  <footer class="bottom-nav">
+    <div class="nav-item active">
+      <img src="../assets/home-icon.png" alt="home icon" class="nav-icon">
+      <span>Home</span>
+    </div>
+    <div class="nav-item">
+      <img src="../assets/host-icon.png" alt="host icon" class="nav-icon">
+      <span>Host Events</span>
+    </div>
+    <div class="nav-item">
+      <img src="../assets/tier-icon.png" alt="tier icon" class="nav-icon">
+      <span>Your Tier</span>
+    </div>
+    <div class="nav-item">
+      <img src="../assets/find-icon.png" alt="find icon" class="nav-icon">
+      <span>Find Events</span>
+    </div>
+    <div class="nav-item">
+      <img src="../assets/profile-icon.png" alt="profile icon" class="nav-icon">
+      <span>Profile</span>
+    </div>
+  </footer>
+
+  <!-- Example Chat Popup -->
+  <div class="chat-popup" id="chatPopup">
+    <div class="chat-popup-content">
+      <h3>Contact Info</h3>
+      <p>(Placeholder) Host’s phone or email goes here.</p>
+      <button id="closeChatBtn" class="btn-close-popup">Close</button>
+    </div>
   </div>
 
+  <!-- Embedded JS: fetch data + render logic -->
   <script>
-    function handleLogout() {
-      // Clear localStorage or token
-      // redirect to welcome.html
-      window.location.href = "welcome.html";
+    /**************************************************************
+     * 1) SERVER FETCH
+     *    We'll call this to get your "registered" and "waitlisted"
+     *    day-block arrays from your backend.
+     **************************************************************/
+    async function fetchEventsFromBackend() {
+      try {
+        // If you use auth tokens, retrieve them from sessionStorage, etc.
+        const token = sessionStorage.getItem("authToken") || "";
+
+        // Example endpoint: adjust to your actual path
+        const res = await fetch("http://127.0.0.1:8000/api/volunteerEvents", {
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token
+          }
+        });
+        if (!res.ok) {
+          throw new Error("Failed to fetch events (status " + res.status + ")");
+        }
+
+        // We expect a JSON object like:
+        // {
+        //   "registered": [
+        //     {
+        //       "dayLabel": "Today",
+        //       "events": [
+        //         { "id": 1, "title": "...", "dateTime": "...", "location": "...", "spots": "...", "imageUrl": "...", "chatAvailable": true, "isHappeningNow": false },
+        //         ...
+        //       ]
+        //     },
+        //     ...
+        //   ],
+        //   "waitlisted": [ ... day blocks ... ]
+        // }
+        const data = await res.json();
+        return data;
+      } catch (err) {
+        console.error("Error fetching from backend:", err);
+        throw err;
+      }
     }
+
+    /**************************************************************
+     * 2) RENDER LOGIC
+     **************************************************************/
+    let usedTriangleAlready = false; // ensures only 1 event gets "live" triangle
+
+    function renderEvents(dayBlocks, isWaitlisted) {
+      // Clear existing content, reset single live usage
+      const homeContent = document.getElementById("homeContent");
+      homeContent.innerHTML = "";
+      usedTriangleAlready = false;
+
+      // For each day block
+      dayBlocks.forEach(dayBlock => {
+        // Parent <section> for that day's events
+        const daySection = document.createElement("section");
+        daySection.className = "event-day";
+
+        const heading = document.createElement("h2");
+        heading.textContent = dayBlock.dayLabel || "Unlabeled Day";
+        daySection.appendChild(heading);
+
+        const divider = document.createElement("div");
+        divider.className = "day-divider";
+        daySection.appendChild(divider);
+
+        // Now loop each event
+        (dayBlock.events || []).forEach(evt => {
+          // Card container
+          const eventCard = document.createElement("article");
+          eventCard.className = "event-card";
+
+          // Left side: (triangle if "live" and not used yet) + image
+          const leftDiv = document.createElement("div");
+          leftDiv.className = "event-left";
+
+          let showTriangle = false;
+          let showCheckinCert = false;
+
+          if (!usedTriangleAlready && !isWaitlisted && evt.isHappeningNow) {
+            showTriangle = true;
+            showCheckinCert = true;
+            usedTriangleAlready = true; // we won't do this again
+          }
+
+          // Triangle
+          const indicator = document.createElement("img");
+          indicator.src = "../assets/triangle-now.png";
+          indicator.alt = "Happening now indicator";
+          indicator.className = showTriangle ? "triangle-indicator" : "triangle-indicator hidden";
+          leftDiv.appendChild(indicator);
+
+          // Event image
+          const eventImg = document.createElement("img");
+          eventImg.src = evt.imageUrl || "../assets/event-placeholder.png";
+          eventImg.alt = "Event placeholder";
+          eventImg.className = "event-image";
+          leftDiv.appendChild(eventImg);
+
+          // Right side: info + actions
+          const rightDiv = document.createElement("div");
+          rightDiv.className = "event-right";
+
+          // Info block
+          const infoDiv = document.createElement("div");
+          infoDiv.className = "event-info";
+
+          const timeP = document.createElement("p");
+          timeP.className = "event-time";
+          timeP.textContent = evt.dateTime || "(No time)";
+
+          const titleH3 = document.createElement("h3");
+          titleH3.className = "event-title";
+          titleH3.textContent = evt.title || "(No Title)";
+
+          const locP = document.createElement("p");
+          locP.className = "event-location";
+          locP.textContent = evt.location || "(No location)";
+
+          const spotsP = document.createElement("p");
+          spotsP.className = "event-spots";
+          spotsP.innerHTML = `<strong>${evt.spots || "N/A"}</strong>`;
+
+          infoDiv.append(timeP, titleH3, locP, spotsP);
+
+          // Actions row
+          const actionsDiv = document.createElement("div");
+          actionsDiv.className = "event-actions";
+
+          // If chat is available
+          if (evt.chatAvailable) {
+            const chatBtn = document.createElement("button");
+            chatBtn.className = "icon-btn chat-btn";
+            const chatIcon = document.createElement("img");
+            chatIcon.src = "../assets/chat-icon.png";
+            chatIcon.alt = "Chat icon";
+            chatIcon.className = "action-icon";
+            chatBtn.appendChild(chatIcon);
+            chatBtn.onclick = () => openChatPopup();
+            actionsDiv.appendChild(chatBtn);
+          }
+
+          // share icon
+          const shareBtn = document.createElement("button");
+          shareBtn.className = "icon-btn share-btn";
+          const shareIcon = document.createElement("img");
+          shareIcon.src = "../assets/share-icon.png";
+          shareIcon.alt = "Share icon";
+          shareIcon.className = "action-icon";
+          shareBtn.appendChild(shareIcon);
+          // shareBtn.onclick = () => { ...some share logic... };
+          actionsDiv.appendChild(shareBtn);
+
+          // CTA row
+          const ctaDiv = document.createElement("div");
+          ctaDiv.className = "event-cta";
+
+          if (isWaitlisted) {
+            // Waitlisted => “Opt-out”
+            const optOutBtn = document.createElement("button");
+            optOutBtn.className = "btn-optout";
+            optOutBtn.textContent = "Opt-out";
+            // optOutBtn.onclick = () => { remove from waitlist? };
+            ctaDiv.appendChild(optOutBtn);
+          } else {
+            // Registered => show checkin/cert only if “live”
+            if (showCheckinCert) {
+              const checkInBtn = document.createElement("button");
+              checkInBtn.className = "btn-checkin disabled-btn";
+              checkInBtn.textContent = "Check-in";
+              checkInBtn.disabled = true;
+
+              const certBtn = document.createElement("button");
+              certBtn.className = "btn-certificate disabled-btn";
+              certBtn.textContent = "Certificate";
+              certBtn.disabled = true;
+
+              ctaDiv.append(checkInBtn, certBtn);
+            }
+          }
+
+          // Combine
+          rightDiv.append(infoDiv, actionsDiv, ctaDiv);
+          eventCard.append(leftDiv, rightDiv);
+          daySection.appendChild(eventCard);
+        });
+
+        // Append day section
+        homeContent.appendChild(daySection);
+      });
+    }
+
+    /**************************************************************
+     * 3) TABS
+     **************************************************************/
+    const registeredTab = document.getElementById("registeredTab");
+    const waitlistedTab = document.getElementById("waitlistedTab");
+    const waitlistNote = document.getElementById("waitlistNote");
+
+    registeredTab.addEventListener("click", () => {
+      registeredTab.classList.add("active");
+      waitlistedTab.classList.remove("active");
+      // We'll fetch the data again if you want always-fresh,
+      // or store it in memory from an earlier fetch. For now, just re-render.
+      renderEvents(_cachedRegistered, false);
+    });
+
+    waitlistedTab.addEventListener("click", () => {
+      waitlistedTab.classList.add("active");
+      registeredTab.classList.remove("active");
+      renderEvents(_cachedWaitlisted, true);
+    });
+
+    /**************************************************************
+     * 4) CHAT POPUP
+     **************************************************************/
+    function openChatPopup() {
+      document.getElementById("chatPopup").classList.add("show");
+    }
+    document.getElementById("closeChatBtn").onclick = () => {
+      document.getElementById("chatPopup").classList.remove("show");
+    };
+
+    /**************************************************************
+     * 5) INIT: Fetch from server, store globally, then render
+     **************************************************************/
+    // We'll keep a global reference to the data so that switching
+    // tabs doesn't require re-fetching from the server each time:
+    let _cachedRegistered = [];
+    let _cachedWaitlisted = [];
+
+    document.addEventListener("DOMContentLoaded", async () => {
+      try {
+        // 1) Fetch data from backend
+        const data = await fetchEventsFromBackend(); 
+        // data should be something like:
+        // { registered: [ { dayLabel, events: [...]}, ... ],
+        //   waitlisted: [ { dayLabel, events: [...]}, ... ] }
+
+        // 2) Store globally
+        _cachedRegistered = data.registered || [];
+        _cachedWaitlisted = data.waitlisted || [];
+
+        // 3) Show "Registered" tab by default
+        renderEvents(_cachedRegistered, false);
+
+      } catch (err) {
+        console.error("Failed to init page with events:", err);
+        // Optionally show an error message in the UI
+        document.getElementById("homeContent").innerHTML = 
+          "<p style='color:red;'>Failed to load events. Please try again.</p>";
+      }
+    });
   </script>
 </body>
 </html>
