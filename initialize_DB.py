@@ -10,6 +10,7 @@ CREATE TABLE IF NOT EXISTS User (
     hash_password TEXT NOT NULL,
     full_name TEXT NOT NULL,
     profile TEXT,
+    profile_pic TEXT,
     age INTEGER,
     verification INTEGER DEFAULT 0 -- 0: not verified, 1: school, 2: work, etc.
 );
