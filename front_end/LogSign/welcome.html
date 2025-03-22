@@ -1,19 +1,63 @@
-<!-- welcome.html -->
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <title>Volunteer App - Welcome</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8">
+  <title>VolunTier - Welcome</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Lexend&display=swap" rel="stylesheet">
 </head>
 <body>
-  <div class="container">
-    <h1>Welcome to Volunteer App</h1>
-    <p style="text-align:center;">
-      A place where you can join or organize hackathons, mentorships, or volunteer events.
-    </p>
-    <button class="btn" onclick="location.href='login.html'">Login</button>
-    <button class="btn" style="margin-top: 10px;" onclick="location.href='registerEmail.html'">Sign Up</button>
+  <div class="center-wrapper">
+    <div class="container">
+      <!-- Logo -->
+      <img src="assets/logo.png" alt="VolunTier Logo" class="logo" />
+      
+      <!-- App name -->
+      <h1 class="app-name">
+        Volun<span class="highlight">Tier</span>
+      </h1>
+      
+      <!-- Tagline -->
+      <p class="tagline">Volunteer based on your skills and experience.</p>
+
+      <!-- Button group: Sign Up / Login -->
+      <div class="button-group">
+        <button id="signupBtn" class="btn primary">Sign Up</button>
+        <button id="loginBtn" class="btn secondary">Login</button>
+      </div>
+    </div>
+
+    <footer class="bottom-links">
+      <a href="#">Terms of Use</a> | <a href="#">Privacy Policy</a>
+    </footer>
   </div>
+
+  <script>
+    document.getElementById('signupBtn').addEventListener('click', () => {
+      setActiveButton('signup');
+      setTimeout(() => {
+        window.location.href = "register.html";
+      }, 150); 
+    });
+
+    document.getElementById('loginBtn').addEventListener('click', () => {
+      setActiveButton('login');
+      setTimeout(() => {
+        window.location.href = "login.html";
+      }, 150);
+    });
+
+    function setActiveButton(type) {
+      const signupBtn = document.getElementById("signupBtn");
+      const loginBtn = document.getElementById("loginBtn");
+      if (type === 'signup') {
+        signupBtn.classList.add("clicked");
+        loginBtn.classList.remove("clicked");
+      } else {
+        loginBtn.classList.add("clicked");
+        signupBtn.classList.remove("clicked");
+      }
+    }
+  </script>
 </body>
 </html>

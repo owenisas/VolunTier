@@ -1,38 +1,60 @@
-<!-- recoveryCode.html -->
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <title>Sign Up - Recovery Code</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8"/>
+  <title>VolunTier - Recovery Code</title>
+  <link rel="stylesheet" href="style.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Lexend&display=swap" rel="stylesheet">
 </head>
 <body>
-  <div class="container">
-    <h2>Recovery Code</h2>
-    <p>This code can be used if you ever lose access to your email.</p>
+  <div class="center-wrapper">
+    <header class="top-nav">
+      <a href="welcome.html" class="logout-link">Log out</a>
+      <img src="assets/logo.png" alt="VolunTier Logo" class="top-logo"/>
+    </header>
 
-    <div id="recoveryCodeContainer" style="text-align:center; margin:20px 0;">
-      <strong id="recoveryCode">ABC123XYZ789</strong>
-    </div>
+    <main class="content-center">
+      <h2>Recovery code</h2>
+      <p class="subtext">Please save your recovery code below. Do not share it with anyone.</p>
 
-    <button class="btn" onclick="saveScreenshot()">Save to Photos</button>
-    <button class="btn" style="margin-top:10px;" onclick="handleContinue()">Continue</button>
+      <div class="recovery-list">
+        <p><strong>Code 1</strong> <span id="recoveryCode1">Nc3yn8SBp9</span></p>
+        <p><strong>Code 2</strong> <span id="recoveryCode2">oIk825JLTs1</span></p>
+      </div>
 
-    <script>
-      // Generate random code on the fly
-      document.getElementById('recoveryCode').innerText = "RC-" + 
-        Math.random().toString(36).substring(2,8).toUpperCase();
+      <div class="button-group-vertical">
+        <button id="saveToPhotosBtn" class="btn secondary">Save to photos</button>
+        <button id="continueBtn" class="btn primary">Continue</button>
+      </div>
 
-      function saveScreenshot() {
-        // Stub: pretend to take screenshot
-        alert("Pretend we took a screenshot and saved it...");
-      }
+      <p id="saveWarning" class="error-message"></p>
+    </main>
 
-      function handleContinue() {
-        // Possibly require user to have clicked "Save"
-        window.location.href = "registerInfo.html";
-      }
-    </script>
+    <footer class="bottom-links">
+      <a href="#">Terms of Use</a> | <a href="#">Privacy Policy</a>
+    </footer>
   </div>
+
+  <script>
+    let hasSaved = false;
+    const saveWarning = document.getElementById('saveWarning');
+    const saveBtn = document.getElementById('saveToPhotosBtn');
+    const continueBtn = document.getElementById('continueBtn');
+
+    saveBtn.addEventListener('click', () => {
+      // Simulate "save to photos"
+      hasSaved = true;
+      saveWarning.textContent = "";
+      alert("Recovery code saved (simulated).");
+    });
+
+    continueBtn.addEventListener('click', () => {
+      if (!hasSaved) {
+        saveWarning.textContent = "Please save your recovery code before continuing.";
+        return;
+      }
+      window.location.href = "baseInfo.html";
+    });
+  </script>
 </body>
 </html>
