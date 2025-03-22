@@ -5,10 +5,10 @@ from pydantic import BaseModel
 
 # User models
 class UserCreate(BaseModel):
-    username: str
+    username: Optional[str] = None
     email: str
     hash_password: str
-    full_name: str
+    full_name: Optional[str] = None
     profile: Optional[str] = None
     profile_pic: Optional[str] = None  # URL or file path
     age: Optional[int] = None
