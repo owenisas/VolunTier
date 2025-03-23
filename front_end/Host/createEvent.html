@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Create an Event</title>
+  <link rel="stylesheet" href="createEvent.css">
+  <link href="https://fonts.googleapis.com/css2?family=Lexend&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- Top bar (fixed) -->
+  <header class="top-bar">
+    <!-- Back arrow -->
+    <button class="back-btn" id="backBtn">
+      <img src="../assets/arrow-back.png" alt="Back Arrow" class="icon-back">
+    </button>
+    <!-- Title -->
+    <h1 class="page-title">Create an Event</h1>
+    <!-- Right logo or brand icon -->
+    <div class="logo-right">
+      <img src="../assets/v-icon.png" alt="VolunTier Icon" class="icon-logo">
+    </div>
+  </header>
+
+  <!-- Main scrollable content -->
+  <main class="content-area">
+
+    <!-- Form container -->
+    <form id="createEventForm" class="form-container">
+
+      <!-- Title -->
+      <div class="input-group">
+        <label for="eventTitle">Title *</label>
+        <input 
+          type="text" 
+          id="eventTitle" 
+          placeholder="e.g. BC Hacks 24" 
+          maxlength="80"
+          required
+        >
+        <div class="char-counter"><span id="titleCharCount">0</span>/80</div>
+      </div>
+
+      <!-- Date, Start time, End time -->
+      <div class="input-group">
+        <label for="eventDate">Date *</label>
+        <input type="date" id="eventDate" required>
+      </div>
+
+      <div class="time-row">
+        <div class="input-group time-group">
+          <label for="startTime">Start Time*</label>
+          <input type="time" id="startTime" required>
+        </div>
+        <div class="input-group time-group">
+          <label for="endTime">End Time*</label>
+          <input type="time" id="endTime" required>
+        </div>
+        <span class="time-zone">PST</span>
+      </div>
+
+      <!-- Location -->
+      <div class="input-group">
+        <label for="eventLocation">Location*</label>
+        <input 
+          type="text" 
+          id="eventLocation" 
+          placeholder="Search or enter address"
+          required
+        >
+      </div>
+
+      <!-- Description (with optional “formatting” icons as placeholders) -->
+      <div class="input-group description-group">
+        <label for="eventDescription">Description*</label>
+        <!-- Fake formatting toolbar icons -->
+        <div class="format-toolbar">
+          <button type="button" class="format-btn">B</button>
+          <button type="button" class="format-btn">I</button>
+          <button type="button" class="format-btn">List</button>
+          <button type="button" class="format-btn">Link</button>
+        </div>
+        <textarea 
+          id="eventDescription" 
+          rows="6" 
+          placeholder="Let volunteers know what to expect, required forms..."
+          required
+        ></textarea>
+        <p class="word-note">
+          Up to 1500 words allowed.
+          <span id="descWordCount">0</span> words so far
+        </p>
+      </div>
+
+      <!-- Featured Photo -->
+      <div class="input-group">
+        <label for="eventPhoto">Featured Photo*</label>
+        <input type="file" id="eventPhoto" accept="image/*" required>
+      </div>
+
+      <!-- Communication Method - optional -->
+      <div class="input-group communication-group">
+        <label for="commCheck" class="check-label">
+          <input type="checkbox" id="commCheck">
+          Provide Communication Link (Optional)
+        </label>
+
+        <!-- If checked, show these two fields -->
+        <div id="commFields" class="comm-fields hidden">
+          <p class="comm-info">
+            This is how you’ll communicate (e.g., LinkedIn, Slack, WhatsApp).
+            It will be released to registered volunteers only. Enter "NA" if not needed.
+          </p>
+          <input 
+            type="text" 
+            id="commTitle" 
+            placeholder="e.g. Join WhatsApp Group"
+          >
+          <input 
+            type="url" 
+            id="commLink" 
+            placeholder="https://whatsapp.com/invite/hab82"
+          >
+        </div>
+      </div>
+
+      <!-- Minimum Age & # of volunteers -->
+      <div class="input-row">
+        <div class="input-group">
+          <label for="minAge">Minimum Age*</label>
+          <select id="minAge" required>
+            <option value="N/A">N/A</option>
+            <option value="18">18 years old</option>
+            <option value="21">21 years old</option>
+            <option value="25">25 years old</option>
+            <option value="30">30 years old</option>
+          </select>
+        </div>
+        <div class="input-group">
+          <label for="volunteerCount"># of volunteers*</label>
+          <input type="number" id="volunteerCount" min="1" max="999" required placeholder="8">
+        </div>
+      </div>
+
+      <!-- Certificate options -->
+      <div class="input-group cert-group">
+        <label for="certificateSelect">Certificate*</label>
+        <select id="certificateSelect" required>
+          <option value="Provided">Provided</option>
+          <option value="NotProvided">Not Provided</option>
+        </select>
+        <button 
+          type="button" 
+          id="createCertBtn" 
+          class="btn-cert"
+        >
+          Create Certificate
+        </button>
+      </div>
+
+      <!-- Event Type (3 max from predefined list) -->
+      <div class="input-group event-type-group">
+        <label>Event Type (3 max)</label>
+        <div id="typeChipsContainer" class="chips-container">
+          <!-- Chips will appear here from selection. E.g. [Technology] [Music] ... -->
+        </div>
+        <!-- A dropdown with your predefined list -->
+        <div class="type-selector">
+          <select id="eventTypeSelect">
+            <option value="" disabled selected>Select a type</option>
+            <option value="Technology">Technology</option>
+            <option value="Entrepreneurship">Entrepreneurship</option>
+            <option value="Investing">Investing</option>
+            <option value="Business">Business</option>
+            <option value="Marketing">Marketing</option>
+            <option value="Healthcare">Healthcare</option>
+            <option value="Education">Education</option>
+            <option value="Finance">Finance</option>
+            <option value="Engineering">Engineering</option>
+            <option value="Science">Science</option>
+            <option value="Environmental">Environmental</option>
+            <option value="Arts">Arts</option>
+            <option value="Music">Music</option>
+            <option value="Fashion">Fashion</option>
+            <option value="Media">Media</option>
+            <option value="Sports">Sports</option>
+            <option value="Law">Law</option>
+            <option value="Government">Government</option>
+            <option value="Nonprofit">Nonprofit</option>
+            <option value="Social Impact">Social Impact</option>
+            <option value="Event Planning">Event Planning</option>
+            <option value="Community Service">Community Service</option>
+          </select>
+          <button type="button" id="addTypeBtn" class="add-type-btn">+</button>
+        </div>
+      </div>
+
+      <!-- Buttons (Publish / Save as draft) -->
+      <div class="button-group">
+        <button type="submit" id="publishBtn" class="btn-publish">Publish</button>
+        <button type="button" id="draftBtn" class="btn-draft">Save as draft</button>
+      </div>
+    </form>
+  </main>
+
+  <!-- Bottom nav (fixed) -->
+  <footer class="bottom-nav">
+    <div class="nav-item">
+      <img src="../assets/home-icon.png" alt="home icon" class="nav-icon">
+      <span>Home</span>
+    </div>
+    <div class="nav-item active">
+      <img src="../assets/host-icon.png" alt="host icon" class="nav-icon">
+      <span>Host Events</span>
+    </div>
+    <div class="nav-item">
+      <img src="../assets/tier-icon.png" alt="tier icon" class="nav-icon">
+      <span>Your Tier</span>
+    </div>
+    <div class="nav-item">
+      <img src="../assets/find-icon.png" alt="find icon" class="nav-icon">
+      <span>Find Events</span>
+    </div>
+    <div class="nav-item">
+      <img src="../assets/profile-icon.png" alt="profile icon" class="nav-icon">
+      <span>Profile</span>
+    </div>
+  </footer>
+
+  <!-- JavaScript inline -->
+  <script>
+    /*******************
+     * DOM Elements
+     *******************/
+    const form = document.getElementById("createEventForm");
+    const eventTitle = document.getElementById("eventTitle");
+    const titleCharCount = document.getElementById("titleCharCount");
+
+    const eventDescription = document.getElementById("eventDescription");
+    const descWordCount = document.getElementById("descWordCount");
+
+    const commCheck = document.getElementById("commCheck");
+    const commFields = document.getElementById("commFields");
+
+    const certificateSelect = document.getElementById("certificateSelect");
+    const createCertBtn = document.getElementById("createCertBtn");
+
+    const eventTypeSelect = document.getElementById("eventTypeSelect");
+    const addTypeBtn = document.getElementById("addTypeBtn");
+    const typeChipsContainer = document.getElementById("typeChipsContainer");
+
+    const backBtn = document.getElementById("backBtn");
+    const draftBtn = document.getElementById("draftBtn");
+
+    /*******************
+     * Title Char Count
+     *******************/
+    eventTitle.addEventListener("input", () => {
+      titleCharCount.textContent = eventTitle.value.length;
+    });
+
+    /*******************
+     * Description Word Count
+     * Max 1500 words
+     *******************/
+    eventDescription.addEventListener("input", () => {
+      const words = eventDescription.value.trim().split(/\s+/).filter(Boolean);
+      descWordCount.textContent = words.length;
+    });
+
+    /*******************
+     * Communication method (checkbox => show/hide fields)
+     *******************/
+    commCheck.addEventListener("change", () => {
+      if (commCheck.checked) {
+        commFields.classList.remove("hidden");
+      } else {
+        commFields.classList.add("hidden");
+      }
+    });
+
+    /*******************
+     * Certificate dropdown => enable/disable "Create Certificate" button
+     *******************/
+    function updateCertButton() {
+      if (certificateSelect.value === "NotProvided") {
+        createCertBtn.disabled = true;
+        createCertBtn.classList.add("disabled-btn");
+      } else {
+        createCertBtn.disabled = false;
+        createCertBtn.classList.remove("disabled-btn");
+      }
+    }
+    certificateSelect.addEventListener("change", updateCertButton);
+    updateCertButton(); // initial call
+
+    /*******************
+     * Event Types (3 max)
+     *******************/
+    let selectedTypes = [];
+    addTypeBtn.addEventListener("click", () => {
+      const selectedVal = eventTypeSelect.value;
+      if (!selectedVal) return; // no selection
+      if (selectedTypes.includes(selectedVal)) {
+        alert("You already selected this type.");
+        return;
+      }
+      if (selectedTypes.length >= 3) {
+        alert("You can only choose up to 3 types.");
+        return;
+      }
+      selectedTypes.push(selectedVal);
+      renderTypeChips();
+    });
+
+    function renderTypeChips() {
+      typeChipsContainer.innerHTML = "";
+      selectedTypes.forEach((type) => {
+        const chip = document.createElement("span");
+        chip.className = "type-chip";
+        chip.textContent = type;
+        // Remove chip on click
+        chip.onclick = () => {
+          selectedTypes = selectedTypes.filter(t => t !== type);
+          renderTypeChips();
+        };
+        typeChipsContainer.appendChild(chip);
+      });
+    }
+
+    /*******************
+     * Buttons
+     *******************/
+    backBtn.addEventListener("click", () => {
+      // Just go back or navigate to your desired page
+      window.history.back();
+    });
+
+    draftBtn.addEventListener("click", () => {
+      // Save as draft logic if needed
+      alert("Saving as draft...");
+      // Possibly call handleSubmit with a 'draft' status
+    });
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      // 1) Validate Title char length
+      const titleLength = eventTitle.value.trim().length;
+      if (titleLength === 0 || titleLength > 80) {
+        alert("Title must be between 1 and 80 characters.");
+        return;
+      }
+
+      // 2) Validate Description word count
+      const words = eventDescription.value.trim().split(/\s+/).filter(Boolean);
+      if (words.length > 1500) {
+        alert("Description cannot exceed 1500 words.");
+        return;
+      }
+
+      // 3) Gather form data
+      const token = sessionStorage.getItem("authToken") || "";
+      const dateVal = document.getElementById("eventDate").value;
+      const startVal = document.getElementById("startTime").value;
+      const endVal = document.getElementById("endTime").value;
+      const locationVal = document.getElementById("eventLocation").value.trim();
+      const minAgeVal = document.getElementById("minAge").value;
+      const volunteerCountVal = document.getElementById("volunteerCount").value;
+      const certVal = certificateSelect.value;
+      const commTitleVal = document.getElementById("commTitle").value.trim();
+      const commLinkVal = document.getElementById("commLink").value.trim();
+
+      // 4) Build final payload
+      // Adjust to your backend's expected structure
+      const payload = {
+        title: eventTitle.value.trim(),
+        date: dateVal,  // "YYYY-MM-DD"
+        start_time: startVal, // "HH:MM"
+        end_time: endVal,
+        timezone: "PST",
+        location: locationVal,
+        description: eventDescription.value.trim(),
+        min_age: minAgeVal,
+        volunteer_capacity: volunteerCountVal,
+        certificate: certVal === "Provided",
+        event_types: selectedTypes, // array
+        communication: commCheck.checked
+          ? {
+              methodTitle: commTitleVal,
+              methodLink: commLinkVal
+            }
+          : null
+      };
+
+      // 5) For the photo, you might do a separate fetch or formData
+      // Example:
+      const photoFile = document.getElementById("eventPhoto").files[0];
+      // you might upload the image first or with your event create
+
+      // 6) Example fetch to create event
+      try {
+        const res = await fetch("http://127.0.0.1:8000/api/events/create", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token
+          },
+          body: JSON.stringify(payload)
+        });
+        if (!res.ok) {
+          const errData = await res.json();
+          alert(errData.detail || "Failed to create event");
+          return;
+        }
+        const eventData = await res.json();
+        console.log("Event created:", eventData);
+
+        // Possibly handle photo upload next...
+        if (photoFile) {
+          let formData = new FormData();
+          formData.append("file", photoFile);
+          formData.append("event_id", eventData.id); // or wherever you attach it
+          const uploadRes = await fetch("http://127.0.0.1:8000/api/events/uploadPhoto", {
+            method: "POST",
+            headers: { "Authorization": "Bearer " + token },
+            body: formData
+          });
+          if (!uploadRes.ok) {
+            alert("Event created, but photo upload failed.");
+          }
+        }
+
+        alert("Event published successfully!");
+        // redirect if you want
+        // window.location.href = "hostEvents.html";
+      } catch (err) {
+        console.error("Error creating event:", err);
+        alert("Network error. Please try again later.");
+      }
+    });
+  </script>
+</body>
+</html>
