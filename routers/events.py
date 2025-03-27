@@ -13,8 +13,19 @@ from .auth import get_current_user, get_current_user_optional
 from typing import Optional
 from fastapi.security import OAuth2PasswordBearer
 
-
 router = APIRouter()
+
+
+@router.get("/events/get", response_model=List[Event])
+def get_events_sorted_by_time(db: sqlite3.Connection = Depends(get_db)):
+    """
+    Retrieves all events from the database sorted by time in ascending order.
+    """
+    cursor = db.cursor()
+    cursor.execute("SELECT * FROM events ORDER BY time ASC LIMIT 10")
+    rows = cursor.fetchall()
+    return [Event(**dict(row)) for row in rows]
+
 
 @router.get("/events/search", response_model=List[Event])
 def search_events(
@@ -161,9 +172,9 @@ def join_event(
 
 @router.get("/events/{event_id}", response_model=Event)
 def get_event(
-    event_id: int,
-    db: sqlite3.Connection = Depends(get_db),
-    current_user: Optional[dict] = Depends(get_current_user_optional)
+        event_id: int,
+        db: sqlite3.Connection = Depends(get_db),
+        current_user: Optional[dict] = Depends(get_current_user_optional)
 ):
     cursor = db.cursor()
     # Retrieve the event
