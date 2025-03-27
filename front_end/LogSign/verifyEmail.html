@@ -16,25 +16,18 @@
     </header>
 
     <main class="content-center">
-      <h2>Verify your email</h2>
+      <h2>Verify your email to use more functions</h2>
       <p id="emailNotice" class="subtext">
-        We sent an email to <span id="userEmail"></span>.
+        We have sent a verification email to <span id="userEmail"></span>.
       </p>
 
-      <div class="verify-code-wrapper">
-        <input type="text" maxlength="1" class="verify-circle" id="code1">
-        <input type="text" maxlength="1" class="verify-circle" id="code2">
-        <input type="text" maxlength="1" class="verify-circle" id="code3">
-        <input type="text" maxlength="1" class="verify-circle" id="code4">
-      </div>
-
       <p class="resend-link">
-        <a href="#" id="resendCode">Resend code</a>
+        <a href="#" id="resendCode">Verify</a>
       </p>
 
       <p id="verifyError" class="error-message"></p>
 
-      <button id="verifyBtn" class="btn primary">Verify</button>
+      <a href="../Home/home.html" id="SkipBtn" class="btn primary">Skip</a>
     </main>
 
     <footer class="bottom-links">
@@ -50,47 +43,6 @@
 
     const verifyBtn = document.getElementById('verifyBtn');
     const verifyError = document.getElementById('verifyError');
-
-    // Example token from sessionStorage or elsewhere
-    let verificationToken = sessionStorage.getItem("authToken") || "dummyToken";
-
-    verifyBtn.addEventListener('click', async () => {
-      const code1 = document.getElementById('code1').value.trim();
-      const code2 = document.getElementById('code2').value.trim();
-      const code3 = document.getElementById('code3').value.trim();
-      const code4 = document.getElementById('code4').value.trim();
-      const fullCode = code1 + code2 + code3 + code4;
-
-      if (fullCode.length < 4) {
-        verifyError.textContent = "Please enter the 4-digit code.";
-        return;
-      }
-
-      // If you want to compare with a server-coded method:
-      // We'll assume your backend requires GET /verify?token=someToken
-      // Or you might actually post the code somewhere. This is an example:
-      try {
-        const res = await fetch(`${apiBase}/verify?token=${verificationToken}`);
-        const data = await res.json();
-
-        if (res.ok) {
-          // Then proceed to next step
-          window.location.href = "recoveryCode.html";
-        } else {
-          verifyError.textContent = data.detail || "Verification failed. Wrong code?";
-        }
-      } catch (err) {
-        console.error(err);
-        verifyError.textContent = "Network error. Please try again.";
-      }
-    });
-
-    // Resend code
-    document.getElementById('resendCode').addEventListener('click', (e) => {
-      e.preventDefault();
-      alert("Verification code resent to " + emailParam);
-      // or call an endpoint like /resend?email=...
-    });
   </script>
 </body>
 </html>

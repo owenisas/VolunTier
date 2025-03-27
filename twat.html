@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>VolunTier - Verifying Email</title>
+  <link rel="stylesheet" href="./front_end/LogSign/style.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Lexend&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="center-wrapper">
+    <header class="top-nav">
+      <a href="register.html" class="back-link">
+        <img src="assets/arrow-back.png" alt="Back Arrow" class="icon-back"/>
+      </a>
+      <img src="assets/logo.png" alt="VolunTier Logo" class="top-logo"/>
+    </header>
+
+    <main class="content-center">
+      <h2>Verifying your email...</h2>
+      <p id="statusMessage" class="subtext">
+        Please wait while we verify your email.
+      </p>
+    </main>
+
+    <footer class="bottom-links">
+      <a href="#">Terms of Use</a> | <a href="#">Privacy Policy</a>
+    </footer>
+  </div>
+
+  <script>
+    const apiBase = "http://127.0.0.1:8000";
+    const urlParams = new URLSearchParams(window.location.search);
+    const token = urlParams.get('token');
+
+    async function verifyEmail() {
+      try {
+        // Call your /verify endpoint using the token from the URL
+        const res = await fetch(`${apiBase}/verify?token=${token}`);
+        const data = await res.json();
+        if (res.ok) {
+          document.getElementById('statusMessage').textContent = "Email verified successfully. Redirecting to home page...";
+          // Redirect to the home page after a short delay
+          setTimeout(() => {
+            window.location.href = "home.html";
+          }, 2000);
+        } else {
+          document.getElementById('statusMessage').textContent = data.detail || "Verification failed. Please try again.";
+        }
+      } catch (err) {
+        console.error(err);
+        document.getElementById('statusMessage').textContent = "Network error. Please try again.";
+      }
+    }
+
+    if (token) {
+      verifyEmail();
+    } else {
+      document.getElementById('statusMessage').textContent = "Missing token. Unable to verify email.";
+    }
+  </script>
+</body>
+</html>

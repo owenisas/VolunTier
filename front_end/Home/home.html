@@ -3,20 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <title>VolunTier - Home</title>
-  <!-- Link to the CSS file -->
   <link rel="stylesheet" href="home.css">
-  <!-- Optional font -->
   <link href="https://fonts.googleapis.com/css2?family=Lexend&display=swap" rel="stylesheet">
 </head>
 <body>
 
   <!-- Header -->
   <header class="home-header">
-    <!-- Left side: App name or logo -->
     <div class="header-left">
       <h1 class="app-name">Volun<span class="highlight">Tier</span></h1>
     </div>
-    <!-- Right side: Saved & Notifications icons -->
     <div class="header-right">
       <button class="icon-btn" id="savedEventsBtn" title="Saved Events">
         <img src="../assets/bookmark-icon.png" alt="bookmark icon" class="header-icon">
@@ -33,12 +29,11 @@
     <button class="tab-button" id="waitlistedTab">Waitlisted</button>
   </nav>
 
-  <!-- A note shown only on Waitlist tab -->
   <p class="waitlist-note" id="waitlistNote">
     You will be automatically registered if others drop out of the event.
   </p>
 
-  <!-- Main container for events, populated by JS -->
+  <!-- Main container for events -->
   <main class="home-content" id="homeContent"></main>
 
   <!-- Bottom Nav -->
@@ -65,7 +60,7 @@
     </div>
   </footer>
 
-  <!-- Example Chat Popup -->
+  <!-- Chat Popup -->
   <div class="chat-popup" id="chatPopup">
     <div class="chat-popup-content">
       <h3>Contact Info</h3>
@@ -74,20 +69,13 @@
     </div>
   </div>
 
-  <!-- Embedded JS: fetch data + render logic -->
+  <!-- Embedded JS: Fetch sorted events, group, and render -->
   <script>
-    /**************************************************************
-     * 1) SERVER FETCH
-     *    We'll call this to get your "registered" and "waitlisted"
-     *    day-block arrays from your backend.
-     **************************************************************/
-    async function fetchEventsFromBackend() {
+    // 1) Fetch up to 10 sorted events from the backend endpoint.
+    async function fetchSortedEventsFromBackend() {
       try {
-        // If you use auth tokens, retrieve them from sessionStorage, etc.
         const token = sessionStorage.getItem("authToken") || "";
-
-        // Example endpoint: adjust to your actual path
-        const res = await fetch("http://127.0.0.1:8000/api/volunteerEvents", {
+        const res = await fetch("http://127.0.0.1:8000/events/get", {
           headers: {
             "Content-Type": "application/json",
             "Authorization": "Bearer " + token
@@ -96,43 +84,47 @@
         if (!res.ok) {
           throw new Error("Failed to fetch events (status " + res.status + ")");
         }
-
-        // We expect a JSON object like:
-        // {
-        //   "registered": [
-        //     {
-        //       "dayLabel": "Today",
-        //       "events": [
-        //         { "id": 1, "title": "...", "dateTime": "...", "location": "...", "spots": "...", "imageUrl": "...", "chatAvailable": true, "isHappeningNow": false },
-        //         ...
-        //       ]
-        //     },
-        //     ...
-        //   ],
-        //   "waitlisted": [ ... day blocks ... ]
-        // }
-        const data = await res.json();
-        return data;
+        // Returns an array of event objects
+        const events = await res.json();
+        return events;
       } catch (err) {
-        console.error("Error fetching from backend:", err);
+        console.error("Error fetching sorted events:", err);
         throw err;
       }
     }
 
-    /**************************************************************
-     * 2) RENDER LOGIC
-     **************************************************************/
-    let usedTriangleAlready = false; // ensures only 1 event gets "live" triangle
+    // 2) Group events by day based on their time (date only).
+    function groupEventsByDay(events) {
+      const groups = {};
+      events.forEach(evt => {
+        // Create a Date object from the event's time field
+        const dateObj = new Date(evt.time);
+        // Use locale date string as a grouping key (e.g., "4/26/2025")
+        const dateStr = dateObj.toLocaleDateString();
+        if (!groups[dateStr]) {
+          groups[dateStr] = [];
+        }
+        groups[dateStr].push(evt);
+      });
+      // Convert groups object into an array of day blocks with a dayLabel and events list.
+      const dayBlocks = Object.keys(groups).map(dateStr => ({
+        dayLabel: dateStr,
+        events: groups[dateStr]
+      }));
+      // Sort the day blocks by date (earliest first)
+      dayBlocks.sort((a, b) => new Date(a.dayLabel) - new Date(b.dayLabel));
+      return dayBlocks;
+    }
+
+    // 3) Render the events grouped by day
+    let usedTriangleAlready = false; // ensures only one event gets the live indicator
 
     function renderEvents(dayBlocks, isWaitlisted) {
-      // Clear existing content, reset single live usage
       const homeContent = document.getElementById("homeContent");
       homeContent.innerHTML = "";
       usedTriangleAlready = false;
 
-      // For each day block
       dayBlocks.forEach(dayBlock => {
-        // Parent <section> for that day's events
         const daySection = document.createElement("section");
         daySection.className = "event-day";
 
@@ -144,50 +136,45 @@
         divider.className = "day-divider";
         daySection.appendChild(divider);
 
-        // Now loop each event
-        (dayBlock.events || []).forEach(evt => {
-          // Card container
+        dayBlock.events.forEach(evt => {
           const eventCard = document.createElement("article");
           eventCard.className = "event-card";
 
-          // Left side: (triangle if "live" and not used yet) + image
+          // Left side: live indicator + image
           const leftDiv = document.createElement("div");
           leftDiv.className = "event-left";
 
           let showTriangle = false;
           let showCheckinCert = false;
-
           if (!usedTriangleAlready && !isWaitlisted && evt.isHappeningNow) {
             showTriangle = true;
             showCheckinCert = true;
-            usedTriangleAlready = true; // we won't do this again
+            usedTriangleAlready = true;
           }
 
-          // Triangle
           const indicator = document.createElement("img");
           indicator.src = "../assets/triangle-now.png";
           indicator.alt = "Happening now indicator";
           indicator.className = showTriangle ? "triangle-indicator" : "triangle-indicator hidden";
           leftDiv.appendChild(indicator);
 
-          // Event image
           const eventImg = document.createElement("img");
-          eventImg.src = evt.imageUrl || "../assets/event-placeholder.png";
+          eventImg.src = evt.event_pic || "../assets/event-placeholder.png";
           eventImg.alt = "Event placeholder";
           eventImg.className = "event-image";
           leftDiv.appendChild(eventImg);
 
-          // Right side: info + actions
+          // Right side: event information and actions
           const rightDiv = document.createElement("div");
           rightDiv.className = "event-right";
 
-          // Info block
           const infoDiv = document.createElement("div");
           infoDiv.className = "event-info";
 
           const timeP = document.createElement("p");
           timeP.className = "event-time";
-          timeP.textContent = evt.dateTime || "(No time)";
+          // Format the event time nicely
+          timeP.textContent = new Date(evt.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
           const titleH3 = document.createElement("h3");
           titleH3.className = "event-title";
@@ -199,15 +186,12 @@
 
           const spotsP = document.createElement("p");
           spotsP.className = "event-spots";
-          spotsP.innerHTML = `<strong>${evt.spots || "N/A"}</strong>`;
+          spotsP.innerHTML = `<strong>${evt.max_participants || "N/A"}</strong>`;
 
           infoDiv.append(timeP, titleH3, locP, spotsP);
 
-          // Actions row
           const actionsDiv = document.createElement("div");
           actionsDiv.className = "event-actions";
-
-          // If chat is available
           if (evt.chatAvailable) {
             const chatBtn = document.createElement("button");
             chatBtn.className = "icon-btn chat-btn";
@@ -220,7 +204,6 @@
             actionsDiv.appendChild(chatBtn);
           }
 
-          // share icon
           const shareBtn = document.createElement("button");
           shareBtn.className = "icon-btn share-btn";
           const shareIcon = document.createElement("img");
@@ -228,72 +211,37 @@
           shareIcon.alt = "Share icon";
           shareIcon.className = "action-icon";
           shareBtn.appendChild(shareIcon);
-          // shareBtn.onclick = () => { ...some share logic... };
           actionsDiv.appendChild(shareBtn);
 
-          // CTA row
           const ctaDiv = document.createElement("div");
           ctaDiv.className = "event-cta";
-
           if (isWaitlisted) {
-            // Waitlisted => “Opt-out”
             const optOutBtn = document.createElement("button");
             optOutBtn.className = "btn-optout";
             optOutBtn.textContent = "Opt-out";
-            // optOutBtn.onclick = () => { remove from waitlist? };
             ctaDiv.appendChild(optOutBtn);
-          } else {
-            // Registered => show checkin/cert only if “live”
-            if (showCheckinCert) {
-              const checkInBtn = document.createElement("button");
-              checkInBtn.className = "btn-checkin disabled-btn";
-              checkInBtn.textContent = "Check-in";
-              checkInBtn.disabled = true;
+          } else if (showCheckinCert) {
+            const checkInBtn = document.createElement("button");
+            checkInBtn.className = "btn-checkin disabled-btn";
+            checkInBtn.textContent = "Check-in";
+            checkInBtn.disabled = true;
 
-              const certBtn = document.createElement("button");
-              certBtn.className = "btn-certificate disabled-btn";
-              certBtn.textContent = "Certificate";
-              certBtn.disabled = true;
-
-              ctaDiv.append(checkInBtn, certBtn);
-            }
+            const certBtn = document.createElement("button");
+            certBtn.className = "btn-certificate disabled-btn";
+            certBtn.textContent = "Certificate";
+            certBtn.disabled = true;
+            ctaDiv.append(checkInBtn, certBtn);
           }
 
-          // Combine
           rightDiv.append(infoDiv, actionsDiv, ctaDiv);
           eventCard.append(leftDiv, rightDiv);
           daySection.appendChild(eventCard);
         });
-
-        // Append day section
         homeContent.appendChild(daySection);
       });
     }
 
-    /**************************************************************
-     * 3) TABS
-     **************************************************************/
-    const registeredTab = document.getElementById("registeredTab");
-    const waitlistedTab = document.getElementById("waitlistedTab");
-    const waitlistNote = document.getElementById("waitlistNote");
-
-    registeredTab.addEventListener("click", () => {
-      registeredTab.classList.add("active");
-      waitlistedTab.classList.remove("active");
-      // We'll fetch the data again if you want always-fresh,
-      // or store it in memory from an earlier fetch. For now, just re-render.
-      renderEvents(_cachedRegistered, false);
-    });
-
-    waitlistedTab.addEventListener("click", () => {
-      waitlistedTab.classList.add("active");
-      registeredTab.classList.remove("active");
-      renderEvents(_cachedWaitlisted, true);
-    });
-
-    /**************************************************************
-     * 4) CHAT POPUP
-     **************************************************************/
+    // 4) Chat popup functionality
     function openChatPopup() {
       document.getElementById("chatPopup").classList.add("show");
     }
@@ -301,33 +249,16 @@
       document.getElementById("chatPopup").classList.remove("show");
     };
 
-    /**************************************************************
-     * 5) INIT: Fetch from server, store globally, then render
-     **************************************************************/
-    // We'll keep a global reference to the data so that switching
-    // tabs doesn't require re-fetching from the server each time:
-    let _cachedRegistered = [];
-    let _cachedWaitlisted = [];
-
+    // 5) Initialization: Fetch events, group by day, and render
     document.addEventListener("DOMContentLoaded", async () => {
       try {
-        // 1) Fetch data from backend
-        const data = await fetchEventsFromBackend(); 
-        // data should be something like:
-        // { registered: [ { dayLabel, events: [...]}, ... ],
-        //   waitlisted: [ { dayLabel, events: [...]}, ... ] }
-
-        // 2) Store globally
-        _cachedRegistered = data.registered || [];
-        _cachedWaitlisted = data.waitlisted || [];
-
-        // 3) Show "Registered" tab by default
-        renderEvents(_cachedRegistered, false);
-
+        const events = await fetchSortedEventsFromBackend();
+        const dayBlocks = groupEventsByDay(events);
+        // In this example, all fetched events are assumed to be "registered"
+        renderEvents(dayBlocks, false);
       } catch (err) {
-        console.error("Failed to init page with events:", err);
-        // Optionally show an error message in the UI
-        document.getElementById("homeContent").innerHTML = 
+        console.error("Failed to load events:", err);
+        document.getElementById("homeContent").innerHTML =
           "<p style='color:red;'>Failed to load events. Please try again.</p>";
       }
     });
