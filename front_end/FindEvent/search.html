@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Find Events</title>
+  <link rel="stylesheet" href="search.css">
+  <link href="https://fonts.googleapis.com/css2?family=Lexend&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- Top bar -->
+  <header class="find-top-bar">
+    <h1 class="app-title">VolunTier</h1>
+    <button class="filter-btn" id="filterBtn">
+      <img src="../assets/filter-icon.png" alt="Filter" class="icon-filter">
+    </button>
+  </header>
+
+  <!-- Main content area -->
+  <main class="find-content" id="findContent">
+
+    <!-- Normal Search State -->
+    <section class="normal-search-state" id="normalSearchState">
+      <!-- Example: a location-based or filtered description -->
+      <div class="search-header">
+        <p id="searchHeaderText">Tech Entrepreneurship event near Bothell, WA</p>
+        <p class="sort-by" id="sortByText">Sort by date</p>
+      </div>
+
+      <!-- Placeholder list of events after normal search -->
+      <div class="search-results" id="searchResults">
+        <!-- Example event card #1 -->
+        <article class="search-event-card">
+          <div class="search-event-left">
+            <p class="search-event-datetime">Mon, Jun 1 • 2:00-3:30PM (PST)</p>
+            <h3 class="search-event-title">CanRegcanRegcanRegcanRegCanReg</h3>
+            <p class="search-event-location">20937 Voluntier SE, Bellevue, WA</p>
+            <p class="search-event-spots">8/10 spots</p>
+          </div>
+          <div class="search-event-right">
+            <button class="btn-register">Register</button>
+          </div>
+        </article>
+
+        <!-- Example event card #2 -->
+        <article class="search-event-card">
+          <div class="search-event-left">
+            <p class="search-event-datetime">Mon, Jun 1 • 2:00-3:30PM (PST)</p>
+            <h3 class="search-event-title">CantRegSoWaitCantRegSoWaitCant</h3>
+            <p class="search-event-location">18888 Voluntier NE, Bothell, WA</p>
+            <p class="search-event-spots">8/10 spots</p>
+          </div>
+          <div class="search-event-right">
+            <button class="btn-waitlist">Waitlist</button>
+          </div>
+        </article>
+
+        <!-- Example event card #3 (live) -->
+        <article class="search-event-card">
+          <div class="search-event-left">
+            <p class="search-event-datetime">Tue, Jun 12 • 1:00-2:30PM (PST)</p>
+            <h3 class="search-event-title">CantRegSoWaitCantRegSoWaitCboth</h3>
+            <p class="search-event-location">20937 Voluntier SE, Bellevue, WA</p>
+            <p class="search-event-spots">2/8 spots</p>
+          </div>
+          <div class="search-event-right">
+            <span class="live-badge">Live!</span>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- AI Search State (hidden by default) -->
+    <section class="ai-search-state" id="aiSearchState" style="display: none;">
+      <!-- AI chat history and instructions -->
+      <div class="ai-chat-area" id="aiChatArea">
+        <!-- For example, user & AI messages appear here -->
+      </div>
+
+      <!-- “Sort by date” or other UI at top of results -->
+      <div class="search-header">
+        <p id="aiSearchHeaderText">Events like ml and mentorship with students, I love coding in web, happening this week.</p>
+        <p class="sort-by" id="aiSortByText">Sort by date</p>
+      </div>
+
+      <!-- AI search results (placeholder) -->
+      <div class="search-results" id="aiSearchResults">
+        <!-- Example event card #1 in AI mode -->
+        <article class="search-event-card">
+          <div class="search-event-left">
+            <p class="search-event-datetime">Mon, Jun 1 • 1:00-2:30PM (PST)</p>
+            <h3 class="search-event-title">CanRegCanRegSoWait So Wait</h3>
+            <p class="search-event-location">20937 Voluntier SE, Open, CA</p>
+            <p class="search-event-spots">8/10 spots</p>
+          </div>
+          <div class="search-event-right">
+            <button class="btn-register">Register</button>
+          </div>
+        </article>
+
+        <!-- Another event card -->
+        <article class="search-event-card">
+          <div class="search-event-left">
+            <p class="search-event-datetime">Mon, Jun 1 • 2:00-3:30PM (PST)</p>
+            <h3 class="search-event-title">CantBothCantBothWaitWait</h3>
+            <p class="search-event-location">18888 Voluntier NE, Eaton, CA</p>
+            <p class="search-event-spots">8/9 spots</p>
+          </div>
+          <div class="search-event-right">
+            <span class="live-badge">Live!</span>
+          </div>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <!-- Filter overlay -->
+  <div class="filter-overlay" id="filterOverlay" style="display: none;">
+    <div class="filter-content">
+      <button class="filter-close-btn" id="filterCloseBtn">&times;</button>
+      <h3>Filter Options</h3>
+      <!-- Basic filter fields (City, Radius, etc.) -->
+      <div class="filter-group">
+        <label for="filterCity">City</label>
+        <select id="filterCity">
+          <option value="">Your location</option>
+          <option value="Bellevue, WA, USA">Bellevue, WA, USA</option>
+          <option value="Bothell, WA, USA">Bothell, WA, USA</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label for="filterRadius">Radius (mi)</label>
+        <input type="number" id="filterRadius" placeholder="10">
+      </div>
+
+      <div class="filter-group">
+        <label for="filterStartDate">Start date</label>
+        <input type="date" id="filterStartDate">
+      </div>
+
+      <div class="filter-group">
+        <label for="filterEndDate">End date</label>
+        <input type="date" id="filterEndDate">
+      </div>
+
+      <div class="filter-group">
+        <label for="filterMinAge">Minimum age</label>
+        <input type="number" id="filterMinAge" placeholder="18">
+      </div>
+
+      <div class="filter-group">
+        <label for="filterCertificate">Certificate</label>
+        <select id="filterCertificate">
+          <option value="">Any</option>
+          <option value="provided">provided</option>
+          <option value="notProvided">not provided</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label for="filterAvailability">Availability</label>
+        <select id="filterAvailability">
+          <option value="">Any</option>
+          <option value="waitlist">waitlist</option>
+          <option value="open">open</option>
+        </select>
+      </div>
+
+      <!-- Example topic selection with max 3 logic from previous solution -->
+      <div class="filter-group">
+        <label for="filterTopicSelect">Topic (max 3)</label>
+        <select id="filterTopicSelect">
+          <option value="" disabled selected>Select a topic</option>
+          <option value="Technology">Technology</option>
+          <option value="Entrepreneurship">Entrepreneurship</option>
+          <option value="Investing">Investing</option>
+          <option value="Business">Business</option>
+          <option value="Marketing">Marketing</option>
+          <option value="Healthcare">Healthcare</option>
+          <option value="Education">Education</option>
+          <option value="Finance">Finance</option>
+          <option value="Engineering">Engineering</option>
+          <option value="Science">Science</option>
+          <option value="Environmental">Environmental</option>
+          <option value="Arts">Arts</option>
+          <option value="Music">Music</option>
+          <option value="Fashion">Fashion</option>
+          <option value="Media">Media</option>
+          <option value="Sports">Sports</option>
+          <option value="Law">Law</option>
+          <option value="Government">Government</option>
+          <option value="Nonprofit">Nonprofit</option>
+          <option value="Social Impact">Social Impact</option>
+          <option value="Event Planning">Event Planning</option>
+          <option value="Community Service">Community Service</option>
+        </select>
+        <div id="selectedTopics" class="selected-topics"></div>
+      </div>
+
+      <button class="btn-apply-filter" id="applyFilterBtn">Apply Filters</button>
+    </div>
+  </div>
+
+  <!-- Bottom nav -->
+  <footer class="bottom-nav">
+    <div class="nav-item">
+      <img src="../assets/home-icon.png" alt="home icon" class="nav-icon">
+      <span>Home</span>
+    </div>
+    <div class="nav-item">
+      <img src="../assets/host-icon.png" alt="host icon" class="nav-icon">
+      <span>Host Events</span>
+    </div>
+    <div class="nav-item">
+      <img src="../assets/tier-icon.png" alt="tier icon" class="nav-icon">
+      <span>Your Tier</span>
+    </div>
+    <div class="nav-item active">
+      <img src="../assets/find-icon.png" alt="find icon" class="nav-icon">
+      <span>Find Events</span>
+    </div>
+    <div class="nav-item">
+      <img src="../assets/profile-icon.png" alt="profile icon" class="nav-icon">
+      <span>Profile</span>
+    </div>
+  </footer>
+
+  <!-- AI Input Bar -->
+  <div class="ai-input-bar" id="aiInputBar">
+    <!-- If user hits 5 interactions, we show a refresh icon up left or message. 
+         For simplicity, let's do a hidden refresh button if needed. -->
+    <button class="ai-toggle-btn" id="aiToggleBtn">
+      <img src="../assets/ai-icon.png" alt="AI" class="icon-ai">
+    </button>
+    <input type="text" id="aiUserInput" placeholder="Describe..." class="ai-text-input">
+    <button class="ai-send-btn" id="aiSendBtn">
+      <img src="../assets/send-icon.png" alt="Send" class="icon-send">
+    </button>
+  </div>
+
+  <!-- JavaScript -->
+  <script>
+    // ---------- Filter Overlay ----------
+    const filterBtn = document.getElementById("filterBtn");
+    const filterOverlay = document.getElementById("filterOverlay");
+    const filterCloseBtn = document.getElementById("filterCloseBtn");
+    const applyFilterBtn = document.getElementById("applyFilterBtn");
+
+    filterBtn.addEventListener("click", () => {
+      filterOverlay.style.display = "block";
+    });
+    filterCloseBtn.addEventListener("click", () => {
+      filterOverlay.style.display = "none";
+    });
+    applyFilterBtn.addEventListener("click", () => {
+      // Gather filter values
+      // Possibly call backend with them
+      filterOverlay.style.display = "none";
+      alert("Filters applied (placeholder).");
+    });
+
+    // ---------- Topic Selection (max 3) ----------
+    const topicSelect = document.getElementById("filterTopicSelect");
+    const selectedTopicsContainer = document.getElementById("selectedTopics");
+    const maxTopics = 3;
+    let selectedTopics = [];
+
+    topicSelect.addEventListener("change", () => {
+      const chosen = topicSelect.value;
+      if (!chosen) return;
+      if (selectedTopics.includes(chosen)) {
+        alert("This topic is already selected.");
+        return;
+      }
+      if (selectedTopics.length >= maxTopics) {
+        alert("You can only select up to 3 topics.");
+        return;
+      }
+      selectedTopics.push(chosen);
+      updateTopicChips();
+      updateTopicDropdown();
+      topicSelect.selectedIndex = 0;
+    });
+
+    function updateTopicChips() {
+      selectedTopicsContainer.innerHTML = "";
+      selectedTopics.forEach((topic, index) => {
+        const chip = document.createElement("span");
+        chip.className = "topic-chip";
+        chip.textContent = topic;
+        chip.onclick = () => {
+          selectedTopics.splice(index, 1);
+          updateTopicChips();
+          updateTopicDropdown();
+        };
+        selectedTopicsContainer.appendChild(chip);
+      });
+    }
+    function updateTopicDropdown() {
+      const options = topicSelect.options;
+      for (let i = 0; i < options.length; i++) {
+        const opt = options[i];
+        if (selectedTopics.includes(opt.value)) {
+          opt.disabled = true;
+        } else {
+          opt.disabled = false;
+        }
+      }
+    }
+
+    // ---------- Search States (normal vs AI) ----------
+    const normalSearchState = document.getElementById("normalSearchState");
+    const aiSearchState = document.getElementById("aiSearchState");
+
+    // ---------- AI Chat Logic ----------
+    const aiToggleBtn = document.getElementById("aiToggleBtn");
+    const aiUserInput = document.getElementById("aiUserInput");
+    const aiSendBtn = document.getElementById("aiSendBtn");
+    const aiChatArea = document.getElementById("aiChatArea");
+    const aiSearchHeaderText = document.getElementById("aiSearchHeaderText");
+    const aiSearchResults = document.getElementById("aiSearchResults");
+
+    let aiInteractionCount = 0;
+    const maxAiInteractions = 5;
+
+    // Toggle AI search mode
+    aiToggleBtn.addEventListener("click", () => {
+      if (aiSearchState.style.display === "block") {
+        // Switch to normal search => clear AI chat
+        aiSearchState.style.display = "none";
+        normalSearchState.style.display = "block";
+        aiChatArea.innerHTML = "";
+        aiSearchResults.innerHTML = "";
+        aiInteractionCount = 0;
+      } else {
+        // Switch to AI search => hide normal
+        aiSearchState.style.display = "block";
+        normalSearchState.style.display = "none";
+        aiChatArea.innerHTML = "";
+        aiSearchResults.innerHTML = "";
+        aiInteractionCount = 0;
+      }
+    });
+
+    // AI send message
+    aiSendBtn.addEventListener("click", () => {
+      if (aiInteractionCount >= maxAiInteractions) {
+        alert("You have reached 5 interactions. Please refresh AI or toggle off/on to start new chat.");
+        return;
+      }
+
+      const query = aiUserInput.value.trim();
+      if (!query) return;
+
+      // Display user message
+      const userMsg = document.createElement("div");
+      userMsg.className = "ai-user-msg";
+      userMsg.textContent = query;
+      aiChatArea.appendChild(userMsg);
+
+      aiUserInput.value = "";
+      aiInteractionCount++;
+
+      // Simulate AI response
+      setTimeout(() => {
+        const botMsg = document.createElement("div");
+        botMsg.className = "ai-bot-msg";
+        botMsg.textContent = "AI response about your query (placeholder).";
+        aiChatArea.appendChild(botMsg);
+
+        // Possibly also update #aiSearchResults with new event suggestions
+        // e.g. fetch from backend
+
+        aiChatArea.scrollTop = aiChatArea.scrollHeight;
+        aiInteractionCount++;
+      }, 800);
+    });
+
+    // If you want normal search logic, you'd do that separately
+    // e.g. typing in a search bar, hitting Enter => fetch backend => update #searchResults
+  </script>
+</body>
+</html>

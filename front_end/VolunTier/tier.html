@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Your Tier</title>
+  <!-- Link your Tier-specific CSS (or merge into a main file) -->
+  <link rel="stylesheet" href="tier.css">
+  <link href="https://fonts.googleapis.com/css2?family=Lexend&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- (Optional) If you want a top bar, uncomment or adjust
+  <header class="tier-top-bar">
+    <h1 class="app-name">Volun<span class="highlight">Tier</span></h1>
+  </header>
+  -->
+
+  <!-- Main content area -->
+  <main class="tier-content" id="tierContent">
+
+    <!-- User info section -->
+    <section class="tier-user-section">
+      <!-- Name -->
+      <h2 class="tier-user-name" id="userName">[User Name]</h2>
+
+      <!-- Stats row (volCount, totalHours) -->
+      <div class="tier-stats">
+        <p><strong id="volCount">0</strong> volunteered</p>
+        <p><strong id="totalHours">0</strong> total hours</p>
+      </div>
+
+      <!-- Top 3 skills (placeholder tags) -->
+      <div class="tier-skills" id="topSkills">
+        <!-- Skills will be inserted dynamically -->
+      </div>
+
+      <!-- Bio summary -->
+      <div class="tier-bio" id="userBio">
+        <!-- Fetched from backend or AI summary -->
+      </div>
+
+      <!-- Badges row -->
+      <div class="tier-badges" id="userBadges">
+        <!-- e.g. gold/silver/bronze images or placeholders -->
+      </div>
+
+      <!-- “Share Card” button -->
+      <button class="btn-share-card" id="shareCardBtn">
+        Share Card
+      </button>
+    </section>
+
+    <!-- Past Events list -->
+    <section class="tier-events-section">
+      <h3>Past Events</h3>
+      <!-- We will insert event cards dynamically via JS -->
+    </section>
+  </main>
+
+  <!-- Bottom nav (highlight “Your Tier”) -->
+  <footer class="bottom-nav">
+    <div class="nav-item">
+      <img src="../assets/home-icon.png" alt="home icon" class="nav-icon">
+      <span>Home</span>
+    </div>
+    <div class="nav-item">
+      <img src="../assets/host-icon.png" alt="host icon" class="nav-icon">
+      <span>Host Events</span>
+    </div>
+    <div class="nav-item active">
+      <img src="../assets/tier-icon.png" alt="tier icon" class="nav-icon">
+      <span>Your Tier</span>
+    </div>
+    <div class="nav-item">
+      <img src="../assets/find-icon.png" alt="find icon" class="nav-icon">
+      <span>Find Events</span>
+    </div>
+    <div class="nav-item">
+      <img src="../assets/profile-icon.png" alt="profile icon" class="nav-icon">
+      <span>Profile</span>
+    </div>
+  </footer>
+
+  <!-- JavaScript for fetching data and populating the page -->
+  <script>
+    document.addEventListener("DOMContentLoaded", async () => {
+      // Example: fetch user tier data from your backend
+      const token = sessionStorage.getItem("authToken") || "";
+      try {
+        // Adjust your endpoint path as needed
+        const res = await fetch("http://127.0.0.1:8000/api/tier", {
+          headers: {
+            "Authorization": "Bearer " + token
+          }
+        });
+        if (!res.ok) {
+          throw new Error("Failed to fetch tier data (status " + res.status + ")");
+        }
+        const data = await res.json();
+
+        // Suppose 'data' returns something like:
+        // {
+        //   "name": "Kuan-Ying Liao",
+        //   "volCount": 15,
+        //   "totalHours": 28,
+        //   "skills": ["Coding", "Startups", "Marketing"],
+        //   "bio": "Some AI-generated summary or user-provided bio",
+        //   "badges": ["gold", "silver", "bronze"],
+        //   "pastEvents": [
+        //     { "title": "...", "datetime": "...", "location": "...", "spots": "...", "status": "complete" },
+        //     ...
+        //   ]
+        // }
+
+        // Fill in user name
+        document.getElementById("userName").textContent = data.name || "[User Name]";
+        // Fill in volCount and totalHours
+        document.getElementById("volCount").textContent = data.volCount || 0;
+        document.getElementById("totalHours").textContent = data.totalHours || 0;
+        // Fill in bio
+        document.getElementById("userBio").textContent = data.bio || "";
+
+        // Top 3 skills
+        const topSkills = document.getElementById("topSkills");
+        topSkills.innerHTML = "";
+        if (Array.isArray(data.skills)) {
+          data.skills.forEach(skill => {
+            const tag = document.createElement("span");
+            tag.className = "skill-tag";
+            tag.textContent = skill;
+            topSkills.appendChild(tag);
+          });
+        }
+
+        // Badges
+        const userBadges = document.getElementById("userBadges");
+        userBadges.innerHTML = "";
+        if (Array.isArray(data.badges)) {
+          data.badges.forEach(b => {
+            // Example: map 'gold' => badge-gold.png, etc.
+            const img = document.createElement("img");
+            img.className = "tier-badge-img";
+            img.alt = b + " badge";
+            img.src = `../assets/badge-${b}.png`;
+            userBadges.appendChild(img);
+          });
+        }
+
+        // Past events
+        const eventsSection = document.querySelector(".tier-events-section");
+        data.pastEvents?.forEach(evt => {
+          const card = createEventCard(evt);
+          eventsSection.appendChild(card);
+        });
+
+      } catch (err) {
+        console.error("Error loading tier data:", err);
+        // Optionally show an error message to the user
+      }
+
+      // “Share Card” button logic
+      const shareCardBtn = document.getElementById("shareCardBtn");
+      shareCardBtn.addEventListener("click", () => {
+        alert("Sharing your Tier card (placeholder)...");
+        // Implement your share logic here
+      });
+    });
+
+    // Helper function to create an event card
+    function createEventCard(evt) {
+      // e.g. { title, datetime, location, spots, status }
+      const card = document.createElement("article");
+      card.className = "tier-event-card";
+
+      const infoDiv = document.createElement("div");
+      infoDiv.className = "tier-event-info";
+
+      const titleH4 = document.createElement("h4");
+      titleH4.className = "tier-event-title";
+      titleH4.textContent = evt.title || "Untitled Event";
+
+      const dtP = document.createElement("p");
+      dtP.className = "tier-event-datetime";
+      dtP.textContent = evt.datetime || "No date/time";
+
+      const locP = document.createElement("p");
+      locP.className = "tier-event-location";
+      locP.textContent = evt.location || "No location";
+
+      const spotsP = document.createElement("p");
+      spotsP.className = "tier-event-spots";
+      spotsP.textContent = evt.spots || "";
+
+      infoDiv.append(titleH4, dtP, locP, spotsP);
+
+      const actionDiv = document.createElement("div");
+      actionDiv.className = "tier-event-action";
+      const btn = document.createElement("button");
+      btn.className = "btn-complete";
+      btn.textContent = evt.status === "complete" ? "Complete" : "View Cert";
+      // Or “View Cert” if they have a certificate link
+      actionDiv.appendChild(btn);
+
+      card.append(infoDiv, actionDiv);
+      return card;
+    }
+  </script>
+
+</body>
+</html>
