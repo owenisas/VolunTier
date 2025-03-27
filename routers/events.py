@@ -1,7 +1,7 @@
 # routers/events.py
 from fastapi import APIRouter, Depends, HTTPException
 from database import get_db
-from schemas import EventCreate, Event
+from schemas import EventCreate, Event, EventImage
 import sqlite3
 from routers.users import router as user_router  # if needed for dependency
 import jwt
@@ -172,31 +172,40 @@ def join_event(
 
 @router.get("/events/{event_id}", response_model=Event)
 def get_event(
-        event_id: int,
-        db: sqlite3.Connection = Depends(get_db),
-        current_user: Optional[dict] = Depends(get_current_user_optional)
+    event_id: int,
+    db: sqlite3.Connection = Depends(get_db),
+    current_user: Optional[dict] = Depends(get_current_user_optional)
 ):
     cursor = db.cursor()
-    # Retrieve the event
+
     cursor.execute("SELECT * FROM events WHERE event_id = ?", (event_id,))
-    row = cursor.fetchone()
-    if row is None:
+    event_row = cursor.fetchone()
+
+    if not event_row:
         raise HTTPException(status_code=404, detail="Event not found")
 
-    event_data = dict(row)
+    event_data = dict(event_row)
 
-    # Update event status based on current time and end_time
-    try:
-        event_end_time = datetime.fromisoformat(event_data["end_time"])
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Invalid end_time format: {str(e)}")
+    # Fetch associated images
+    cursor.execute("SELECT * FROM Event_Images WHERE event_id = ?", (event_id,))
+    image_rows = cursor.fetchall()
+
+    if image_rows:
+        event_images = [EventImage(**dict(row)) for row in image_rows]
+    else:
+        event_images = None  # Return None if no images
+
+    event_data["images"] = event_images
+
+    # Existing logic for contact_methods and status update
+    event_end_time = datetime.fromisoformat(event_data["end_time"])
     now = datetime.utcnow()
     if now > event_end_time and event_data["status"] == 1:
         cursor.execute("UPDATE events SET status = 0 WHERE event_id = ?", (event_id,))
         db.commit()
         event_data["status"] = 0
 
-    # Check the user's role; if not authenticated or not the organizer, remove contact_methods
+    # Privacy handling
     if not current_user:
         event_data.pop("contact_methods", None)
     else:

@@ -1,6 +1,6 @@
 # schemas.py
 from datetime import datetime
-from typing import Optional
+from typing import Optional, List
 from pydantic import BaseModel
 
 # User models
@@ -10,21 +10,21 @@ class UserCreate(BaseModel):
     hash_password: str
     full_name: Optional[str] = None
     profile: Optional[str] = None
-    profile_pic: Optional[str] = None  # URL or file path
+    profile_pic_url: Optional[str] = None  # URL or file path
     age: Optional[int] = None
 
 class UserEdit(BaseModel):
     username: Optional[str] = None
     profile: Optional[str] = None
     age: Optional[int] = None
-    
+
 class User(BaseModel):
     user_id: int
     username: str
     email: str
     full_name: str
     profile: Optional[str] = None
-    profile_pic: Optional[str] = None
+    profile_pic_url: Optional[str] = None
     age: Optional[int] = None
     verification: int
 
@@ -45,12 +45,23 @@ class LoginRequest(BaseModel):
     email: str
     password: str
 
+
+
+class EventImage(BaseModel):
+    image_id: int
+    event_id: int
+    image_url: str
+    created_at: datetime
+
+    class Config:
+        orm_mode = True
+
 # Event models
 class EventCreate(BaseModel):
     title: str
     details: str
     time: datetime  # User provided event start time
-    event_pic: Optional[str] = None  # URL or file path for event picture
+    images: Optional[List[EventImage]] = None  # <-- updated field
     event_link: Optional[str] = None
     location: Optional[str] = None
     certificate: int = 0
@@ -66,7 +77,7 @@ class Event(BaseModel):
     time: datetime
     title: str
     details: str
-    event_pic: Optional[str] = None
+    images: Optional[List[EventImage]] = None  # <-- updated field
     organizer: Optional[str] = None
     organization_name: Optional[str] = None
     event_link: Optional[str] = None

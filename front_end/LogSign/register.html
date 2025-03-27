@@ -11,9 +11,9 @@
     <!-- Top nav: back arrow, or link to welcome -->
     <header class="top-nav">
       <a href="welcome.html" class="back-link">
-        <img src="assets/arrow-back.png" alt="Back Arrow" class="icon-back"/>
+        <img src="../assets/arrow-back.png" alt="Back Arrow" class="icon-back"/>
       </a>
-      <img src="assets/logo.png" alt="VolunTier Logo" class="top-logo"/>
+      <img src="../assets/logo.png" alt="VolunTier Logo" class="logo" />
     </header>
 
     <main class="content-center">
@@ -25,9 +25,9 @@
         <!-- Email -->
         <div class="input-group outlined">
           <label for="signupEmail">Email</label>
-          <input 
-            type="email" 
-            id="signupEmail" 
+          <input
+            type="email"
+            id="signupEmail"
             placeholder="example@gmail.com"
             required
           />
@@ -36,15 +36,15 @@
         <!-- Password (show/hide) -->
         <div class="input-group outlined" style="position: relative;">
           <label for="signupPassword">Password*</label>
-          <input 
-            type="password" 
-            id="signupPassword" 
+          <input
+            type="password"
+            id="signupPassword"
             placeholder="Enter password"
             required
             style="padding-right: 40px;"
           />
           <!-- Eye icon toggler (inline SVG) -->
-          <span 
+          <span
             id="toggleSignupPassword"
             class="toggle-eye"
           >
@@ -58,15 +58,15 @@
         <!-- Confirm Password (show/hide) -->
         <div class="input-group outlined" style="position: relative;">
           <label for="confirmPassword">Confirm Password*</label>
-          <input 
-            type="password" 
-            id="confirmPassword" 
+          <input
+            type="password"
+            id="confirmPassword"
             placeholder="Re-type password"
             required
             style="padding-right: 40px;"
           />
           <!-- Eye icon toggler (inline SVG) -->
-          <span 
+          <span
             id="toggleConfirmPassword"
             class="toggle-eye"
           >
@@ -131,7 +131,7 @@
     registerForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       debug("Form submitted");
-      
+
       const email = document.getElementById('signupEmail').value.trim();
       const password = signupPassword.value.trim();
       const confirmPass = confirmPassword.value.trim();
@@ -140,7 +140,7 @@
 
       if (!isPasswordValid(password)) {
         warningMsg.style.color = "red";
-        warningMsg.textContent = 
+        warningMsg.textContent =
           "Password must be ≥12 chars, with uppercase, lowercase, digit, and symbol.";
         return;
       }
@@ -173,7 +173,7 @@
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload)
         });
-        
+
         debug(`API response status: ${res.status}`);
         const data = await res.json();
         debug(`API response data: ${JSON.stringify(data).substring(0, 100)}...`);
@@ -185,7 +185,7 @@
             sessionStorage.setItem("authToken", data.access_token);
             debug("Auth token saved to session storage");
           }
-          
+
           // Show success message
           warningMsg.style.color = "green";
           warningMsg.textContent = "Registration successful! Redirecting...";

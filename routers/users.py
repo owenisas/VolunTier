@@ -70,8 +70,8 @@ def register(user: UserCreate, db: sqlite3.Connection = Depends(get_db)):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Username already taken")
 
     cursor.execute(
-        "INSERT INTO User (username, email, hash_password, full_name, profile, profile_pic, age) VALUES (?, ?, ?, ?, ?, ?, ?)",
-        (user.username, user.email, user.hash_password, user.full_name, user.profile, user.profile_pic, user.age)
+        "INSERT INTO User (username, email, hash_password, full_name, profile, age) VALUES (?, ?, ?, ?, ?, ?, ?)",
+        (user.username, user.email, user.hash_password, user.full_name, user.profile, user.age)
     )
     db.commit()
     user_id = cursor.lastrowid

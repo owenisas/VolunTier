@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS User (
     hash_password TEXT NOT NULL,
     full_name TEXT NOT NULL,
     profile TEXT,
-    profile_pic TEXT,
+    profile_pic_url TEXT,
     age INTEGER,
     verification INTEGER DEFAULT 0 -- 0: not verified, 1: school, 2: work, etc.
 );
@@ -38,7 +38,6 @@ CREATE TABLE IF NOT EXISTS Events (
     end_time TIMESTAMP,  -- New column to store computed end time
     title TEXT NOT NULL,
     details TEXT NOT NULL,
-    picture TEXT,
     organizer TEXT,
     organization_name TEXT,
     event_link TEXT,
@@ -49,8 +48,16 @@ CREATE TABLE IF NOT EXISTS Events (
     instructions TEXT,
     max_participants INTEGER,
     duration INTEGER,  -- Duration in minutes
-    event_pic TEXT,
     status INTEGER DEFAULT 1  -- 0: ended/unavailable, 1: upcoming/active
+);
+
+-- Event_Images Table: Multiple Images per Event
+CREATE TABLE IF NOT EXISTS Event_Images (
+    image_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    event_id INTEGER NOT NULL,
+    image_url TEXT NOT NULL, -- Secure URL
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (event_id) REFERENCES Events(event_id)
 );
 
 -- Event_Users Table to map users to events with a role field

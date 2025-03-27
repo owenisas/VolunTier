@@ -11,9 +11,9 @@
     <!-- Top Nav: back arrow to welcome, logo on right -->
     <header class="top-nav">
       <a href="welcome.html" class="back-link">
-        <img src="assets/arrow-back.png" alt="Back Arrow" class="icon-back" />
+        <img src="../assets/arrow-back.png" alt="Back Arrow" class="icon-back" />
       </a>
-      <img src="assets/logo.png" alt="VolunTier Logo" class="top-logo" />
+      <img src="../assets/logo.png" alt="VolunTier Logo" class="logo" />
     </header>
 
     <main class="content-center">
@@ -26,10 +26,10 @@
         <!-- Email -->
         <div class="input-group outlined">
           <label for="loginEmail">Email</label>
-          <input 
-            type="email" 
-            id="loginEmail" 
-            placeholder="Enter your email" 
+          <input
+            type="email"
+            id="loginEmail"
+            placeholder="Enter your email"
             required
           />
         </div>
@@ -37,15 +37,15 @@
         <!-- Password (with show/hide) -->
         <div class="input-group outlined" style="position: relative;">
           <label for="loginPassword">Password*</label>
-          <input 
-            type="password" 
-            id="loginPassword" 
+          <input
+            type="password"
+            id="loginPassword"
             placeholder="Enter your password"
             required
             style="padding-right: 40px;"
           />
           <!-- Eye icon -->
-          <span 
+          <span
             id="togglePassword"
             class="toggle-eye"
           >
@@ -113,7 +113,7 @@
           } else {
             // go to homepage or wherever
             alert("Login successful! Redirecting...");
-            window.location.href = "verifyEmail.html";
+            window.location.href = "../Home/home.html.html";
           }
         } else {
           loginWarning.textContent = data.detail || "Login failed. Check your credentials.";
