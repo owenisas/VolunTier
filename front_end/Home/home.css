@@ -1,267 +1,383 @@
 /* home.css */
 
+/* RESET */
 * {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-  }
-  
-  body {
-    font-family: 'Lexend', sans-serif;
-    background-color: #ffffff;
-    color: #000;
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
-  }
-  
-  /* HEADER */
-  .home-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 16px;
-    height: 56px;
-    border-bottom: 1px solid #ccc;
-  }
-  .header-left, .header-right {
-    display: flex;
-    align-items: center;
-  }
-  .app-name {
-    font-size: 1.2rem;
-  }
-  .highlight {
-    color: #FF6721;
-  }
-  .header-icon {
-    width: 24px;
-    height: 24px;
-  }
-  .icon-btn {
-    background: none;
-    border: none;
-    cursor: pointer;
-    margin-left: 12px;
-  }
-  
-  /* TABS (REGISTERED / WAITLISTED) */
-  .toggle-section {
-    display: flex;
-    align-items: center;
-    justify-content: space-around;
-    border-bottom: 1px solid #ccc;
-  }
-  .tab-button {
-    flex: 1;
-    padding: 12px 0;
-    border: none;
-    background: none;
-    font-size: 0.9rem;
-    font-weight: bold;
-    cursor: pointer;
-    color: #555;
-  }
-  .tab-button.active {
-    background-color: #FF6721;
-    color: #fff;
-  }
-  
-  /* WAITLIST NOTE */
-  .waitlist-note {
-    display: none;
-    text-align: center;
-    font-size: 0.85rem;
-    color: #555;
-    margin: 8px 12px;
-  }
-  
-  /* MAIN CONTENT */
-  .home-content {
-    flex: 1;
-    overflow-y: auto;
-    padding: 8px 16px;
-  }
-  .event-day {
-    margin-bottom: 24px;
-  }
-  .event-day h2 {
-    font-size: 1rem;
-    font-weight: bold;
-    margin: 16px 0 4px;
-  }
-  .day-divider {
-    width: 100%;
-    height: 1px;
-    background-color: #ccc;
-    margin: 8px 0;
-  }
-  
-  /* EVENT CARD */
-  .event-card {
-    display: flex;
-    padding: 12px 0;
-    border-bottom: 1px solid #eee;
-  }
-  .event-left {
-    position: relative;
-    margin-right: 12px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-  /* The single “live” triangle for the first isHappeningNow event */
-  .triangle-indicator {
-    position: absolute;
-    top: -4px;
-    left: -12px;
-    width: 20px;
-    height: 20px;
-  }
-  .triangle-indicator.hidden {
-    display: none;
-  }
-  .event-image {
-    width: 80px;
-    height: 60px;
-    object-fit: cover;
-    border-radius: 8px;
-    border: 2px solid #FF6721;
-  }
-  
-  .event-right {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-  }
-  .event-info {
-    margin-bottom: 8px;
-  }
-  .event-time {
-    font-size: 0.8rem;
-    color: #666;
-  }
-  .event-title {
-    margin: 4px 0;
-    font-size: 0.95rem;
-    font-weight: bold;
-    line-height: 1.2;
-  }
-  .event-location {
-    font-size: 0.8rem;
-    color: #444;
-    margin: 2px 0;
-  }
-  .event-spots {
-    font-size: 0.8rem;
-    margin-top: 4px;
-    color: #000;
-  }
-  
-  /* ACTION ICONS (chat, share) */
-  .event-actions {
-    display: flex;
-    gap: 12px;
-    margin-bottom: 8px;
-  }
-  .action-icon {
-    width: 20px;
-    height: 20px;
-  }
-  
-  /* CTA row */
-  .event-cta {
-    display: flex;
-    gap: 12px;
-  }
-  
-  /* WAITLIST “Opt-out” button */
-  .btn-optout {
-    background-color: #FF6721;
-    color: #fff;
-    border: none;
-    border-radius: 6px;
-    padding: 8px 12px;
-    font-size: 0.8rem;
-    font-weight: bold;
-    cursor: pointer;
-  }
-  
-  /* DISABLED Check-in / Cert */
-  .btn-checkin,
-  .btn-certificate {
-    flex: 1;
-    padding: 8px;
-    border-radius: 6px;
-    border: none;
-    font-size: 0.8rem;
-    font-weight: bold;
-    cursor: not-allowed;
-    background-color: rgba(127,127,127,0.25);
-    color: #333;
-  }
-  .disabled-btn {
-    opacity: 1; /* remains visible, just not clickable */
-  }
-  
-  /* BOTTOM NAV */
-  .bottom-nav {
-    display: flex;
-    justify-content: space-around;
-    border-top: 1px solid #ccc;
-    height: 56px;
-    align-items: center;
-  }
-  .nav-item {
-    flex: 1;
-    text-align: center;
-    font-size: 0.7rem;
-    color: #000;
-    cursor: pointer;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-  }
-  .nav-item.active {
-    color: #FF6721;
-  }
-  .nav-icon {
-    width: 24px;
-    height: 24px;
-    margin-bottom: 2px;
-  }
-  
-  /* CHAT POPUP */
-  .chat-popup {
-    position: fixed;
-    top: 0; 
-    left: 0;
-    width: 100%;
-    height: 100%;
-    display: none; /* hidden by default */
-    justify-content: center;
-    align-items: center;
-    background-color: rgba(0,0,0,0.4);
-  }
-  .chat-popup.show {
-    display: flex;
-  }
-  .chat-popup-content {
-    background: #fff;
-    width: 80%;
-    max-width: 300px;
-    padding: 16px;
-    border-radius: 8px;
-    text-align: center;
-  }
-  .btn-close-popup {
-    margin-top: 16px;
-    padding: 8px 16px;
-    border-radius: 6px;
-    border: none;
-    background-color: #FF6721;
-    color: #fff;
-    font-weight: bold;
-    cursor: pointer;
-  }  
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Lexend', sans-serif;
+  background-color: #ffffff;
+  color: #000;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+/* HEADER */
+.home-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  height: 56px;
+  border-bottom: 1px solid #ccc;
+}
+.header-left, .header-right {
+  display: flex;
+  align-items: center;
+}
+.app-name {
+  font-size: 1.2rem;
+}
+.highlight {
+  color: #FF6721;
+}
+.header-icon {
+  width: 24px;
+  height: 24px;
+}
+.icon-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  margin-left: 12px;
+}
+
+/* TABS (REGISTERED / WAITLISTED) */
+.toggle-section {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  border-bottom: 1px solid #ccc;
+}
+.tab-button {
+  flex: 1;
+  padding: 12px 0;
+  border: none;
+  background: none;
+  font-size: 0.9rem;
+  font-weight: bold;
+  cursor: pointer;
+  color: #555;
+}
+.tab-button.active {
+  background-color: #FF6721;
+  color: #fff;
+}
+
+/* WAITLIST NOTE */
+.waitlist-note {
+  display: none;
+  text-align: center;
+  font-size: 0.85rem;
+  color: #555;
+  margin: 8px 12px;
+}
+
+/* MAIN CONTENT (for Home) */
+.home-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px 16px;
+}
+.event-day {
+  margin-bottom: 24px;
+}
+.event-day h2 {
+  font-size: 1rem;
+  font-weight: bold;
+  margin: 16px 0 4px;
+}
+.day-divider {
+  width: 100%;
+  height: 1px;
+  background-color: #ccc;
+  margin: 8px 0;
+}
+
+/* EVENT CARD */
+.event-card {
+  display: flex;
+  padding: 12px 0;
+  border-bottom: 1px solid #eee;
+}
+.event-left {
+  position: relative;
+  margin-right: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+/* Single “live” triangle (first isHappeningNow event) */
+.triangle-indicator {
+  position: absolute;
+  top: -4px;
+  left: -12px;
+  width: 20px;
+  height: 20px;
+}
+.triangle-indicator.hidden {
+  display: none;
+}
+.event-image {
+  width: 80px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 2px solid #FF6721;
+}
+
+.event-right {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+.event-info {
+  margin-bottom: 8px;
+}
+.event-time {
+  font-size: 0.8rem;
+  color: #666;
+}
+.event-title {
+  margin: 4px 0;
+  font-size: 0.95rem;
+  font-weight: bold;
+  line-height: 1.2;
+}
+.event-location {
+  font-size: 0.8rem;
+  color: #444;
+  margin: 2px 0;
+}
+.event-spots {
+  font-size: 0.8rem;
+  margin-top: 4px;
+  color: #000;
+}
+
+/* ACTION ICONS (chat, share) */
+.event-actions {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+.action-icon {
+  width: 20px;
+  height: 20px;
+}
+
+/* CTA row */
+.event-cta {
+  display: flex;
+  gap: 12px;
+}
+
+/* WAITLIST “Opt-out” button */
+.btn-optout {
+  background-color: #FF6721;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 0.8rem;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+/* DISABLED Check-in / Certificate */
+.btn-checkin,
+.btn-certificate {
+  flex: 1;
+  padding: 8px;
+  border-radius: 6px;
+  border: none;
+  font-size: 0.8rem;
+  font-weight: bold;
+  cursor: not-allowed;
+  background-color: rgba(127,127,127,0.25);
+  color: #333;
+}
+.disabled-btn {
+  opacity: 1; /* remains visible, just not clickable */
+}
+
+/* BOTTOM NAV */
+.bottom-nav {
+  display: flex;
+  justify-content: space-around;
+  border-top: 1px solid #ccc;
+  height: 56px;
+  align-items: center;
+}
+.nav-item {
+  flex: 1;
+  text-align: center;
+  font-size: 0.7rem;
+  color: #000;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.nav-item.active {
+  color: #FF6721;
+}
+.nav-icon {
+  width: 24px;
+  height: 24px;
+  margin-bottom: 2px;
+}
+
+/* CHAT POPUP */
+.chat-popup {
+  position: fixed;
+  top: 0; 
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: none; /* hidden by default */
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(0,0,0,0.4);
+}
+.chat-popup.show {
+  display: flex;
+}
+.chat-popup-content {
+  background: #fff;
+  width: 80%;
+  max-width: 300px;
+  padding: 16px;
+  border-radius: 8px;
+  text-align: center;
+}
+.btn-close-popup {
+  margin-top: 16px;
+  padding: 8px 16px;
+  border-radius: 6px;
+  border: none;
+  background-color: #FF6721;
+  color: #fff;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+/* ==============================
+   NOTIFICATION PAGE STYLES
+   (if using the same CSS for notifications)
+   ============================== */
+.notifications-page {
+  margin-top: 56px; 
+  margin-bottom: 56px;
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+}
+.notif-section {
+  margin-bottom: 24px;
+}
+.notif-heading {
+  font-size: 1rem;
+  font-weight: bold;
+  margin-bottom: 8px;
+  margin-top: 16px;
+}
+.notif-divider {
+  width: 100%;
+  height: 1px;
+  background-color: #ccc;
+  border: none;
+  margin: 16px 0;
+}
+.notification-item {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid #eee;
+}
+.notif-text {
+  flex: 1;
+  margin-right: 8px;
+}
+.notif-text p {
+  font-size: 0.9rem;
+  line-height: 1.4;
+  color: #000;
+}
+.notif-time-ago {
+  color: #777;
+  font-size: 0.8rem;
+  margin-left: 4px;
+}
+.notif-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 8px;
+  overflow: hidden;
+  flex-shrink: 0;
+  background-color: #f2f2f2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.notif-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.notif-end {
+  text-align: center;
+  color: #999;
+  font-size: 0.8rem;
+  margin-top: 24px;
+  margin-bottom: 16px;
+}
+
+/* ==============================
+   SAVED EVENTS PAGE STYLES
+   ============================== */
+.saved-page {
+  /* Same idea: space for top & bottom bars */
+  margin-top: 56px;
+  margin-bottom: 56px;
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+}
+
+.saved-header {
+  font-size: 1rem;
+  font-weight: bold;
+  margin-top: 8px;
+  margin-bottom: 4px;
+}
+
+.saved-subtext {
+  font-size: 0.85rem;
+  color: #555;
+  margin-bottom: 16px;
+}
+
+/* For “Register” or “Waitlist” button on the right side if desired */
+.btn-register,
+.btn-waitlist {
+  border: 2px solid #FF6721;
+  background: transparent;
+  color: #FF6721;
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 0.8rem;
+  font-weight: bold;
+  cursor: pointer;
+}
+.btn-register:active,
+.btn-waitlist:active {
+  background-color: #FF6721;
+  color: #fff;
+}

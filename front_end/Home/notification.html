@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>VolunTier - Notifications</title>
+  <!-- Use your shared style file (the same as your other pages) -->
+  <link rel="stylesheet" href="home.css">
+  <!-- Optional font -->
+  <link href="https://fonts.googleapis.com/css2?family=Lexend&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- Top bar (fixed) -->
+  <header class="top-bar">
+    <!-- Back arrow -->
+    <button class="back-btn" id="backBtn">
+      <img src="../assets/arrow-back.png" alt="Back Arrow" class="icon-back">
+    </button>
+    <!-- Page Title -->
+    <h1 class="page-title">Notification</h1>
+    <!-- Right icon or logo -->
+    <div class="logo-right">
+      <img src="../assets/v-icon.png" alt="VolunTier Icon" class="icon-logo">
+    </div>
+  </header>
+
+  <!-- Main content for notifications (scrollable) -->
+  <main class="content-area notifications-page" id="notificationContent">
+    <!-- The notifications will be rendered here by JS, or you can hardcode. 
+         For demonstration, we’ll show a placeholder markup matching your screenshot. -->
+
+    <!-- "Today" section -->
+    <section class="notif-section">
+      <h2 class="notif-heading">Today</h2>
+      <div class="notification-item">
+        <div class="notif-text">
+          <p>
+            Check-In Now: You have arrived at "#EventName" on #EventDate. 
+            Please check in with the event organizer #OrganizerName upon arrival. 
+            <span class="notif-time-ago">15min</span>
+          </p>
+        </div>
+        <div class="notif-icon">
+          <img src="../assets/event-placeholder.png" alt="Notification icon">
+        </div>
+      </div>
+
+      <div class="notification-item">
+        <div class="notif-text">
+          <p>
+            Your upcoming volunteer "#EventName" is happening in 2 hours. 
+            <span class="notif-time-ago">1.5hr</span>
+          </p>
+        </div>
+        <div class="notif-icon">
+          <img src="../assets/event-placeholder.png" alt="Notification icon">
+        </div>
+      </div>
+
+      <div class="notification-item">
+        <div class="notif-text">
+          <p>
+            Waitlist Update: You’re In! You have been registered for "#EventName" on #EventDate. 
+            <span class="notif-time-ago">30min</span>
+          </p>
+        </div>
+        <div class="notif-icon">
+          <img src="../assets/event-placeholder.png" alt="Notification icon">
+        </div>
+      </div>
+
+      <div class="notification-item">
+        <div class="notif-text">
+          <p>
+            Update: Your registration for "#EventName" on #EventDate has been disapproved. 
+            Please check for other available events.
+            <span class="notif-time-ago">7hr</span>
+          </p>
+        </div>
+        <div class="notif-icon">
+          <img src="../assets/event-placeholder.png" alt="Notification icon">
+        </div>
+      </div>
+    </section>
+
+    <hr class="notif-divider">
+
+    <!-- "This week" section -->
+    <section class="notif-section">
+      <h2 class="notif-heading">This week</h2>
+      <div class="notification-item">
+        <div class="notif-text">
+          <p>Your upcoming volunteer "#EventName" is happening in 3 days. 
+            <span class="notif-time-ago">5d</span>
+          </p>
+        </div>
+        <div class="notif-icon">
+          <img src="../assets/event-placeholder.png" alt="Notification icon">
+        </div>
+      </div>
+
+      <div class="notification-item">
+        <div class="notif-text">
+          <p>Event Canceled: The event "#EventName" scheduled for #EventDate has been canceled. 
+            <span class="notif-time-ago">6d</span>
+          </p>
+        </div>
+        <div class="notif-icon">
+          <img src="../assets/event-placeholder.png" alt="Notification icon">
+        </div>
+      </div>
+
+      <div class="notification-item">
+        <div class="notif-text">
+          <p>Event Update: There have been changes to the event "#EventName" on #EventDate. 
+            Please check the updated details.
+            <span class="notif-time-ago">6d</span>
+          </p>
+        </div>
+        <div class="notif-icon">
+          <img src="../assets/event-placeholder.png" alt="Notification icon">
+        </div>
+      </div>
+    </section>
+
+    <hr class="notif-divider">
+
+    <!-- "This month" section -->
+    <section class="notif-section">
+      <h2 class="notif-heading">This month</h2>
+      <div class="notification-item">
+        <div class="notif-text">
+          <p>
+            Thank you for volunteering at "#EventName" on #EventDate! A volunteer certificate 
+            has been issued and is now available at 
+            <a href="#">Your Tier</a> page. 
+            <span class="notif-time-ago">25d</span>
+          </p>
+        </div>
+        <div class="notif-icon">
+          <img src="../assets/event-placeholder.png" alt="Notification icon">
+        </div>
+      </div>
+    </section>
+
+    <p class="notif-end">end of notification</p>
+  </main>
+
+  <!-- Bottom nav (fixed) -->
+  <footer class="bottom-nav">
+    <div class="nav-item active">
+      <img src="../assets/home-icon.png" alt="home icon" class="nav-icon">
+      <span>Home</span>
+    </div>
+    <div class="nav-item">
+      <img src="../assets/host-icon.png" alt="host icon" class="nav-icon">
+      <span>Host Events</span>
+    </div>
+    <div class="nav-item">
+      <img src="../assets/tier-icon.png" alt="tier icon" class="nav-icon">
+      <span>Your Tier</span>
+    </div>
+    <div class="nav-item">
+      <img src="../assets/find-icon.png" alt="find icon" class="nav-icon">
+      <span>Find Events</span>
+    </div>
+    <div class="nav-item">
+      <img src="../assets/profile-icon.png" alt="profile icon" class="nav-icon">
+      <span>Profile</span>
+    </div>
+  </footer>
+
+  <!-- Optional JavaScript for fetching notifications from backend -->
+  <script>
+    // Example: if you'd like to fetch notifications from the server
+    // and insert them dynamically, you could do so here.
+    document.addEventListener("DOMContentLoaded", () => {
+      const token = sessionStorage.getItem("authToken") || "";
+      // fetch("http://127.0.0.1:8000/api/notifications", { headers: { "Authorization": "Bearer " + token } })
+      //   .then(res => res.json())
+      //   .then(data => {
+      //       // data might be grouped by day or week, so you’d loop over them
+      //       // and create elements similar to the placeholders above
+      //   })
+      //   .catch(err => console.error("Notification fetch error:", err));
+
+      // Back button
+      const backBtn = document.getElementById('backBtn');
+      backBtn.addEventListener('click', () => {
+        window.history.back();
+      });
+    });
+  </script>
+
+</body>
+</html>

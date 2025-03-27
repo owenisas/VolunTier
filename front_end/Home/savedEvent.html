@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Saved Events</title>
+  <link rel="stylesheet" href="home.css">
+  <link href="https://fonts.googleapis.com/css2?family=Lexend&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- Top bar (similar to home-header) -->
+  <header class="home-header">
+    <div class="header-left">
+      <!-- back arrow or icon if you want -->
+      <button class="icon-btn" onclick="window.history.back()">
+        <img src="../assets/arrow-back.png" alt="Back Arrow" class="header-icon">
+      </button>
+      <!-- or just text? up to you -->
+    </div>
+    <div class="header-right">
+      <h1 class="app-name">Saved <span class="highlight">Event</span></h1>
+    </div>
+  </header>
+
+  <!-- Main content (saved-page) -->
+  <main class="saved-page">
+    <h2 class="saved-header">Here’s a list of your saved event.</h2>
+    <p class="saved-subtext">All your bookmarked events appear below.</p>
+
+    <!-- Example: day grouping just like home -->
+    <section class="event-day">
+      <h2>Wed, May 31 • 2:00-3:30PM (PST)</h2>
+      <div class="day-divider"></div>
+
+      <!-- One event card -->
+      <article class="event-card">
+        <div class="event-left">
+          <!-- No triangle indicator needed unless “live” logic applies -->
+          <img src="../assets/event-placeholder.png" alt="Event" class="event-image">
+        </div>
+        <div class="event-right">
+          <div class="event-info">
+            <p class="event-title">Event1Event1Event1Event1Event1…</p>
+            <p class="event-location">20937 Voluntier SE, Bellevue, WA</p>
+            <p class="event-spots"><strong>0/10 spots</strong></p>
+          </div>
+          <!-- Actions row (optional chat, share) -->
+          <div class="event-actions">
+            <button class="icon-btn">
+              <img src="../assets/chat-icon.png" alt="Chat" class="action-icon">
+            </button>
+            <button class="icon-btn">
+              <img src="../assets/share-icon.png" alt="Share" class="action-icon">
+            </button>
+          </div>
+          <!-- CTA row: “Register” or “Waitlist” -->
+          <div class="event-cta">
+            <button class="btn-register">Register</button>
+          </div>
+        </div>
+      </article>
+
+      <!-- Another event, etc. -->
+      <article class="event-card">
+        <div class="event-left">
+          <img src="../assets/event-placeholder.png" alt="Event" class="event-image">
+        </div>
+        <div class="event-right">
+          <div class="event-info">
+            <p class="event-title">Event1.5… (Placeholder Title)</p>
+            <p class="event-location">Baywatch NE, Eaton, CA</p>
+            <p class="event-spots"><strong>2/8 spots</strong></p>
+          </div>
+          <div class="event-actions">
+            <!-- maybe no chat, just share -->
+            <button class="icon-btn">
+              <img src="../assets/share-icon.png" alt="Share" class="action-icon">
+            </button>
+          </div>
+          <div class="event-cta">
+            <button class="btn-waitlist">Waitlist</button>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <!-- Additional day blocks as needed... -->
+
+  </main>
+
+  <!-- Bottom Nav: highlight “Home” if this is part of Home. -->
+  <footer class="bottom-nav">
+    <div class="nav-item active">
+      <img src="../assets/home-icon.png" alt="home icon" class="nav-icon">
+      <span>Home</span>
+    </div>
+    <div class="nav-item">
+      <img src="../assets/host-icon.png" alt="host icon" class="nav-icon">
+      <span>Host Events</span>
+    </div>
+    <div class="nav-item">
+      <img src="../assets/tier-icon.png" alt="tier icon" class="nav-icon">
+      <span>Your Tier</span>
+    </div>
+    <div class="nav-item">
+      <img src="../assets/find-icon.png" alt="find icon" class="nav-icon">
+      <span>Find Events</span>
+    </div>
+    <div class="nav-item">
+      <img src="../assets/profile-icon.png" alt="profile icon" class="nav-icon">
+      <span>Profile</span>
+    </div>
+  </footer>
+
+</body>
+</html>

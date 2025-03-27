@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>VolunTier - Host Events</title>
+  <!-- This new CSS file for the host/manager perspective -->
+  <link rel="stylesheet" href="host.css">
+  <!-- (Optional) Global font link -->
+  <link href="https://fonts.googleapis.com/css2?family=Lexend&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- Top bar with user name and 3 tabs -->
+  <header class="host-top-bar">
+    <div class="host-user">
+      <h1 id="hostName">Justin</h1>
+    </div>
+    <div class="host-tabs">
+      <button class="host-tab-btn active" id="draftTab">Draft</button>
+      <button class="host-tab-btn" id="publishedTab">Published</button>
+      <button class="host-tab-btn" id="pastTab">Past Event</button>
+    </div>
+  </header>
+
+  <!-- Main scrollable area -->
+  <main class="host-content" id="hostContent">
+    <!-- We'll dynamically show “Draft,” “Published,” or “Past Event” content via JS -->
+    <!-- Or you can hardcode them in separate <div>s and toggle. Below is placeholder markup. -->
+  </main>
+
+  <!-- Floating “Create” button (only for Draft & Published, not for Past) -->
+  <button class="fab-button" id="createEventBtn">
+    <img src="../assets/plus-icon.png" alt="Create Event">
+  </button>
+
+  <!-- Bottom nav (Host Events is active) -->
+  <footer class="bottom-nav">
+    <div class="nav-item">
+      <img src="../assets/home-icon.png" alt="home icon" class="nav-icon">
+      <span>Home</span>
+    </div>
+    <div class="nav-item active">
+      <img src="../assets/host-icon.png" alt="host icon" class="nav-icon">
+      <span>Host Events</span>
+    </div>
+    <div class="nav-item">
+      <img src="../assets/tier-icon.png" alt="tier icon" class="nav-icon">
+      <span>Your Tier</span>
+    </div>
+    <div class="nav-item">
+      <img src="../assets/find-icon.png" alt="find icon" class="nav-icon">
+      <span>Find Events</span>
+    </div>
+    <div class="nav-item">
+      <img src="../assets/profile-icon.png" alt="profile icon" class="nav-icon">
+      <span>Profile</span>
+    </div>
+  </footer>
+
+  <!-- Example JavaScript to toggle tabs & load data -->
+  <script>
+    // DOM references
+    const draftTab = document.getElementById("draftTab");
+    const publishedTab = document.getElementById("publishedTab");
+    const pastTab = document.getElementById("pastTab");
+    const hostContent = document.getElementById("hostContent");
+    const createEventBtn = document.getElementById("createEventBtn");
+
+    // Simulated data from backend
+    let draftEvents = [
+      {
+        dayLabel: "Fri, Jun 11 • 1:00-2:30PM (PST)",
+        title: "DEvent1DEvent1DEvent1",
+        location: "20937 Obe SE, Open, CA",
+        spots: "0/3 spots",
+        imageUrl: "../assets/event-placeholder.png",
+      },
+      {
+        dayLabel: "Mon, Jul 5 • 1:00-3:00PM (PST)",
+        title: "DEvent1.5DEvent1.5…",
+        location: "895 Cavalend SE, Nath, NC",
+        spots: "0/12 spots",
+        imageUrl: "../assets/event-placeholder.png",
+      }
+    ];
+
+    let publishedEvents = [
+      {
+        dayLabel: "Wed, May 31 • 2:00-3:30PM (PST)",
+        title: "MyEvent1MyEvent1MyEvent1…",
+        location: "20937 Voluntier SE, Bellevue, WA",
+        spots: "0/10 spots",
+        checkinEnabled: true,
+        certEnabled: true,
+        imageUrl: "../assets/event-placeholder.png",
+      },
+      {
+        dayLabel: "Fri, Aug 10 • 1:00-2:00PM (PST)",
+        title: "MyEvent2MyEvent2…",
+        location: "18888 Voluntier NE, Bothell, WA",
+        spots: "2/8 spots",
+        checkinEnabled: false,
+        certEnabled: false,
+        imageUrl: "../assets/event-placeholder.png",
+      }
+    ];
+
+    let pastEvents = [
+      {
+        dayLabel: "Fri, May 10 • 1:00-3:00PM (PST)",
+        title: "PEvent1PEvent1PEvent1…",
+        location: "1380 Bense NE, Campen, CA",
+        spots: "5/5 volunteers",
+        imageUrl: "../assets/event-placeholder.png",
+      },
+      {
+        dayLabel: "Sun, May 25 • 2:00-4:00PM (PST)",
+        title: "PEvent1.5PEvent1.5…",
+        location: "1920 Northcreek NE, Norman, WA",
+        spots: "3/5 volunteers",
+        imageUrl: "../assets/event-placeholder.png",
+      }
+    ];
+
+    // Tab switching
+    draftTab.addEventListener("click", () => {
+      draftTab.classList.add("active");
+      publishedTab.classList.remove("active");
+      pastTab.classList.remove("active");
+      createEventBtn.style.display = "block"; // show “+” in Draft
+      renderDraftEvents();
+    });
+
+    publishedTab.addEventListener("click", () => {
+      draftTab.classList.remove("active");
+      publishedTab.classList.add("active");
+      pastTab.classList.remove("active");
+      createEventBtn.style.display = "block"; // show “+” in Published
+      renderPublishedEvents();
+    });
+
+    pastTab.addEventListener("click", () => {
+      draftTab.classList.remove("active");
+      publishedTab.classList.remove("active");
+      pastTab.classList.add("active");
+      createEventBtn.style.display = "none"; // hide “+” in Past
+      renderPastEvents();
+    });
+
+    // On plus button click => link to createEvent.html
+    createEventBtn.addEventListener("click", () => {
+      window.location.href = "createEvent.html";
+    });
+
+    // Render logic for each tab
+    function renderDraftEvents() {
+      hostContent.innerHTML = "";
+      draftEvents.forEach(evt => {
+        hostContent.appendChild(createDraftCard(evt));
+      });
+    }
+
+    function renderPublishedEvents() {
+      hostContent.innerHTML = "";
+      publishedEvents.forEach(evt => {
+        hostContent.appendChild(createPublishedCard(evt));
+      });
+    }
+
+    function renderPastEvents() {
+      hostContent.innerHTML = "";
+      pastEvents.forEach(evt => {
+        hostContent.appendChild(createPastCard(evt));
+      });
+    }
+
+    // Card factories
+    function createDraftCard(evt) {
+      const card = document.createElement("div");
+      card.className = "host-event-card";
+
+      card.innerHTML = `
+        <h3>${evt.dayLabel}</h3>
+        <div class="host-card-row">
+          <img src="${evt.imageUrl}" alt="Event" class="host-event-image">
+          <div class="host-card-info">
+            <p class="host-event-title">${evt.title}</p>
+            <p class="host-event-loc">${evt.location}</p>
+            <p class="host-event-spots"><strong>${evt.spots}</strong></p>
+            <div class="host-card-cta">
+              <button class="btn-edit">Edit</button>
+              <button class="btn-share">Share</button>
+            </div>
+          </div>
+        </div>
+      `;
+      return card;
+    }
+
+    function createPublishedCard(evt) {
+      const card = document.createElement("div");
+      card.className = "host-event-card";
+
+      // If checkinEnabled => show "Check-in" button, else show "Edit"?
+      // If certEnabled => show "View Certificate", else "View/Edit Certificate"?
+      // You can adapt logic as needed
+      let checkinBtnText = evt.checkinEnabled ? "Check-in" : "Edit";
+      let certBtnText = evt.certEnabled ? "View Certificate" : "View/Edit Certificate";
+
+      card.innerHTML = `
+        <h3>${evt.dayLabel}</h3>
+        <div class="host-card-row">
+          <img src="${evt.imageUrl}" alt="Event" class="host-event-image">
+          <div class="host-card-info">
+            <p class="host-event-title">${evt.title}</p>
+            <p class="host-event-loc">${evt.location}</p>
+            <p class="host-event-spots"><strong>${evt.spots}</strong></p>
+            <div class="host-card-cta">
+              <button class="btn-checkin">${checkinBtnText}</button>
+              <button class="btn-certificate">${certBtnText}</button>
+              <button class="btn-share">Share</button>
+            </div>
+          </div>
+        </div>
+      `;
+      return card;
+    }
+
+    function createPastCard(evt) {
+      const card = document.createElement("div");
+      card.className = "host-event-card";
+
+      card.innerHTML = `
+        <h3>${evt.dayLabel}</h3>
+        <div class="host-card-row">
+          <img src="${evt.imageUrl}" alt="Event" class="host-event-image">
+          <div class="host-card-info">
+            <p class="host-event-title">${evt.title}</p>
+            <p class="host-event-loc">${evt.location}</p>
+            <p class="host-event-spots"><strong>${evt.spots}</strong></p>
+          </div>
+        </div>
+      `;
+      return card;
+    }
+
+    // INIT: Show "Draft" by default
+    publishedTab.click();
+  </script>
+</body>
+</html>

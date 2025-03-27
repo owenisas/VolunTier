@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Settings and Privacy</title>
+  <link rel="stylesheet" href="profile.css">
+  <link href="https://fonts.googleapis.com/css2?family=Lexend&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- Optionally a top bar with “Settings” title and back arrow -->
+  <header class="top-bar-profile">
+    <button class="back-btn" onclick="window.history.back()">
+      <img src="../assets/arrow-back.png" alt="Back Arrow" class="icon-back">
+    </button>
+    <h1 class="page-title">Settings and Privacy</h1>
+    <div class="logo-right">
+      <img src="../assets/v-icon.png" alt="VolunTier Icon" class="icon-logo">
+    </div>
+  </header>
+
+  <!-- Main area -->
+  <main class="settings-content">
+    <!-- Example: “Log out” and “Delete account” in red -->
+    <button class="btn-logout" onclick="handleLogout()">
+      Log out
+    </button>
+    <button class="btn-delete" onclick="handleDeleteAccount()">
+      Delete account
+    </button>
+  </main>
+
+  <!-- Bottom nav (Profile active) -->
+  <footer class="bottom-nav">
+    <div class="nav-item">
+      <img src="../assets/home-icon.png" alt="home icon" class="nav-icon">
+      <span>Home</span>
+    </div>
+    <div class="nav-item">
+      <img src="../assets/host-icon.png" alt="host icon" class="nav-icon">
+      <span>Host Events</span>
+    </div>
+    <div class="nav-item">
+      <img src="../assets/tier-icon.png" alt="tier icon" class="nav-icon">
+      <span>Your Tier</span>
+    </div>
+    <div class="nav-item">
+      <img src="../assets/find-icon.png" alt="find icon" class="nav-icon">
+      <span>Find Events</span>
+    </div>
+    <div class="nav-item active">
+      <img 
+        src="../assets/profile-icon.png" 
+        alt="profile icon" 
+        class="nav-icon"
+      >
+      <span>Profile</span>
+    </div>
+  </footer>
+
+  <!-- JS -->
+  <script>
+    function handleLogout() {
+      alert("Logging out (placeholder)...");
+      // e.g. call backend /logout, clear token, redirect
+    }
+    function handleDeleteAccount() {
+      if (confirm("Are you sure you want to delete your account?")) {
+        alert("Account deleted (placeholder).");
+        // e.g. call backend /delete, redirect to welcome
+      }
+    }
+  </script>
+</body>
+</html>

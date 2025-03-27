@@ -1,0 +1,506 @@
+/* manage.css */
+
+/* RESET */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+  
+  body {
+    font-family: 'Lexend', sans-serif;
+    background-color: #fff;
+    color: #000;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+  }
+  
+  /* ==============
+     TOP BAR
+     ============== */
+  .host-top-bar {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    height: 56px;
+    border-bottom: 1px solid #ccc;
+    background-color: #fff;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 8px;
+  }
+  
+  /* The left side with the user's name */
+  .host-user {
+    display: flex;
+    align-items: center;
+  }
+  .host-user h1 {
+    font-size: 1rem;
+    margin-left: 8px;
+    font-weight: bold;
+  }
+  
+  /* The right side with the 3 tabs: Draft, Published, Past */
+  .host-tabs {
+    display: flex;
+    gap: 4px;
+  }
+  .host-tab-btn {
+    background: none;
+    border: none;
+    padding: 6px 8px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 8px;
+    color: #FF6721;
+    border: 2px solid #FF6721;
+  }
+  .host-tab-btn.active {
+    background-color: #FF6721;
+    color: #fff;
+  }
+  
+  /* ==============
+     MAIN CONTENT
+     ============== */
+  .host-content {
+    margin-top: 56px; /* space for top bar */
+    margin-bottom: 56px; /* space for bottom nav */
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px;
+  }
+  
+  /* A single event card container */
+  .host-event-card {
+    background-color: #fff;
+    border-bottom: 1px solid #eee;
+    padding: 12px 0;
+    margin-bottom: 8px;
+  }
+  .host-event-card h3 {
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 8px;
+    font-weight: normal;
+  }
+  
+  /* Row with image + info + CTA */
+  .host-card-row {
+    display: flex;
+    gap: 8px;
+  }
+  .host-event-image {
+    width: 80px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 2px solid #FF6721;
+    flex-shrink: 0;
+  }
+  .host-card-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .host-event-title {
+    font-size: 0.95rem;
+    font-weight: bold;
+    line-height: 1.2;
+  }
+  .host-event-loc {
+    font-size: 0.8rem;
+    color: #444;
+  }
+  .host-event-spots {
+    font-size: 0.8rem;
+    color: #000;
+  }
+  
+  /* CTA row: edit, share, check-in, certificate, etc. */
+  .host-card-cta {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+  }
+  .btn-edit,
+  .btn-share,
+  .btn-checkin,
+  .btn-certificate {
+    background-color: transparent;
+    border: 2px solid #FF6721;
+    color: #FF6721;
+    border-radius: 6px;
+    padding: 6px 10px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+  .btn-edit:active,
+  .btn-share:active,
+  .btn-checkin:active,
+  .btn-certificate:active {
+    background-color: #FF6721;
+    color: #fff;
+  }
+  
+  /* ==============
+     FLOATING “+” BUTTON
+     ============== */
+  .fab-button {
+    position: fixed;
+    bottom: 64px; /* just above the bottom nav */
+    right: 50%;
+    transform: translateX(50%); /* center horizontally if you want */
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background-color: #FF6721;
+    border: none;
+    cursor: pointer;
+    z-index: 1100; /* above bottom nav */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .fab-button img {
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+  }
+  
+  /* ==============
+     BOTTOM NAV
+     ============== */
+  .bottom-nav {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    height: 56px;
+    border-top: 1px solid #ccc;
+    background-color: #fff;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    z-index: 1000;
+  }
+  .nav-item {
+    flex: 1;
+    text-align: center;
+    font-size: 0.7rem;
+    color: #000;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  .nav-item.active {
+    color: #FF6721;
+  }
+  .nav-icon {
+    width: 24px;
+    height: 24px;
+    margin-bottom: 2px;
+  }  
+
+
+/* ==========================
+   EVENT DETAIL (HOST) STYLES
+   ========================== */
+
+/* The main content area for detail */
+.host-detail-content {
+    margin-top: 56px; /* for fixed top bar */
+    margin-bottom: 56px; /* for bottom nav */
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px;
+  }
+  
+  /* Each section in detail page */
+  .host-detail-section {
+    margin-bottom: 16px;
+  }
+  
+  .host-detail-title {
+    font-size: 1rem;
+    font-weight: bold;
+    margin-bottom: 4px;
+  }
+  .host-detail-datetime {
+    font-size: 0.85rem;
+    color: #666;
+    margin-bottom: 4px;
+  }
+  .host-detail-location {
+    font-size: 0.85rem;
+    color: #444;
+  }
+  
+  /* Communication, age, capacity, certificate, etc. 
+     Already have .type-chip from your create/edit pages,
+     so we can reuse that. */
+  .host-detail-types {
+    margin-top: 8px;
+    display: flex;
+    gap: 8px;
+  }
+  
+  /* Action Buttons: Cancel, Edit */
+  .host-detail-actions {
+    display: flex;
+    gap: 16px;
+    margin-top: 16px;
+  }
+  
+  .btn-cancel,
+  .btn-edit {
+    background-color: transparent;
+    border: 2px solid #FF6721;
+    color: #FF6721;
+    border-radius: 6px;
+    padding: 8px 12px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    cursor: pointer;
+    flex: 1;
+    text-align: center;
+  }
+  
+  .btn-cancel:active,
+  .btn-edit:active {
+    background-color: #FF6721;
+    color: #fff;
+  }
+  
+  /* =========================
+   VOLUNTEER CHECK-IN PAGE
+   ========================= */
+.checkin-content {
+    margin-top: 56px;   /* space for fixed top bar */
+    margin-bottom: 56px;/* space for bottom nav */
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px;
+  }
+  
+  .volunteer-row {
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #eee;
+    padding: 12px 0;
+  }
+  
+  .volunteer-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 12px;
+    flex-shrink: 0;
+  }
+  
+  .volunteer-info {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  
+  .volunteer-names {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  
+  .volunteer-fullname {
+    font-weight: bold;
+    font-size: 0.95rem;
+    margin: 0;
+  }
+  
+  .volunteer-nickname {
+    font-size: 0.8rem;
+    color: #666;
+    margin: 0;
+  }
+  
+  /* Right side: "Profile" + "Check-in" buttons */
+  .volunteer-actions {
+    display: flex;
+    gap: 8px;
+  }
+  
+  .btn-profile {
+    background-color: transparent;
+    border: 2px solid #FF6721;
+    color: #FF6721;
+    border-radius: 6px;
+    padding: 6px 10px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    cursor: pointer;
+  }
+  .btn-profile:active {
+    background-color: #FF6721;
+    color: #fff;
+  }
+  
+  .btn-checkin {
+    border: none;
+    border-radius: 6px;
+    padding: 6px 10px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    cursor: pointer;
+  }
+  
+  /* If not checked, show a gray style */
+  .btn-checkin.not-checked {
+    background-color: rgba(127,127,127,0.25);
+    color: #333;
+  }
+  
+  /* If checked, show an orange style */
+  .btn-checkin.checked {
+    background-color: #FF6721;
+    color: #fff;
+  }
+  
+
+  /* =========================
+   VIEW EVENT (HOST) PAGE
+   ========================= */
+
+/* The main container below the top bar, above bottom nav */
+.view-event-content {
+    margin-top: 56px;  /* space for fixed top bar */
+    margin-bottom: 56px; /* space for bottom nav */
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px;
+  }
+  
+  /* Hero image */
+  .event-hero {
+    width: 100%;
+    height: auto; /* let the image define the height */
+    margin-bottom: 16px;
+  }
+  .event-hero-img {
+    width: 100%;
+    height: auto;
+    object-fit: cover; /* or contain if you prefer */
+    border-radius: 8px;
+    display: block;
+  }
+  
+  /* Basic sections */
+  .view-event-section {
+    margin-bottom: 16px;
+  }
+  .view-event-title {
+    font-size: 1rem;
+    font-weight: bold;
+    margin-bottom: 4px;
+  }
+  .view-event-datetime {
+    font-size: 0.85rem;
+    color: #666;
+    margin-bottom: 4px;
+  }
+  .view-event-location {
+    font-size: 0.85rem;
+    color: #444;
+    margin-bottom: 8px;
+  }
+  .view-event-meta p {
+    margin: 2px 0;
+    font-size: 0.85rem;
+    color: #555;
+  }
+  .view-event-types {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 8px;
+  }
+  
+  /* Fellow volunteers horizontal scroll */
+  .volunteer-scroll {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto; /* horizontal scroll */
+    padding-bottom: 8px;
+  }
+  .volunteer-card {
+    width: 56px;
+    flex-shrink: 0;
+    text-align: center;
+  }
+  .volunteer-card-img {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 4px;
+    border: 2px solid #FF6721;
+  }
+  .volunteer-card-name {
+    font-size: 0.75rem;
+    color: #333;
+    margin: 0;
+  }
+  
+  /* Contact note */
+  .contact-note {
+    font-size: 0.8rem;
+    color: #666;
+    margin-top: 4px;
+  }
+  
+  /* “Detail” heading is a standard h3, text is standard p */
+  .view-event-actions {
+    display: flex;
+    gap: 16px;
+    margin-top: 16px;
+  }
+  .btn-edit,
+  .btn-cancel {
+    background-color: transparent;
+    border: 2px solid #FF6721;
+    color: #FF6721;
+    border-radius: 6px;
+    padding: 8px 12px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    cursor: pointer;
+    flex: 1;
+    text-align: center;
+  }
+  .btn-edit:active,
+  .btn-cancel:active {
+    background-color: #FF6721;
+    color: #fff;
+  }
+  
+  /* If you want .btn-cancel in red or something, 
+     you can override it here, e.g.: 
+  .btn-cancel {
+    border-color: #f00;
+    color: #f00;
+  }
+  .btn-cancel:active {
+    background-color: #f00;
+    color: #fff;
+  }
+  */
+  

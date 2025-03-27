@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Public Profile</title>
+  <!-- Reuse your profile.css or create a new "publicProfile.css" if you prefer -->
+  <link rel="stylesheet" href="profile.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Lexend&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- Top bar with back arrow on left, brand icon on right -->
+  <header class="top-bar-profile">
+    <button class="back-btn" id="backBtn">
+      <img src="../assets/arrow-back.png" alt="Back Arrow" class="icon-back">
+    </button>
+    <!-- The user’s name can be centered or we can keep the title generic -->
+    <h1 class="page-title" id="publicProfileName">Thomas Suen</h1>
+    <div class="logo-right">
+      <img src="../assets/v-icon.png" alt="VolunTier Icon" class="icon-logo">
+    </div>
+  </header>
+
+  <!-- Main content area -->
+  <main class="public-profile-content" id="publicProfileContent">
+    
+    <!-- Avatar, volunteer/host counts, badges -->
+    <section class="public-profile-header">
+      <div class="public-avatar-wrap">
+        <img 
+          src="../assets/user-placeholder.png" 
+          alt="User Avatar" 
+          class="public-avatar" 
+          id="publicUserAvatar"
+        >
+      </div>
+
+      <div class="public-profile-stats">
+        <!-- “12 volunteered” / “5 hosted” etc. We’ll hide the “hosted” part if user is not an organizer -->
+        <div class="volunteer-count" id="volCountWrapper">
+          <span id="volCountNumber">12</span>
+          <small>volunteered</small>
+        </div>
+        <div class="host-count" id="hostCountWrapper">
+          <span id="hostCountNumber">5</span>
+          <small>hosted</small>
+        </div>
+      </div>
+
+      <!-- Badges row (student, employee, organizer, etc.) -->
+      <div class="badge-row" id="badgeRow">
+        <span class="badge-pill student-badge">Student</span>
+        <span class="badge-pill employee-badge">Employee</span>
+        <!-- If user is an organizer, you might show <span class="badge-pill organizer-badge">Organizer</span> -->
+      </div>
+    </section>
+
+    <!-- Info table: Nickname, Interests, Social links, Resume, etc. -->
+    <section class="public-profile-info">
+      <!-- Nickname row -->
+      <div class="info-row">
+        <div class="info-label">Nickname</div>
+        <div class="info-value" id="publicNickname">Tommy</div>
+      </div>
+      <!-- Interests row -->
+      <div class="info-row">
+        <div class="info-label">Interests</div>
+        <div class="info-value" id="publicInterests">
+          Coding, anime, stock, rock climbing, gaming
+        </div>
+      </div>
+      <!-- Social links row -->
+      <div class="info-row">
+        <div class="info-label">Social links</div>
+        <div class="info-value" id="publicSocialLinks">
+          <!-- Example: LinkedIn + personal site icons -->
+          <img src="../assets/linkedin-icon.png" alt="LinkedIn" class="social-icon">
+          <img src="../assets/globe-icon.png" alt="Website" class="social-icon">
+        </div>
+      </div>
+      <!-- Resume row -->
+      <div class="info-row">
+        <div class="info-label">Resume</div>
+        <!-- If user has a resume, show “View PDF” or link. If not, show empty or hide row. -->
+        <div class="info-value" id="publicResume">
+          <button class="btn-view-pdf">View PDF</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Bottom nav (Profile active, or you can highlight a different tab if needed) -->
+  <footer class="bottom-nav">
+    <div class="nav-item">
+      <img src="../assets/home-icon.png" alt="home icon" class="nav-icon">
+      <span>Home</span>
+    </div>
+    <div class="nav-item">
+      <img src="../assets/host-icon.png" alt="host icon" class="nav-icon">
+      <span>Host Events</span>
+    </div>
+    <div class="nav-item">
+      <img src="../assets/tier-icon.png" alt="tier icon" class="nav-icon">
+      <span>Your Tier</span>
+    </div>
+    <div class="nav-item">
+      <img src="../assets/find-icon.png" alt="find icon" class="nav-icon">
+      <span>Find Events</span>
+    </div>
+    <div class="nav-item active">
+      <img 
+        src="../assets/profile-icon.png" 
+        alt="profile icon" 
+        class="nav-icon"
+      >
+      <span>Profile</span>
+    </div>
+  </footer>
+
+  <!-- Minimal JS to show/hide certain elements based on user data -->
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const backBtn = document.getElementById("backBtn");
+      backBtn.addEventListener("click", () => {
+        window.history.back();
+      });
+
+      // Suppose you get user data from the backend:
+      // e.g. ?userId=789 => fetch user data
+      // We'll do a dummy example:
+      const userData = {
+        name: "Thomas Suen",
+        avatar: "../assets/thomas-avatar.png",
+        volunteeredCount: 12,
+        hostedCount: 0, // if 0 => hide hosted
+        badges: ["Student", "Employee"], // or ["Organizer"] etc.
+        nickname: "Tommy",
+        interests: "Coding, anime, stock, rock climbing, gaming",
+        socialLinks: ["linkedin", "website"], 
+        resumeLink: "" // if empty => hide row or show "N/A"
+      };
+
+      // fill in data
+      document.getElementById("publicProfileName").textContent = userData.name;
+      if (userData.avatar) {
+        document.getElementById("publicUserAvatar").src = userData.avatar;
+      }
+      document.getElementById("volCountNumber").textContent = userData.volunteeredCount;
+
+      // If hostedCount is 0 => hide the .host-count
+      if (userData.hostedCount > 0) {
+        document.getElementById("hostCountNumber").textContent = userData.hostedCount;
+      } else {
+        document.getElementById("hostCountWrapper").style.display = "none";
+      }
+
+      // badges
+      const badgeRow = document.getElementById("badgeRow");
+      badgeRow.innerHTML = "";
+      userData.badges.forEach(b => {
+        const span = document.createElement("span");
+        span.className = "badge-pill";
+        span.textContent = b;
+        badgeRow.appendChild(span);
+      });
+
+      // nickname
+      document.getElementById("publicNickname").textContent = userData.nickname;
+      // interests
+      document.getElementById("publicInterests").textContent = userData.interests;
+
+      // social links
+      // If user has no links, show nothing or hide row
+      // Otherwise, show icons
+      const socialValueDiv = document.getElementById("publicSocialLinks");
+      socialValueDiv.innerHTML = "";
+      if (userData.socialLinks.length === 0) {
+        socialValueDiv.textContent = "N/A";
+      } else {
+        userData.socialLinks.forEach(linkType => {
+          if (linkType === "linkedin") {
+            const icon = document.createElement("img");
+            icon.src = "../assets/linkedin-icon.png";
+            icon.alt = "LinkedIn";
+            icon.className = "social-icon";
+            socialValueDiv.appendChild(icon);
+          } else if (linkType === "website") {
+            const icon = document.createElement("img");
+            icon.src = "../assets/globe-icon.png";
+            icon.alt = "Website";
+            icon.className = "social-icon";
+            socialValueDiv.appendChild(icon);
+          }
+          // etc.
+        });
+      }
+
+      // resume
+      if (!userData.resumeLink) {
+        document.getElementById("publicResume").textContent = "N/A";
+      } else {
+        // show button or link
+      }
+    });
+  </script>
+</body>
+</html>

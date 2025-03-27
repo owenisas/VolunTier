@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>User Profile</title>
+  <link rel="stylesheet" href="profile.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Lexend&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- 
+    No top bar in your screenshot—just the user’s name or info at top.
+    If you prefer a top bar, you can add it similarly to other pages. 
+  -->
+
+  <!-- Main content -->
+  <main class="profile-content">
+    <!-- User info top row -->
+    <section class="profile-header">
+      <div class="profile-avatar-wrap">
+        <!-- user’s avatar (profile pic) -->
+        <img 
+          src="../assets/user-placeholder.png" 
+          alt="User Avatar" 
+          class="profile-avatar" 
+          id="userAvatar"
+        >
+      </div>
+      <div class="profile-top-info">
+        <!-- Full name or display name -->
+        <h1 id="displayName">Justin</h1>
+
+        <!-- Two “badges” or status (e.g., Student, Employee) 
+             If you have dynamic badges, you can loop them in JS. -->
+        <div class="badge-row" id="badgeRow">
+          <span class="badge-pill">Student</span>
+          <span class="badge-pill">Employee</span>
+        </div>
+
+        <!-- Buttons: “Edit profile” and “Edit badges” -->
+        <div class="profile-top-actions">
+          <button class="btn-edit-profile">Edit profile</button>
+          <button class="btn-edit-badges">Edit badges</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Info list: name, nickname, email, age, etc. 
+         The arrow indicates it’s clickable/editable. 
+         If no arrow, it’s static (not editable). 
+    -->
+    <section class="profile-info-list">
+      <!-- Name (clickable => edit name page) -->
+      <div class="info-row clickable" onclick="goEditName()">
+        <div class="info-label">Name</div>
+        <div class="info-value">Kuan-Ying Liao</div>
+        <img src="../assets/arrow-right.png" alt=">" class="info-arrow" />
+      </div>
+
+      <!-- Nickname (clickable => edit nickname) -->
+      <div class="info-row clickable" onclick="goEditNickname()">
+        <div class="info-label">Nickname</div>
+        <div class="info-value">Justin</div>
+        <img src="../assets/arrow-right.png" alt=">" class="info-arrow" />
+      </div>
+
+      <!-- Email (clickable => edit email) -->
+      <div class="info-row clickable" onclick="goEditEmail()">
+        <div class="info-label">Email</div>
+        <div class="info-value">test123@gmail.com</div>
+        <img src="../assets/arrow-right.png" alt=">" class="info-arrow" />
+      </div>
+
+      <!-- Age => no arrow => not editable -->
+      <div class="info-row">
+        <div class="info-label">Age</div>
+        <div class="info-value">20</div>
+      </div>
+
+      <!-- Interests => arrow => link to “Edit passions/skills” page -->
+      <div class="info-row clickable" onclick="goEditInterests()">
+        <div class="info-label">Interests</div>
+        <div class="info-value">Edit passions / skills</div>
+        <img src="../assets/arrow-right.png" alt=">" class="info-arrow" />
+      </div>
+
+      <!-- Social Links => arrow => link to “Add links” page -->
+      <div class="info-row clickable" onclick="goEditSocialLinks()">
+        <div class="info-label">Social Links</div>
+        <div class="info-value">Edit / Add links</div>
+        <img src="../assets/arrow-right.png" alt=">" class="info-arrow" />
+      </div>
+    </section>
+
+    <!-- “Settings” link => goes to settings.html -->
+    <section class="profile-settings">
+      <button class="btn-settings" onclick="goSettings()">
+        Settings
+      </button>
+    </section>
+  </main>
+
+  <!-- Bottom nav (Profile is active) -->
+  <footer class="bottom-nav">
+    <div class="nav-item">
+      <img src="../assets/home-icon.png" alt="home icon" class="nav-icon">
+      <span>Home</span>
+    </div>
+    <div class="nav-item">
+      <img src="../assets/host-icon.png" alt="host icon" class="nav-icon">
+      <span>Host Events</span>
+    </div>
+    <div class="nav-item">
+      <img src="../assets/tier-icon.png" alt="tier icon" class="nav-icon">
+      <span>Your Tier</span>
+    </div>
+    <div class="nav-item">
+      <img src="../assets/find-icon.png" alt="find icon" class="nav-icon">
+      <span>Find Events</span>
+    </div>
+    <div class="nav-item active">
+      <img 
+        src="../assets/profile-icon.png" 
+        alt="profile icon" 
+        class="nav-icon"
+      >
+      <span>Profile</span>
+    </div>
+  </footer>
+
+  <!-- Minimal JS for navigation placeholders -->
+  <script>
+    function goEditName() {
+      alert("Go to Edit Name page (placeholder).");
+    }
+    function goEditNickname() {
+      alert("Go to Edit Nickname page (placeholder).");
+    }
+    function goEditEmail() {
+      alert("Go to Edit Email page (placeholder).");
+    }
+    function goEditInterests() {
+      alert("Go to Edit Interests page (placeholder).");
+    }
+    function goEditSocialLinks() {
+      alert("Go to Edit Social Links page (placeholder).");
+    }
+    function goSettings() {
+      window.location.href = "settings.html";
+    }
+  </script>
+</body>
+</html>

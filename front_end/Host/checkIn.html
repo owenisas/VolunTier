@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Volunteer Check-in</title>
+  <!-- Use the same manage.css as your Host Events pages -->
+  <link rel="stylesheet" href="host.css">
+  <link href="https://fonts.googleapis.com/css2?family=Lexend&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- Top bar (similar to .host-top-bar) -->
+  <header class="host-top-bar">
+    <button class="back-btn" onclick="window.history.back()">
+      <img src="../assets/arrow-back.png" alt="Back Arrow" class="icon-back">
+    </button>
+    <h1 class="page-title">Volunteer Check-in</h1>
+    <div class="logo-right">
+      <img src="../assets/v-icon.png" alt="VolunTier Icon" class="icon-logo">
+    </div>
+  </header>
+
+  <!-- Main scrollable content -->
+  <main class="checkin-content" id="checkinContent">
+    <!-- Example volunteers. In real usage, you’d fetch from backend. -->
+
+    <div class="volunteer-row">
+      <img 
+        src="../assets/user-placeholder.png" 
+        alt="Profile" 
+        class="volunteer-avatar"
+      >
+      <div class="volunteer-info">
+        <div class="volunteer-names">
+          <p class="volunteer-fullname">Thomas Suen</p>
+          <p class="volunteer-nickname">Tommy</p>
+        </div>
+        <div class="volunteer-actions">
+          <button class="btn-profile">Profile</button>
+          <button class="btn-checkin not-checked">Check-in</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="volunteer-row">
+      <img 
+        src="../assets/user-placeholder.png" 
+        alt="Profile" 
+        class="volunteer-avatar"
+      >
+      <div class="volunteer-info">
+        <div class="volunteer-names">
+          <p class="volunteer-fullname">Nanny Jun</p>
+          <p class="volunteer-nickname">Nan</p>
+        </div>
+        <div class="volunteer-actions">
+          <button class="btn-profile">Profile</button>
+          <button class="btn-checkin checked">Check-in</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="volunteer-row">
+      <img 
+        src="../assets/user-placeholder.png" 
+        alt="Profile" 
+        class="volunteer-avatar"
+      >
+      <div class="volunteer-info">
+        <div class="volunteer-names">
+          <p class="volunteer-fullname">Ben Smith</p>
+          <p class="volunteer-nickname">BS</p>
+        </div>
+        <div class="volunteer-actions">
+          <button class="btn-profile">Profile</button>
+          <button class="btn-checkin not-checked">Check-in</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ... more volunteers as needed ... -->
+
+  </main>
+
+  <!-- Bottom nav (Host Events active) -->
+  <footer class="bottom-nav">
+    <div class="nav-item">
+      <img src="../assets/home-icon.png" alt="home icon" class="nav-icon">
+      <span>Home</span>
+    </div>
+    <div class="nav-item active">
+      <img src="../assets/host-icon.png" alt="host icon" class="nav-icon">
+      <span>Host Events</span>
+    </div>
+    <div class="nav-item">
+      <img src="../assets/tier-icon.png" alt="tier icon" class="nav-icon">
+      <span>Your Tier</span>
+    </div>
+    <div class="nav-item">
+      <img src="../assets/find-icon.png" alt="find icon" class="nav-icon">
+      <span>Find Events</span>
+    </div>
+    <div class="nav-item">
+      <img src="../assets/profile-icon.png" alt="profile icon" class="nav-icon">
+      <span>Profile</span>
+    </div>
+  </footer>
+
+  <!-- JS to toggle check-in status, etc. -->
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const checkinButtons = document.querySelectorAll(".btn-checkin");
+      checkinButtons.forEach(btn => {
+        btn.addEventListener("click", () => {
+          // Toggle between not-checked & checked
+          if (btn.classList.contains("checked")) {
+            btn.classList.remove("checked");
+            btn.classList.add("not-checked");
+            btn.textContent = "Check-in";
+            // Possibly call backend to "uncheck" volunteer
+          } else {
+            btn.classList.remove("not-checked");
+            btn.classList.add("checked");
+            btn.textContent = "Check-in";
+            // Possibly call backend to "check in" volunteer
+          }
+        });
+      });
+    });
+  </script>
+
+</body>
+</html>

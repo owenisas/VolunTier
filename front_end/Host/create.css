@@ -291,3 +291,30 @@
     height: 24px;
     margin-bottom: 2px;
   }  
+
+
+  /* =======================
+   EDIT EVENT (HOST) STYLES
+   ======================= */
+
+/* Overwrite or add a new button style for “Update” if you like. 
+   We can keep .btn-publish style, or define .btn-update. */
+.btn-update {
+  background-color: #FF6721;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+/* Or if you want a special .btn-save style, but we can reuse .btn-draft, etc. */
+/* 
+.btn-save {
+  background-color: #eee;
+  color: #333;
+  ...
+}
+*/

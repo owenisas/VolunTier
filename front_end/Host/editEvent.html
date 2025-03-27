@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Edit Event (Host)</title>
+  <!-- Use the same "host.css" from createEvent -->
+  <link rel="stylesheet" href="create.css">
+  <link href="https://fonts.googleapis.com/css2?family=Lexend&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- Top bar (like createEvent) -->
+  <header class="top-bar">
+    <button class="back-btn" id="backBtn">
+      <img src="../assets/arrow-back.png" alt="Back Arrow" class="icon-back">
+    </button>
+    <h1 class="page-title">Edit Event</h1>
+    <div class="logo-right">
+      <img src="../assets/v-icon.png" alt="VolunTier Icon" class="icon-logo">
+    </div>
+  </header>
+
+  <!-- Scrollable content area -->
+  <main class="content-area">
+    <!-- Form container (like createEventForm, but pre-filled) -->
+    <form id="editEventForm" class="form-container">
+
+      <!-- Title -->
+      <div class="input-group">
+        <label for="eventTitle">Title</label>
+        <input 
+          type="text" 
+          id="eventTitle" 
+          value="Event1.5" 
+          maxlength="80"
+          required
+        >
+        <div class="char-counter">
+          <span id="titleCharCount">8</span>/80
+        </div>
+      </div>
+
+      <!-- Date, Start Time, End Time (pre-filled) -->
+      <div class="input-group">
+        <label for="eventDate">Date</label>
+        <input type="date" id="eventDate" value="2025-06-31" required>
+      </div>
+
+      <div class="time-row">
+        <div class="input-group time-group">
+          <label for="startTime">Start Time</label>
+          <input type="time" id="startTime" value="19:00" required>
+        </div>
+        <div class="input-group time-group">
+          <label for="endTime">End Time</label>
+          <input type="time" id="endTime" value="19:35" required>
+        </div>
+        <span class="time-zone">PST</span>
+      </div>
+
+      <!-- Location -->
+      <div class="input-group">
+        <label for="eventLocation">Location</label>
+        <input 
+          type="text" 
+          id="eventLocation" 
+          value="Bothell Way NE, 98011"
+          required
+        >
+      </div>
+
+      <!-- Description -->
+      <div class="input-group description-group">
+        <label for="eventDescription">Description</label>
+        <div class="format-toolbar">
+          <button type="button" class="format-btn">B</button>
+          <button type="button" class="format-btn">I</button>
+          <button type="button" class="format-btn">List</button>
+          <button type="button" class="format-btn">Link</button>
+        </div>
+        <textarea 
+          id="eventDescription" 
+          rows="6" 
+          required
+        >Room 204: Free parking is available in Lot B, plus recommended forms for volunteering. Check with host for additional instructions.</textarea>
+        <p class="word-note">
+          Up to 1500 words allowed.
+          <span id="descWordCount">14</span> words so far
+        </p>
+      </div>
+
+      <!-- Featured Photo -->
+      <div class="input-group">
+        <label for="eventPhoto">Featured Photo</label>
+        <input type="file" id="eventPhoto" accept="image/*">
+      </div>
+
+      <!-- Communication (optional) -->
+      <div class="input-group communication-group">
+        <label for="commCheck" class="check-label">
+          <input type="checkbox" id="commCheck" checked>
+          Provide Communication Link
+        </label>
+        <div id="commFields" class="comm-fields">
+          <p class="comm-info">
+            This is how you’ll communicate with volunteers (Slack, WhatsApp, etc.).
+          </p>
+          <input 
+            type="text" 
+            id="commTitle" 
+            value="Join WhatsApp Group"
+          >
+          <input 
+            type="url" 
+            id="commLink" 
+            value="https://whatsapp.com/invite/hab82"
+          >
+        </div>
+      </div>
+
+      <!-- Minimum Age & # of volunteers -->
+      <div class="input-row">
+        <div class="input-group">
+          <label for="minAge">Minimum Age</label>
+          <select id="minAge" required>
+            <option value="N/A">N/A</option>
+            <option value="18">18 years old</option>
+            <option value="21" selected>21 years old</option>
+            <option value="25">25 years old</option>
+            <option value="30">30 years old</option>
+          </select>
+        </div>
+        <div class="input-group">
+          <label for="volunteerCount"># of volunteers</label>
+          <input type="number" id="volunteerCount" min="1" max="999" value="8" required>
+        </div>
+      </div>
+
+      <!-- Certificate -->
+      <div class="input-group cert-group">
+        <label for="certificateSelect">Certificate</label>
+        <select id="certificateSelect" required>
+          <option value="Provided" selected>Provided</option>
+          <option value="NotProvided">Not Provided</option>
+        </select>
+        <button type="button" id="createCertBtn" class="btn-cert">
+          Create Certificate
+        </button>
+      </div>
+
+      <!-- Event Type (3 max) -->
+      <div class="input-group event-type-group">
+        <label>Event Type (3 max)</label>
+        <div id="typeChipsContainer" class="chips-container">
+          <!-- Pre-filled types if desired -->
+          <span class="type-chip">Technology</span>
+        </div>
+        <div class="type-selector">
+          <select id="eventTypeSelect">
+            <option value="" disabled selected>Select a type</option>
+            <option value="Technology">Technology</option>
+            <option value="Music">Music</option>
+            <option value="Community Service">Community Service</option>
+            <!-- etc. -->
+          </select>
+          <button type="button" id="addTypeBtn" class="add-type-btn">+</button>
+        </div>
+      </div>
+
+      <!-- Buttons (Update / Save) -->
+      <div class="button-group">
+        <button type="submit" id="updateBtn" class="btn-update">Update</button>
+        <button type="button" id="saveBtn" class="btn-draft">Save</button>
+      </div>
+
+    </form>
+  </main>
+
+  <!-- Bottom nav (Host Events active) -->
+  <footer class="bottom-nav">
+    <div class="nav-item">
+      <img src="../assets/home-icon.png" alt="home icon" class="nav-icon">
+      <span>Home</span>
+    </div>
+    <div class="nav-item active">
+      <img src="../assets/host-icon.png" alt="host icon" class="nav-icon">
+      <span>Host Events</span>
+    </div>
+    <div class="nav-item">
+      <img src="../assets/tier-icon.png" alt="tier icon" class="nav-icon">
+      <span>Your Tier</span>
+    </div>
+    <div class="nav-item">
+      <img src="../assets/find-icon.png" alt="find icon" class="nav-icon">
+      <span>Find Events</span>
+    </div>
+    <div class="nav-item">
+      <img src="../assets/profile-icon.png" alt="profile icon" class="nav-icon">
+      <span>Profile</span>
+    </div>
+  </footer>
+
+  <!-- Inline JS: similar to createEvent, but using an "update" approach -->
+  <script>
+    // On load, fetch event data from backend, fill in fields
+    document.addEventListener("DOMContentLoaded", () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const eventId = urlParams.get('eventId') || '123';
+      console.log("Editing event:", eventId);
+
+      // Example: fetch existing data
+      // fetch(`http://127.0.0.1:8000/api/events/${eventId}`, ...)
+      //   .then(res => res.json())
+      //   .then(data => { fill form with data; });
+
+      // Title char count
+      const eventTitle = document.getElementById("eventTitle");
+      const titleCharCount = document.getElementById("titleCharCount");
+      eventTitle.addEventListener("input", () => {
+        titleCharCount.textContent = eventTitle.value.length;
+      });
+
+      // Description word count
+      const eventDescription = document.getElementById("eventDescription");
+      const descWordCount = document.getElementById("descWordCount");
+      function updateWordCount() {
+        const words = eventDescription.value.trim().split(/\s+/).filter(Boolean);
+        descWordCount.textContent = words.length;
+      }
+      eventDescription.addEventListener("input", updateWordCount);
+      updateWordCount(); // initial
+
+      // Communication checkbox
+      const commCheck = document.getElementById("commCheck");
+      const commFields = document.getElementById("commFields");
+      commCheck.addEventListener("change", () => {
+        commFields.classList.toggle("hidden", !commCheck.checked);
+      });
+
+      // Certificate
+      const certificateSelect = document.getElementById("certificateSelect");
+      const createCertBtn = document.getElementById("createCertBtn");
+      function updateCertButton() {
+        if (certificateSelect.value === "NotProvided") {
+          createCertBtn.disabled = true;
+          createCertBtn.classList.add("disabled-btn");
+        } else {
+          createCertBtn.disabled = false;
+          createCertBtn.classList.remove("disabled-btn");
+        }
+      }
+      certificateSelect.addEventListener("change", updateCertButton);
+      updateCertButton();
+
+      // Event types (3 max)
+      let selectedTypes = ["Technology"]; // pre-filled example
+      const typeChipsContainer = document.getElementById("typeChipsContainer");
+      const eventTypeSelect = document.getElementById("eventTypeSelect");
+      const addTypeBtn = document.getElementById("addTypeBtn");
+
+      function renderTypeChips() {
+        typeChipsContainer.innerHTML = "";
+        selectedTypes.forEach((type) => {
+          const chip = document.createElement("span");
+          chip.className = "type-chip";
+          chip.textContent = type;
+          chip.onclick = () => {
+            selectedTypes = selectedTypes.filter(t => t !== type);
+            renderTypeChips();
+          };
+          typeChipsContainer.appendChild(chip);
+        });
+      }
+      renderTypeChips();
+
+      addTypeBtn.addEventListener("click", () => {
+        const selectedVal = eventTypeSelect.value;
+        if (!selectedVal) return;
+        if (selectedTypes.includes(selectedVal)) {
+          alert("Already selected this type.");
+          return;
+        }
+        if (selectedTypes.length >= 3) {
+          alert("You can only choose up to 3 types.");
+          return;
+        }
+        selectedTypes.push(selectedVal);
+        renderTypeChips();
+      });
+
+      // Back button
+      document.getElementById("backBtn").addEventListener("click", () => {
+        window.history.back();
+      });
+
+      // “Update” vs. “Save as Draft”
+      const editEventForm = document.getElementById("editEventForm");
+      editEventForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        // build payload, do fetch with PUT/PATCH
+        alert("Update event in backend here...");
+      });
+
+      document.getElementById("saveBtn").addEventListener("click", () => {
+        // possibly call the same logic but with a “draft” status
+        alert("Save event changes as draft...");
+      });
+    });
+  </script>
+</body>
+</html>
