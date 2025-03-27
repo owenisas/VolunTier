@@ -4,55 +4,17 @@ from database import get_db
 from schemas import EventCreate, Event
 import sqlite3
 from routers.users import router as user_router  # if needed for dependency
-from fastapi.security import OAuth2PasswordBearer
 import jwt
 from config import SECRET_KEY, ALGORITHM
-from utils import create_access_token
 from datetime import datetime
 from typing import List, Optional
 from datetime import timedelta
-
-router = APIRouter()
-
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login")
-
+from .auth import get_current_user, get_current_user_optional
 from typing import Optional
 from fastapi.security import OAuth2PasswordBearer
 
-# Create an OAuth2 scheme that doesn't automatically error when no token is provided.
-optional_oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login", auto_error=False)
 
-def get_current_user_optional(
-    token: Optional[str] = Depends(optional_oauth2_scheme),
-    db: sqlite3.Connection = Depends(get_db)
-) -> Optional[dict]:
-    if token is None:
-        return None
-    try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        user_id = int(payload.get("sub"))
-    except Exception:
-        return None
-    cursor = db.cursor()
-    cursor.execute("SELECT * FROM User WHERE user_id = ?", (user_id,))
-    row = cursor.fetchone()
-    if row is None:
-        return None
-    return dict(row)
-
-def get_current_user(token: str = Depends(oauth2_scheme), db: sqlite3.Connection = Depends(get_db)):
-    try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        user_id = int(payload.get("sub"))
-    except Exception:
-        raise HTTPException(status_code=401, detail="Could not validate credentials")
-    cursor = db.cursor()
-    cursor.execute("SELECT * FROM User WHERE user_id = ?", (user_id,))
-    row = cursor.fetchone()
-    if row is None:
-        raise HTTPException(status_code=404, detail="User not found")
-    return dict(row)
-
+router = APIRouter()
 
 @router.get("/events/search", response_model=List[Event])
 def search_events(
@@ -209,9 +171,9 @@ def get_event(
     row = cursor.fetchone()
     if row is None:
         raise HTTPException(status_code=404, detail="Event not found")
-    
+
     event_data = dict(row)
-    
+
     # Update event status based on current time and end_time
     try:
         event_end_time = datetime.fromisoformat(event_data["end_time"])
