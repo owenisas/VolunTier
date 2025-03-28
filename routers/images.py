@@ -4,7 +4,7 @@ import os, uuid
 from database import get_db
 import sqlite3
 from utils import create_image_url, decode_image_token
-import datetime
+from datetime import datetime
 from schemas import EventImage
 # Import get_current_user from a common location (here, from routers.events for example)
 from .auth import get_current_user

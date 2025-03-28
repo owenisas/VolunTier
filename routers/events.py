@@ -75,17 +75,16 @@ def create_event(event: EventCreate, current_user: dict = Depends(get_current_us
         cursor.execute(
             """
             INSERT INTO events (
-                time, end_time, title, details, event_pic, organizer, organization_name, event_link, location,
+                time, end_time, title, details, organizer, organization_name, event_link, location,
                 certificate, requirements, contact_methods, instructions, max_participants, duration, status
             )
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """,
             (
                 event.time.isoformat(),
                 end_time.isoformat(),
                 event.title,
                 event.details,
-                event.event_pic,
                 current_user.get("full_name"),
                 None,
                 event.event_link,

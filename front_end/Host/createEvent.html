@@ -18,7 +18,7 @@
     <h1 class="page-title">Create an Event</h1>
     <!-- Right logo or brand icon -->
     <div class="logo-right">
-      <img src="../assets/v-icon.png" alt="VolunTier Icon" class="icon-logo">
+      <img src="../assets/logo.png" alt="VolunTier Icon" class="icon-logo">
     </div>
   </header>
 
@@ -31,10 +31,10 @@
       <!-- Title -->
       <div class="input-group">
         <label for="eventTitle">Title *</label>
-        <input 
-          type="text" 
-          id="eventTitle" 
-          placeholder="e.g. BC Hacks 24" 
+        <input
+          type="text"
+          id="eventTitle"
+          placeholder="e.g. BC Hacks 24"
           maxlength="80"
           required
         >
@@ -62,9 +62,9 @@
       <!-- Location -->
       <div class="input-group">
         <label for="eventLocation">Location*</label>
-        <input 
-          type="text" 
-          id="eventLocation" 
+        <input
+          type="text"
+          id="eventLocation"
           placeholder="Search or enter address"
           required
         >
@@ -80,9 +80,9 @@
           <button type="button" class="format-btn">List</button>
           <button type="button" class="format-btn">Link</button>
         </div>
-        <textarea 
-          id="eventDescription" 
-          rows="6" 
+        <textarea
+          id="eventDescription"
+          rows="6"
           placeholder="Let volunteers know what to expect, required forms..."
           required
         ></textarea>
@@ -95,7 +95,7 @@
       <!-- Featured Photo -->
       <div class="input-group">
         <label for="eventPhoto">Featured Photo*</label>
-        <input type="file" id="eventPhoto" accept="image/*" required>
+        <input type="file" id="eventPhoto" name="files" accept="image/*" required>
       </div>
 
       <!-- Communication Method - optional -->
@@ -111,14 +111,14 @@
             This is how you’ll communicate (e.g., LinkedIn, Slack, WhatsApp).
             It will be released to registered volunteers only. Enter "NA" if not needed.
           </p>
-          <input 
-            type="text" 
-            id="commTitle" 
+          <input
+            type="text"
+            id="commTitle"
             placeholder="e.g. Join WhatsApp Group"
           >
-          <input 
-            type="url" 
-            id="commLink" 
+          <input
+            type="url"
+            id="commLink"
             placeholder="https://whatsapp.com/invite/hab82"
           >
         </div>
@@ -149,9 +149,9 @@
           <option value="Provided">Provided</option>
           <option value="NotProvided">Not Provided</option>
         </select>
-        <button 
-          type="button" 
-          id="createCertBtn" 
+        <button
+          type="button"
+          id="createCertBtn"
           class="btn-cert"
         >
           Create Certificate
@@ -342,103 +342,200 @@
       // Possibly call handleSubmit with a 'draft' status
     });
 
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
+    // form.addEventListener("submit", async (e) => {
+    //   e.preventDefault();
+    //
+    //   // 1) Validate Title char length
+    //   const titleLength = eventTitle.value.trim().length;
+    //   if (titleLength === 0 || titleLength > 80) {
+    //     alert("Title must be between 1 and 80 characters.");
+    //     return;
+    //   }
+    //
+    //   // 2) Validate Description word count
+    //   const words = eventDescription.value.trim().split(/\s+/).filter(Boolean);
+    //   if (words.length > 1500) {
+    //     alert("Description cannot exceed 1500 words.");
+    //     return;
+    //   }
+    //
+    //   // 3) Gather form data
+    //   // const token = sessionStorage.getItem("authToken") || "";
+    //   // const dateVal = document.getElementById("eventDate").value;
+    //   // const startVal = document.getElementById("startTime").value;
+    //   // const endVal = document.getElementById("endTime").value;
+    //   // const locationVal = document.getElementById("eventLocation").value.trim();
+    //   // const minAgeVal = document.getElementById("minAge").value;
+    //   // const volunteerCountVal = document.getElementById("volunteerCount").value;
+    //   // const certVal = certificateSelect.value;
+    //   // const commTitleVal = document.getElementById("commTitle").value.trim();
+    //   // const commLinkVal = document.getElementById("commLink").value.trim();
+    //
+    //   // 4) Build final payload
+    //   // Adjust to your backend's expected structure
+    //   const payload = {
+    //     title: eventTitle.value.trim(),
+    //     date: dateVal,  // "YYYY-MM-DD"
+    //     start_time: startVal, // "HH:MM"
+    //     end_time: endVal,
+    //     timezone: "PST",
+    //     location: locationVal,
+    //     description: eventDescription.value.trim(),
+    //     min_age: minAgeVal,
+    //     volunteer_capacity: volunteerCountVal,
+    //     certificate: certVal === "Provided",
+    //     event_types: selectedTypes, // array
+    //     communication: commCheck.checked
+    //       ? {
+    //           methodTitle: commTitleVal,
+    //           methodLink: commLinkVal
+    //         }
+    //       : null
+    //   };
+    //
+    //   // 5) For the photo, you might do a separate fetch or formData
+    //   // Example:
+    //   const photoFile = document.getElementById("eventPhoto").files[0];
+    //   // you might upload the image first or with your event create
+    //
+    //   // 6) Example fetch to create event
+    //   try {
+    //     const res = await fetch("http://127.0.0.1:8000/api/events/create", {
+    //       method: "POST",
+    //       headers: {
+    //         "Content-Type": "application/json",
+    //         "Authorization": "Bearer " + token
+    //       },
+    //       body: JSON.stringify(payload)
+    //     });
+    //     if (!res.ok) {
+    //       const errData = await res.json();
+    //       alert(errData.detail || "Failed to create event");
+    //       return;
+    //     }
+    //     const eventData = await res.json();
+    //     console.log("Event created:", eventData);
+    //
+    //     // Possibly handle photo upload next...
+    //     if (photoFile) {
+    //       let formData = new FormData();
+    //       formData.append("file", photoFile);
+    //       formData.append("event_id", eventData.id); // or wherever you attach it
+    //       const uploadRes = await fetch("http://127.0.0.1:8000/api/events/uploadPhoto", {
+    //         method: "POST",
+    //         headers: { "Authorization": "Bearer " + token },
+    //         body: formData
+    //       });
+    //       if (!uploadRes.ok) {
+    //         alert("Event created, but photo upload failed.");
+    //       }
+    //     }
+    //
+    //     alert("Event published successfully!");
+    //     // redirect if you want
+    //     // window.location.href = "hostEvents.html";
+    //   } catch (err) {
+    //     console.error("Error creating event:", err);
+    //     alert("Network error. Please try again later.");
+    //   }
+    // });
+    //
+  form.addEventListener("submit", async (e) => {
+  e.preventDefault();
 
-      // 1) Validate Title char length
-      const titleLength = eventTitle.value.trim().length;
-      if (titleLength === 0 || titleLength > 80) {
-        alert("Title must be between 1 and 80 characters.");
-        return;
+  const token = sessionStorage.getItem("authToken") || "";
+
+  const titleLength = eventTitle.value.trim().length;
+  if (titleLength === 0 || titleLength > 80) {
+    alert("Title must be between 1 and 80 characters.");
+    return;
+  }
+
+  const words = eventDescription.value.trim().split(/\s+/).filter(Boolean);
+  if (words.length > 1500) {
+    alert("Description cannot exceed 1500 words.");
+    return;
+  }
+
+  const dateVal = document.getElementById("eventDate").value;
+  const startVal = document.getElementById("startTime").value;
+  const endVal = document.getElementById("endTime").value;
+  const locationVal = document.getElementById("eventLocation").value.trim();
+  const minAgeVal = document.getElementById("minAge").value;
+  const volunteerCountVal = document.getElementById("volunteerCount").value;
+  const certVal = certificateSelect.value;
+  const commTitleVal = document.getElementById("commTitle").value.trim();
+  const commLinkVal = document.getElementById("commLink").value.trim();
+
+  const startDateTime = new Date(`${dateVal}T${startVal}:00`);
+  const endDateTime = new Date(`${dateVal}T${endVal}:00`);
+  const durationMinutes = (endDateTime - startDateTime) / 60000;
+
+  const payload = {
+    title: eventTitle.value.trim(),
+    details: eventDescription.value.trim(),
+    location: locationVal,
+    time: startDateTime.toISOString(),
+    duration: durationMinutes,
+    certificate: certVal === "Provided" ? 1 : 0,
+    contact_methods: commCheck.checked ? `${commTitleVal} - ${commLinkVal}` : null,
+    max_participants: parseInt(volunteerCountVal) || null,
+    requirements: minAgeVal !== "N/A" ? `Minimum Age: ${minAgeVal}` : null,
+    instructions: selectedTypes.join(", "),
+    event_link: null,
+    event_pic: null,
+    status: true
+  };
+
+  try {
+    const res = await fetch("http://127.0.0.1:8000/events/create", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + token
+      },
+      body: JSON.stringify(payload)
+    });
+
+    if (!res.ok) {
+      const errData = await res.json();
+      alert(errData.detail || "Failed to create event");
+      return;
+    }
+
+    const eventData = await res.json();
+    const Ifiles = document.getElementById("eventPhoto").files;
+    if (Ifiles.length > 0) {
+      let formData = new FormData();
+      for (let i = 0; i < Ifiles.length; i++) {
+        formData.append('files', Ifiles[i]);
       }
-
-      // 2) Validate Description word count
-      const words = eventDescription.value.trim().split(/\s+/).filter(Boolean);
-      if (words.length > 1500) {
-        alert("Description cannot exceed 1500 words.");
-        return;
-      }
-
-      // 3) Gather form data
-      const token = sessionStorage.getItem("authToken") || "";
-      const dateVal = document.getElementById("eventDate").value;
-      const startVal = document.getElementById("startTime").value;
-      const endVal = document.getElementById("endTime").value;
-      const locationVal = document.getElementById("eventLocation").value.trim();
-      const minAgeVal = document.getElementById("minAge").value;
-      const volunteerCountVal = document.getElementById("volunteerCount").value;
-      const certVal = certificateSelect.value;
-      const commTitleVal = document.getElementById("commTitle").value.trim();
-      const commLinkVal = document.getElementById("commLink").value.trim();
-
-      // 4) Build final payload
-      // Adjust to your backend's expected structure
-      const payload = {
-        title: eventTitle.value.trim(),
-        date: dateVal,  // "YYYY-MM-DD"
-        start_time: startVal, // "HH:MM"
-        end_time: endVal,
-        timezone: "PST",
-        location: locationVal,
-        description: eventDescription.value.trim(),
-        min_age: minAgeVal,
-        volunteer_capacity: volunteerCountVal,
-        certificate: certVal === "Provided",
-        event_types: selectedTypes, // array
-        communication: commCheck.checked
-          ? {
-              methodTitle: commTitleVal,
-              methodLink: commLinkVal
-            }
-          : null
-      };
-
-      // 5) For the photo, you might do a separate fetch or formData
-      // Example:
-      const photoFile = document.getElementById("eventPhoto").files[0];
-      // you might upload the image first or with your event create
-
-      // 6) Example fetch to create event
       try {
-        const res = await fetch("http://127.0.0.1:8000/api/events/create", {
-          method: "POST",
+        const response = await fetch(`http://127.0.0.1:8000/events/${eventData.event_id}/images/upload`, {
+          method: 'POST',
+          body: formData,
           headers: {
-            "Content-Type": "application/json",
             "Authorization": "Bearer " + token
-          },
-          body: JSON.stringify(payload)
-        });
-        if (!res.ok) {
-          const errData = await res.json();
-          alert(errData.detail || "Failed to create event");
-          return;
-        }
-        const eventData = await res.json();
-        console.log("Event created:", eventData);
-
-        // Possibly handle photo upload next...
-        if (photoFile) {
-          let formData = new FormData();
-          formData.append("file", photoFile);
-          formData.append("event_id", eventData.id); // or wherever you attach it
-          const uploadRes = await fetch("http://127.0.0.1:8000/api/events/uploadPhoto", {
-            method: "POST",
-            headers: { "Authorization": "Bearer " + token },
-            body: formData
-          });
-          if (!uploadRes.ok) {
-            alert("Event created, but photo upload failed.");
           }
+        });
+
+        if (!response.ok) {
+          alert("Event created, but photo upload failed.");
         }
 
-        alert("Event published successfully!");
-        // redirect if you want
-        // window.location.href = "hostEvents.html";
+        alert("Event created successfully!");
+        window.location.href = "../Home/home.html";
+
       } catch (err) {
         console.error("Error creating event:", err);
         alert("Network error. Please try again later.");
       }
-    });
+    }
+    }catch (err) {
+        console.error("Error creating event:", err);
+        alert("Network error. Please try again later.");
+      }
+  });
   </script>
 </body>
 </html>

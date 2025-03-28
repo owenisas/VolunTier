@@ -61,7 +61,6 @@ class EventCreate(BaseModel):
     title: str
     details: str
     time: datetime  # User provided event start time
-    images: Optional[List[EventImage]] = None  # <-- updated field
     event_link: Optional[str] = None
     location: Optional[str] = None
     certificate: int = 0
