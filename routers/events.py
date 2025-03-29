@@ -18,8 +18,69 @@ router = APIRouter()
 
 from schemas import Event, EventImage  # Ensure these are imported
 from datetime import datetime
-@router.get("/tier", response_model=List[Event])
-def your_tier(db: sqlite3.Connection = Depends(get_db()), current_user: dict = Depends(get_current_user)):
+
+
+@router.get("/tier")
+def your_tier(db: sqlite3.Connection = Depends(get_db), current_user: dict = Depends(get_current_user)):
+    """
+    Retrieves events that the current user has joined (from the Event_Users table)
+    and returns a dictionary containing the current user's username, a list of events,
+    the count of events (volCount), and the total hours computed from event durations.
+    """
+    cursor = db.cursor()
+    # Get all event IDs that the current user has joined
+    cursor.execute("SELECT event_id FROM Event_Users WHERE user_id = ?", (current_user["user_id"],))
+    joined_rows = cursor.fetchall()
+
+    if not joined_rows:
+        events = []
+    else:
+        # Extract event_ids from the result
+        event_ids = [row["event_id"] for row in joined_rows]
+        # Build the IN clause dynamically
+        placeholders = ','.join('?' for _ in event_ids)
+        query = f"SELECT * FROM events WHERE event_id IN ({placeholders}) ORDER BY time ASC"
+        cursor.execute(query, event_ids)
+        rows = cursor.fetchall()
+
+        events = []
+        for row in rows:
+            event = dict(row)
+            event_id = event.get("event_id")
+            # Retrieve the first image for this event, ordered by creation time
+            cursor.execute(
+                "SELECT image_id, image_url, created_at FROM Event_Images WHERE event_id = ? ORDER BY created_at ASC LIMIT 1",
+                (event_id,)
+            )
+            image_row = cursor.fetchone()
+            if image_row:
+                event_image = EventImage(
+                    image_id=image_row["image_id"],
+                    event_id=event_id,
+                    image_url=image_row["image_url"],
+                    created_at=image_row["created_at"]
+                )
+                event["images"] = [event_image]
+            else:
+                event["images"] = []
+            events.append(Event(**event))
+
+    # Extract username from current_user (assuming it exists in the user table)
+    username = current_user.get("username")
+    # volCount is the number of events joined
+    volCount = len(events)
+    # Calculate total minutes from event durations (if duration is not None)
+    total_minutes = sum(e.duration if e.duration else 0 for e in events)
+    # Convert minutes to hours
+    total_hours = total_minutes / 60
+
+    return {
+        "username": username,
+        "events": events,
+        "volCount": volCount,
+        "totalHours": total_hours
+    }
+
 
 @router.get("/events/get", response_model=List[Event])
 def get_events_sorted_by_time(db: sqlite3.Connection = Depends(get_db)):

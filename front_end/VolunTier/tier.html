@@ -89,7 +89,7 @@
       const token = sessionStorage.getItem("authToken") || "";
       try {
         // Adjust your endpoint path as needed
-        const res = await fetch("http://127.0.0.1:8000/api/tier", {
+        const res = await fetch("http://127.0.0.1:8000/tier", {
           headers: {
             "Authorization": "Bearer " + token
           }
@@ -114,7 +114,7 @@
         // }
 
         // Fill in user name
-        document.getElementById("userName").textContent = data.name || "[User Name]";
+        document.getElementById("userName").textContent = data.username || "[User Name]";
         // Fill in volCount and totalHours
         document.getElementById("volCount").textContent = data.volCount || 0;
         document.getElementById("totalHours").textContent = data.totalHours || 0;
@@ -149,7 +149,7 @@
 
         // Past events
         const eventsSection = document.querySelector(".tier-events-section");
-        data.pastEvents?.forEach(evt => {
+        data.events?.forEach(evt => {
           const card = createEventCard(evt);
           eventsSection.appendChild(card);
         });
@@ -182,7 +182,7 @@
 
       const dtP = document.createElement("p");
       dtP.className = "tier-event-datetime";
-      dtP.textContent = evt.datetime || "No date/time";
+      dtP.textContent = evt.time || "No date/time";
 
       const locP = document.createElement("p");
       locP.className = "tier-event-location";
@@ -190,7 +190,7 @@
 
       const spotsP = document.createElement("p");
       spotsP.className = "tier-event-spots";
-      spotsP.textContent = evt.spots || "";
+      spotsP.textContent = evt.max || "";
 
       infoDiv.append(titleH4, dtP, locP, spotsP);
 
