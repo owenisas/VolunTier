@@ -38,26 +38,26 @@
 
   <!-- Bottom Nav -->
   <footer class="bottom-nav">
-    <div class="nav-item active">
+    <a href="../Home/home.html" class="nav-item active">
       <img src="../assets/homeBlack.png" alt="home icon" class="nav-icon">
       <span>Home</span>
-    </div>
-    <div class="nav-item">
+    </a>
+    <a href="../Host/host.html" class="nav-item">
       <img src="../assets/hostEventBlack.png" alt="host icon" class="nav-icon">
       <span>Host Events</span>
-    </div>
-    <div class="nav-item">
+    </a>
+    <a href="../VolunTier/tier.html" class="nav-item">
       <img src="../assets/yourTierOrange.png" alt="tier icon" class="nav-icon">
       <span>Your Tier</span>
-    </div>
-    <div class="nav-item">
+    </a>
+    <a href="../FindEvent/search.html" class="nav-item">
       <img src="../assets/findEventsBlack.png" alt="find icon" class="nav-icon">
       <span>Find Events</span>
-    </div>
-    <div class="nav-item">
+    </a>
+    <a href="../Profile/profile.html" class="nav-item">
       <img src="../assets/profile.png" alt="profile icon" class="nav-icon">
       <span>Profile</span>
-    </div>
+    </a>
   </footer>
 
   <!-- Chat Popup -->
@@ -137,6 +137,16 @@
         daySection.appendChild(divider);
 
         dayBlock.events.forEach(evt => {
+          // Compute additional fields if they are not provided by the backend
+          const eventStart = new Date(evt.time);
+          const eventDuration = evt.duration || 0; // in minutes
+          const eventEnd = new Date(eventStart.getTime() + eventDuration * 60000);
+          const now = new Date();
+          // Determine if the event is happening now
+          evt.isHappeningNow = now >= eventStart && now <= eventEnd;
+          // Determine if chat is available based on contact_methods
+          evt.chatAvailable = Boolean(evt.contact_methods && evt.contact_methods.trim() !== "");
+
           const eventCard = document.createElement("article");
           eventCard.className = "event-card";
 
@@ -144,6 +154,7 @@
           const leftDiv = document.createElement("div");
           leftDiv.className = "event-left";
 
+          // Live indicator (unchanged)
           let showTriangle = false;
           let showCheckinCert = false;
           if (!usedTriangleAlready && !isWaitlisted && evt.isHappeningNow) {
@@ -158,11 +169,19 @@
           indicator.className = showTriangle ? "triangle-indicator" : "triangle-indicator hidden";
           leftDiv.appendChild(indicator);
 
+          // Use event_pic directly from the backend
           const eventImg = document.createElement("img");
-          eventImg.src = evt.event_pic || "../assets/event-placeholder.png";
-          eventImg.alt = "Event placeholder";
+          // Check if evt.images is an array and has at least one element
+          if (Array.isArray(evt.images) && evt.images.length > 0) {
+            eventImg.src = "http://127.0.0.1:8000" + evt.images[0].image_url;
+          } else {
+            eventImg.src = "../assets/event-placeholder.png";
+          }
+          eventImg.alt = evt.title || "Event placeholder";
           eventImg.className = "event-image";
           leftDiv.appendChild(eventImg);
+
+
 
           // Right side: event information and actions
           const rightDiv = document.createElement("div");
@@ -174,7 +193,7 @@
           const timeP = document.createElement("p");
           timeP.className = "event-time";
           // Format the event time nicely
-          timeP.textContent = new Date(evt.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+          timeP.textContent = eventStart.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
           const titleH3 = document.createElement("h3");
           titleH3.className = "event-title";
@@ -183,6 +202,12 @@
           const locP = document.createElement("p");
           locP.className = "event-location";
           locP.textContent = evt.location || "(No location)";
+
+           eventCard.addEventListener("click", () => {
+            // Assuming evt.id is the event's unique identifier
+             window.location.href = `../Host/eventDetail.html?eventId=${evt.event_id}`;
+           });
+
 
           const spotsP = document.createElement("p");
           spotsP.className = "event-spots";
@@ -207,7 +232,7 @@
           const shareBtn = document.createElement("button");
           shareBtn.className = "icon-btn share-btn";
           const shareIcon = document.createElement("img");
-          shareIcon.src = "../assets/share-icon.png";
+          shareIcon.src = "../assets/shareButton.png";
           shareIcon.alt = "Share icon";
           shareIcon.className = "action-icon";
           shareBtn.appendChild(shareIcon);

@@ -3,146 +3,114 @@
 <head>
   <meta charset="UTF-8">
   <title>View Event</title>
-  <!-- Reuse your manage.css for host-related pages -->
   <link rel="stylesheet" href="host.css">
   <link href="https://fonts.googleapis.com/css2?family=Lexend&display=swap" rel="stylesheet">
 </head>
 <body>
 
-  <!-- Top bar (host-top-bar style from manage.css) -->
+  <!-- Top Bar -->
   <header class="host-top-bar">
-    <!-- Left: back arrow -->
     <button class="back-btn" id="backBtn">
       <img src="../assets/arrow-back.png" alt="Back Arrow" class="icon-back">
     </button>
-    <!-- Page title in center (or you can keep it left aligned) -->
     <h1 class="page-title">View Event</h1>
-    <!-- Right: share icon -->
     <button class="share-btn" id="shareBtn">
-      <img src="../assets/share-icon.png" alt="Share Icon" class="icon-back">
-    </button> 
+      <img src="../assets/shareButton.png" alt="Share Icon" class="icon-back">
+    </button>
   </header>
 
-  <!-- Scrollable main content -->
+  <!-- Main Content -->
   <main class="view-event-content" id="viewEventContent">
-
-    <!-- Hero / Featured Image -->
+    <!-- Event Featured Image -->
     <section class="event-hero">
-      <img 
-        src="../assets/event-placeholder.png" 
-        alt="Featured Image" 
-        class="event-hero-img"
-        id="eventHeroImg"
-      >
+      <img src="../assets/event-placeholder.png" alt="Featured Image" class="featured" id="eventHeroImg">
     </section>
 
-    <!-- Event Basic Info -->
-    <section class="view-event-section">
-      <h2 class="view-event-title" id="eventTitle">Event1.5</h2>
-      <p class="view-event-datetime" id="eventDatetime">
-        Wed, May 31 • 7:00-8:00PM (PST)
-      </p>
-      <p class="view-event-location" id="eventLocation">
-        18888 Voluntier NE, Bothell, WA
-      </p>
+    <!-- Event Images Gallery Section -->
+    <section class="view-event-section" id="eventImagesSection">
+      <h3>Event Images</h3>
+      <div class="event-images-container" id="eventImagesContainer">
+        <!-- Gallery images will be appended here -->
+      </div>
+    </section>
 
-      <!-- Host info + min age, capacity, etc. -->
+    <!-- Event Basic Information -->
+    <section class="view-event-section">
+      <h2 class="view-event-title" id="eventTitle">Event Title</h2>
+      <p class="view-event-datetime" id="eventDatetime">Date and Time</p>
+      <p class="view-event-location" id="eventLocation">Location</p>
       <div class="view-event-meta">
         <p>
-          Hosted by <strong id="eventHost">Ethan Leonard</strong>
+          Hosted by <strong id="eventHost">Host Name</strong>
         </p>
         <p>
-          Min Age: <strong id="eventMinAge">18</strong> &nbsp; 
-          | &nbsp; <strong id="eventSpots">2/15 spots</strong>
+          Min Age: <strong id="eventMinAge">N/A</strong> &nbsp; | &nbsp;
+          <strong id="eventSpots">0 spots</strong>
         </p>
       </div>
-
-      <!-- Event Type chips (Startup, Technology, etc.) -->
       <div class="view-event-types" id="eventTypes">
-        <span class="type-chip">Startup</span>
-        <span class="type-chip">Technology</span>
+        <!-- Dynamic type chips -->
       </div>
     </section>
 
-    <!-- Fellow Volunteers (horizontal scroll) -->
+    <!-- Fellow Volunteers Section -->
     <section class="view-event-section">
       <h3>Fellow Volunteers</h3>
       <div class="volunteer-scroll" id="volunteerScroll">
-        <!-- Each volunteer: avatar + short name? -->
-        <div class="volunteer-card">
-          <img src="../assets/user-placeholder.png" alt="Profile" class="volunteer-card-img">
-          <p class="volunteer-card-name">Thomas</p>
-        </div>
-        <div class="volunteer-card">
-          <img src="../assets/user-placeholder.png" alt="Profile" class="volunteer-card-img">
-          <p class="volunteer-card-name">Nanny</p>
-        </div>
-        <div class="volunteer-card">
-          <img src="../assets/user-placeholder.png" alt="Profile" class="volunteer-card-img">
-          <p class="volunteer-card-name">Ben</p>
-        </div>
-        <!-- more volunteer cards... -->
+        <!-- Volunteer cards will be appended dynamically -->
       </div>
     </section>
 
-    <!-- Contact method (WhatsApp, Slack, etc.) -->
+    <!-- Contact Method Section -->
     <section class="view-event-section">
       <h3>Contact Method</h3>
       <p>
-        Please reach out via 
-        <a href="https://whatsapp.com/invite/hab82" target="_blank" id="contactLink">
-          this WhatsApp Group
-        </a>.
+        Please reach out via
+        <a href="#" target="_blank" id="contactLink">this contact link</a>.
       </p>
       <p class="contact-note">
         (This link is for registered volunteers only—do not share it publicly.)
       </p>
     </section>
 
-    <!-- Detail / Description -->
+    <!-- Event Detail/Description -->
     <section class="view-event-section">
       <h3>Detail</h3>
-      <p id="eventDetail">
-        Welcome to TechConcert: Startup & AI Event for Data, AI, & Tech Professionals! 
-        If you are passionate in the fields of data, AI, or technology, you’re in the right place. 
-        ...
-        (Full description up to 1500 words)
-      </p>
+      <p id="eventDetail">Event details will appear here...</p>
     </section>
 
-    <!-- Buttons: Edit, Cancel event -->
+    <!-- Action Buttons -->
     <section class="view-event-actions">
       <button class="btn-edit" id="editBtn">Edit</button>
       <button class="btn-cancel" id="cancelBtn">Cancel event</button>
     </section>
-
   </main>
 
-  <!-- Bottom nav (Host Events active) -->
+   <!-- Bottom Nav -->
   <footer class="bottom-nav">
-    <div class="nav-item">
-      <img src="../assets/home-icon.png" alt="home icon" class="nav-icon">
+    <a href="../Home/home.html" class="nav-item active">
+      <img src="../assets/homeBlack.png" alt="home icon" class="nav-icon">
       <span>Home</span>
-    </div>
-    <div class="nav-item active">
-      <img src="../assets/host-icon.png" alt="host icon" class="nav-icon">
+    </a>
+    <a href="../Host/host.html" class="nav-item">
+      <img src="../assets/hostEventBlack.png" alt="host icon" class="nav-icon">
       <span>Host Events</span>
-    </div>
-    <div class="nav-item">
-      <img src="../assets/tier-icon.png" alt="tier icon" class="nav-icon">
+    </a>
+    <a href="../VolunTier/tier.html" class="nav-item">
+      <img src="../assets/yourTierOrange.png" alt="tier icon" class="nav-icon">
       <span>Your Tier</span>
-    </div>
-    <div class="nav-item">
-      <img src="../assets/find-icon.png" alt="find icon" class="nav-icon">
+    </a>
+    <a href="../FindEvent/search.html" class="nav-item">
+      <img src="../assets/findEventsBlack.png" alt="find icon" class="nav-icon">
       <span>Find Events</span>
-    </div>
-    <div class="nav-item">
-      <img src="../assets/profile-icon.png" alt="profile icon" class="nav-icon">
+    </a>
+    <a href="../Profile/profile.html" class="nav-item">
+      <img src="../assets/profile.png" alt="profile icon" class="nav-icon">
       <span>Profile</span>
-    </div>
+    </a>
   </footer>
 
-  <!-- JS logic to load data from backend, handle edit/cancel, etc. -->
+  <!-- JavaScript to load event details and display images -->
   <script>
     document.addEventListener("DOMContentLoaded", () => {
       const backBtn = document.getElementById("backBtn");
@@ -153,25 +121,81 @@
       const shareBtn = document.getElementById("shareBtn");
       shareBtn.addEventListener("click", () => {
         alert("Sharing the event link... (placeholder)");
-        // or open a share modal / copy link
       });
 
       document.getElementById("editBtn").addEventListener("click", () => {
-        // Go to edit page
-        window.location.href = "editEvent.html?eventId=123";
+        const urlParams = new URLSearchParams(window.location.search);
+        const eventId = urlParams.get('eventId');
+        window.location.href = "editEvent.html?eventId=" + eventId;
       });
 
       document.getElementById("cancelBtn").addEventListener("click", () => {
-        // Confirm cancellation, call backend, etc.
         if (confirm("Are you sure you want to cancel this event?")) {
           alert("Event canceled (demo).");
         }
       });
 
-      // If you have an API to load event details:
-      // fetch(...) => fill in #eventTitle, #eventDatetime, #eventLocation, #eventMinAge, etc.
+      const urlParams = new URLSearchParams(window.location.search);
+      const eventId = urlParams.get('eventId');
+
+      if (eventId) {
+        fetch(`http://127.0.0.1:8000/events/${eventId}`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json"
+            // Add Authorization header if required:
+            // "Authorization": "Bearer " + sessionStorage.getItem("authToken")
+          }
+        })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error("Failed to fetch event details (status " + response.status + ")");
+          }
+          return response.json();
+        })
+        .then(data => {
+          document.getElementById("eventTitle").textContent = data.title || "No Title";
+          if (data.time) {
+            const eventDate = new Date(data.time);
+            document.getElementById("eventDatetime").textContent = eventDate.toLocaleString();
+          } else {
+            document.getElementById("eventDatetime").textContent = "No Date/Time";
+          }
+          document.getElementById("eventLocation").textContent = data.location || "No Location";
+          document.getElementById("eventHost").textContent = data.organizer || "Unknown Host";
+          document.getElementById("eventMinAge").textContent = "N/A"; // Adjust if needed
+          document.getElementById("eventSpots").textContent = data.max_participants ? data.max_participants + " spots" : "N/A";
+          document.getElementById("eventDetail").textContent = data.details || "No details provided.";
+
+          // Display event images
+          if (data.images && data.images.length > 0) {
+            // Update the hero image with the first image from the list
+            document.getElementById("eventHeroImg").src = "http://127.0.0.1:8000" + data.images[0].image_url;
+
+            // Populate the gallery container with all images
+            const imagesContainer = document.getElementById("eventImagesContainer");
+            imagesContainer.innerHTML = "";
+            data.images.forEach(image => {
+              const imgElem = document.createElement("img");
+              imgElem.src = "http://127.0.0.1:8000" + image.image_url;
+              imgElem.alt = "Event Image";
+              imgElem.className = "gallery-image";
+              imagesContainer.appendChild(imgElem);
+            });
+          }
+
+          // Update the contact link if provided
+          if (data.contact_methods) {
+            document.getElementById("contactLink").href = data.contact_methods;
+          }
+        })
+        .catch(error => {
+          console.error("Error fetching event details:", error);
+        });
+      } else {
+        console.error("No event ID found in the URL.");
+      }
     });
   </script>
-
 </body>
 </html>

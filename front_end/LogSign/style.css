@@ -36,7 +36,18 @@ body {
   height: auto;
   margin-bottom: 20px;
 }
-
+    /* Optional styling for the image gallery */
+    .gallery-image {
+      max-width: 100%;
+      height: auto;
+      margin: 5px;
+      border: 1px solid #ccc;
+    }
+    .event-images-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
 .app-name {
   font-size: 2rem;
   text-align: center;
@@ -70,7 +81,7 @@ body {
   margin: 0 auto;
   font-weight: bold;
   transition: all 0.2s ease;
-  box-sizing: border-box; 
+  box-sizing: border-box;
   border: 2px solid transparent;
   text-align: center;
 }
@@ -201,7 +212,7 @@ body {
   margin-top: -8px;
   margin-bottom: 8px;
   font-size: 0.9rem;
-  min-height: 1.2em; 
+  min-height: 1.2em;
 }
 
 /* Subtext or disclaimers */

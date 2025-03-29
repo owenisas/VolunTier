@@ -8,36 +8,28 @@
 </head>
 <body>
 
-  <!-- 
-    No top bar in your screenshot—just the user’s name or info at top.
-    If you prefer a top bar, you can add it similarly to other pages. 
-  -->
-
   <!-- Main content -->
   <main class="profile-content">
     <!-- User info top row -->
     <section class="profile-header">
       <div class="profile-avatar-wrap">
-        <!-- user’s avatar (profile pic) -->
-        <img 
-          src="../assets/user-placeholder.png" 
-          alt="User Avatar" 
-          class="profile-avatar" 
+        <!-- User’s avatar (profile pic) -->
+        <img
+          src="../assets/user-placeholder.png"
+          alt="User Avatar"
+          class="profile-avatar"
           id="userAvatar"
         >
       </div>
       <div class="profile-top-info">
-        <!-- Full name or display name -->
-        <h1 id="displayName">Justin</h1>
-
-        <!-- Two “badges” or status (e.g., Student, Employee) 
-             If you have dynamic badges, you can loop them in JS. -->
+        <!-- Display name updated dynamically -->
+        <h1 id="displayName">Loading...</h1>
+        <!-- Badge row (can be generated dynamically if needed) -->
         <div class="badge-row" id="badgeRow">
           <span class="badge-pill">Student</span>
           <span class="badge-pill">Employee</span>
         </div>
-
-        <!-- Buttons: “Edit profile” and “Edit badges” -->
+        <!-- Profile action buttons -->
         <div class="profile-top-actions">
           <button class="btn-edit-profile">Edit profile</button>
           <button class="btn-edit-badges">Edit badges</button>
@@ -45,46 +37,38 @@
       </div>
     </section>
 
-    <!-- Info list: name, nickname, email, age, etc. 
-         The arrow indicates it’s clickable/editable. 
-         If no arrow, it’s static (not editable). 
-    -->
+    <!-- Info list -->
     <section class="profile-info-list">
-      <!-- Name (clickable => edit name page) -->
+      <!-- Full Name -->
       <div class="info-row clickable" onclick="goEditName()">
         <div class="info-label">Name</div>
-        <div class="info-value">Kuan-Ying Liao</div>
+        <div class="info-value" id="fullNameValue">Loading...</div>
         <img src="../assets/arrow-right.png" alt=">" class="info-arrow" />
       </div>
-
-      <!-- Nickname (clickable => edit nickname) -->
+      <!-- Nickname -->
       <div class="info-row clickable" onclick="goEditNickname()">
         <div class="info-label">Nickname</div>
-        <div class="info-value">Justin</div>
+        <div class="info-value" id="nicknameValue">Loading...</div>
         <img src="../assets/arrow-right.png" alt=">" class="info-arrow" />
       </div>
-
-      <!-- Email (clickable => edit email) -->
+      <!-- Email -->
       <div class="info-row clickable" onclick="goEditEmail()">
         <div class="info-label">Email</div>
-        <div class="info-value">test123@gmail.com</div>
+        <div class="info-value" id="emailValue">Loading...</div>
         <img src="../assets/arrow-right.png" alt=">" class="info-arrow" />
       </div>
-
-      <!-- Age => no arrow => not editable -->
+      <!-- Age (not editable) -->
       <div class="info-row">
         <div class="info-label">Age</div>
-        <div class="info-value">20</div>
+        <div class="info-value" id="ageValue">Loading...</div>
       </div>
-
-      <!-- Interests => arrow => link to “Edit passions/skills” page -->
+      <!-- Interests -->
       <div class="info-row clickable" onclick="goEditInterests()">
         <div class="info-label">Interests</div>
         <div class="info-value">Edit passions / skills</div>
         <img src="../assets/arrow-right.png" alt=">" class="info-arrow" />
       </div>
-
-      <!-- Social Links => arrow => link to “Add links” page -->
+      <!-- Social Links -->
       <div class="info-row clickable" onclick="goEditSocialLinks()">
         <div class="info-label">Social Links</div>
         <div class="info-value">Edit / Add links</div>
@@ -92,43 +76,37 @@
       </div>
     </section>
 
-    <!-- “Settings” link => goes to settings.html -->
+    <!-- Settings button -->
     <section class="profile-settings">
-      <button class="btn-settings" onclick="goSettings()">
-        Settings
-      </button>
+      <button class="btn-settings" onclick="goSettings()">Settings</button>
     </section>
   </main>
 
-  <!-- Bottom nav (Profile is active) -->
+  <!-- Bottom Navigation -->
   <footer class="bottom-nav">
-    <div class="nav-item">
-      <img src="../assets/home-icon.png" alt="home icon" class="nav-icon">
+    <a href="../Home/home.html" class="nav-item">
+      <img src="../assets/homeBlack.png" alt="home icon" class="nav-icon">
       <span>Home</span>
-    </div>
-    <div class="nav-item">
-      <img src="../assets/host-icon.png" alt="host icon" class="nav-icon">
+    </a>
+    <a href="../Host/host.html" class="nav-item">
+      <img src="../assets/hostEventBlack.png" alt="host icon" class="nav-icon">
       <span>Host Events</span>
-    </div>
-    <div class="nav-item">
-      <img src="../assets/tier-icon.png" alt="tier icon" class="nav-icon">
+    </a>
+    <a href="../VolunTier/tier.html" class="nav-item">
+      <img src="../assets/yourTierOrange.png" alt="tier icon" class="nav-icon">
       <span>Your Tier</span>
-    </div>
-    <div class="nav-item">
-      <img src="../assets/find-icon.png" alt="find icon" class="nav-icon">
+    </a>
+    <a href="../FindEvent/search.html" class="nav-item">
+      <img src="../assets/findEventsBlack.png" alt="find icon" class="nav-icon">
       <span>Find Events</span>
-    </div>
-    <div class="nav-item active">
-      <img 
-        src="../assets/profile-icon.png" 
-        alt="profile icon" 
-        class="nav-icon"
-      >
+    </a>
+    <a href="../Profile/profile.html" class="nav-item active">
+      <img src="../assets/profile.png" alt="profile icon" class="nav-icon">
       <span>Profile</span>
-    </div>
+    </a>
   </footer>
 
-  <!-- Minimal JS for navigation placeholders -->
+  <!-- Navigation functions -->
   <script>
     function goEditName() {
       alert("Go to Edit Name page (placeholder).");
@@ -148,6 +126,45 @@
     function goSettings() {
       window.location.href = "settings.html";
     }
+  </script>
+
+  <!-- Script to fetch data from backend and update the profile -->
+  <script>
+    const token = sessionStorage.getItem("authToken") || "";
+    async function fetchUserData() {
+      try {
+        const response = await fetch('http://127.0.0.1:8000/users/me', {
+          method: 'GET',
+          headers: {
+            "Authorization": "Bearer " + token
+          }
+        });
+
+        if (!response.ok) {
+          console.error('Failed to load user data. Status:', response.status);
+          return;
+        }
+
+        const data = await response.json();
+
+        // Update the DOM elements with the fetched data.
+        document.getElementById('displayName').textContent = data.username || 'No name';
+        document.getElementById('fullNameValue').textContent = data.full_name || 'No full name';
+        document.getElementById('nicknameValue').textContent = data.username || 'No nickname';
+        document.getElementById('emailValue').textContent = data.email || 'No email';
+        document.getElementById('ageValue').textContent = data.age || 'N/A';
+
+        // If a profile picture URL is provided, update the avatar image.
+        if (data.profile_pic_url) {
+          document.getElementById('userAvatar').src = data.profile_pic_url;
+        }
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+      }
+    }
+
+    // Call the fetchUserData function when the window has finished loading.
+    window.addEventListener('load', fetchUserData);
   </script>
 </body>
 </html>

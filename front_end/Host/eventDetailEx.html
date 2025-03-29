@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>View Event</title>
+  <!-- Reuse your manage.css for host-related pages -->
+  <link rel="stylesheet" href="host.css">
+  <link href="https://fonts.googleapis.com/css2?family=Lexend&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- Top bar (host-top-bar style from manage.css) -->
+  <header class="host-top-bar">
+    <!-- Left: back arrow -->
+    <button class="back-btn" id="backBtn">
+      <img src="../assets/arrow-back.png" alt="Back Arrow" class="icon-back">
+    </button>
+    <!-- Page title in center (or you can keep it left aligned) -->
+    <h1 class="page-title">View Event</h1>
+    <!-- Right: share icon -->
+    <button class="share-btn" id="shareBtn">
+      <img src="../assets/shareButton.png" alt="Share Icon" class="icon-back">
+    </button>
+  </header>
+
+  <!-- Scrollable main content -->
+  <main class="view-event-content" id="viewEventContent">
+
+    <!-- Hero / Featured Image -->
+    <section class="event-hero">
+      <img
+        src="../assets/event-placeholder.png"
+        alt="Featured Image"
+        class="event-hero-img"
+        id="eventHeroImg"
+      >
+    </section>
+
+    <!-- Event Basic Info -->
+    <section class="view-event-section">
+      <h2 class="view-event-title" id="eventTitle">Event1.5</h2>
+      <p class="view-event-datetime" id="eventDatetime">
+        Wed, May 31 • 7:00-8:00PM (PST)
+      </p>
+      <p class="view-event-location" id="eventLocation">
+        18888 Voluntier NE, Bothell, WA
+      </p>
+
+      <!-- Host info + min age, capacity, etc. -->
+      <div class="view-event-meta">
+        <p>
+          Hosted by <strong id="eventHost">Ethan Leonard</strong>
+        </p>
+        <p>
+          Min Age: <strong id="eventMinAge">18</strong> &nbsp;
+          | &nbsp; <strong id="eventSpots">2/15 spots</strong>
+        </p>
+      </div>
+
+      <!-- Event Type chips (Startup, Technology, etc.) -->
+      <div class="view-event-types" id="eventTypes">
+        <span class="type-chip">Startup</span>
+        <span class="type-chip">Technology</span>
+      </div>
+    </section>
+
+    <!-- Fellow Volunteers (horizontal scroll) -->
+    <section class="view-event-section">
+      <h3>Fellow Volunteers</h3>
+      <div class="volunteer-scroll" id="volunteerScroll">
+        <!-- Each volunteer: avatar + short name? -->
+        <div class="volunteer-card">
+          <img src="../assets/user-placeholder.png" alt="Profile" class="volunteer-card-img">
+          <p class="volunteer-card-name">Thomas</p>
+        </div>
+        <div class="volunteer-card">
+          <img src="../assets/user-placeholder.png" alt="Profile" class="volunteer-card-img">
+          <p class="volunteer-card-name">Nanny</p>
+        </div>
+        <div class="volunteer-card">
+          <img src="../assets/user-placeholder.png" alt="Profile" class="volunteer-card-img">
+          <p class="volunteer-card-name">Ben</p>
+        </div>
+        <!-- more volunteer cards... -->
+      </div>
+    </section>
+
+    <!-- Contact method (WhatsApp, Slack, etc.) -->
+    <section class="view-event-section">
+      <h3>Contact Method</h3>
+      <p>
+        Please reach out via
+        <a href="https://whatsapp.com/invite/hab82" target="_blank" id="contactLink">
+          this WhatsApp Group
+        </a>.
+      </p>
+      <p class="contact-note">
+        (This link is for registered volunteers only—do not share it publicly.)
+      </p>
+    </section>
+
+    <!-- Detail / Description -->
+    <section class="view-event-section">
+      <h3>Detail</h3>
+      <p id="eventDetail">
+        Welcome to TechConcert: Startup & AI Event for Data, AI, & Tech Professionals!
+        If you are passionate in the fields of data, AI, or technology, you’re in the right place.
+        ...
+        (Full description up to 1500 words)
+      </p>
+    </section>
+
+    <!-- Buttons: Edit, Cancel event -->
+    <section class="view-event-actions">
+      <button class="btn-edit" id="editBtn">Edit</button>
+      <button class="btn-cancel" id="cancelBtn">Cancel event</button>
+    </section>
+
+  </main>
+
+   <!-- Bottom Nav -->
+  <footer class="bottom-nav">
+    <a href="../Home/home.html" class="nav-item">
+      <img src="../assets/homeBlack.png" alt="home icon" class="nav-icon">
+      <span>Home</span>
+    </a>
+    <a href="../Host/host.html" class="nav-item">
+      <img src="../assets/hostEventBlack.png" alt="host icon" class="nav-icon">
+      <span>Host Events</span>
+    </a>
+    <a href="../VolunTier/tier.html" class="nav-item">
+      <img src="../assets/yourTierOrange.png" alt="tier icon" class="nav-icon">
+      <span>Your Tier</span>
+    </a>
+    <a href="../FindEvent/search.html" class="nav-item">
+      <img src="../assets/findEventsBlack.png" alt="find icon" class="nav-icon">
+      <span>Find Events</span>
+    </a>
+    <a href="../Profile/profile.html" class="nav-item">
+      <img src="../assets/profile.png" alt="profile icon" class="nav-icon">
+      <span>Profile</span>
+    </a>
+  </footer>
+  <!-- JS logic to load data from backend, handle edit/cancel, etc. -->
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const backBtn = document.getElementById("backBtn");
+      backBtn.addEventListener("click", () => {
+        window.history.back();
+      });
+
+      const shareBtn = document.getElementById("shareBtn");
+      shareBtn.addEventListener("click", () => {
+        alert("Sharing the event link... (placeholder)");
+        // or open a share modal / copy link
+      });
+
+      document.getElementById("editBtn").addEventListener("click", () => {
+        // Go to edit page
+        window.location.href = "editEvent.html?eventId=123";
+      });
+
+      document.getElementById("cancelBtn").addEventListener("click", () => {
+        // Confirm cancellation, call backend, etc.
+        if (confirm("Are you sure you want to cancel this event?")) {
+          alert("Event canceled (demo).");
+        }
+      });
+
+      // If you have an API to load event details:
+      // fetch(...) => fill in #eventTitle, #eventDatetime, #eventLocation, #eventMinAge, etc.
+    });
+  </script>
+
+</body>
+</html>

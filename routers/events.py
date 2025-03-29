@@ -8,7 +8,7 @@ import jwt
 from config import SECRET_KEY, ALGORITHM
 from datetime import datetime
 from typing import List, Optional
-from datetime import timedelta
+from datetime import timedelta, timezone
 from .auth import get_current_user, get_current_user_optional
 from typing import Optional
 from fastapi.security import OAuth2PasswordBearer
@@ -16,15 +16,44 @@ from fastapi.security import OAuth2PasswordBearer
 router = APIRouter()
 
 
+from schemas import Event, EventImage  # Ensure these are imported
+from datetime import datetime
+
 @router.get("/events/get", response_model=List[Event])
 def get_events_sorted_by_time(db: sqlite3.Connection = Depends(get_db)):
     """
-    Retrieves all events from the database sorted by time in ascending order.
+    Retrieves up to 10 events from the database sorted by time in ascending order,
+    and attaches the first image (if available) as a list of EventImage.
     """
     cursor = db.cursor()
     cursor.execute("SELECT * FROM events ORDER BY time ASC LIMIT 10")
     rows = cursor.fetchall()
-    return [Event(**dict(row)) for row in rows]
+    events = []
+    for row in rows:
+        event = dict(row)
+        event_id = event.get("event_id")
+        # Retrieve the first image for this event, ordered by creation time
+        cursor.execute(
+            "SELECT image_id, image_url, created_at FROM Event_Images WHERE event_id = ? ORDER BY created_at ASC LIMIT 1",
+            (event_id,)
+        )
+        image_row = cursor.fetchone()
+        if image_row:
+            # Create an EventImage instance
+            # If created_at is a string, you may need to convert it to datetime
+            event_image = EventImage(
+                image_id=image_row["image_id"],
+                event_id=event_id,
+                image_url=image_row["image_url"],
+                created_at=image_row["created_at"]
+            )
+            event["images"] = [event_image]
+        else:
+            event["images"] = []
+        events.append(Event(**event))
+    return events
+
+
 
 
 @router.get("/events/search", response_model=List[Event])
@@ -198,7 +227,7 @@ def get_event(
 
     # Existing logic for contact_methods and status update
     event_end_time = datetime.fromisoformat(event_data["end_time"])
-    now = datetime.utcnow()
+    now = now = datetime.now(timezone.utc)
     if now > event_end_time and event_data["status"] == 1:
         cursor.execute("UPDATE events SET status = 0 WHERE event_id = ?", (event_id,))
         db.commit()
