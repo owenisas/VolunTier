@@ -18,6 +18,8 @@ router = APIRouter()
 
 from schemas import Event, EventImage  # Ensure these are imported
 from datetime import datetime
+@router.get("/tier", response_model=List[Event])
+def your_tier(db: sqlite3.Connection = Depends(get_db()), current_user: dict = Depends(get_current_user)):
 
 @router.get("/events/get", response_model=List[Event])
 def get_events_sorted_by_time(db: sqlite3.Connection = Depends(get_db)):
@@ -26,7 +28,7 @@ def get_events_sorted_by_time(db: sqlite3.Connection = Depends(get_db)):
     and attaches the first image (if available) as a list of EventImage.
     """
     cursor = db.cursor()
-    cursor.execute("SELECT * FROM events ORDER BY time ASC LIMIT 10")
+    cursor.execute("SELECT * FROM events WHERE status = 1 ORDER BY time ASC LIMIT 10")
     rows = cursor.fetchall()
     events = []
     for row in rows:
