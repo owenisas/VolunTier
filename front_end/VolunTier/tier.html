@@ -114,12 +114,12 @@
         // }
 
         // Fill in user name
-        document.getElementById("userName").textContent = data.username || "[User Name]";
+        document.getElementById("userName").textContent = data.user.username || "[User Name]";
         // Fill in volCount and totalHours
         document.getElementById("volCount").textContent = data.volCount || 0;
         document.getElementById("totalHours").textContent = data.totalHours || 0;
         // Fill in bio
-        document.getElementById("userBio").textContent = data.bio || "";
+        document.getElementById("userBio").textContent = data.user.profile || "";
 
         // Top 3 skills
         const topSkills = document.getElementById("topSkills");
@@ -139,8 +139,11 @@
         const img = document.createElement("img");
         img.className = "tier-badge-img";
         img.src = `../assets/badge2.jpg`;
+        const img2 = document.createElement("img");
+        img2.className = "tier-badge-img";
+        img2.src = `../assets/badge.jpg`;
         userBadges.appendChild(img);
-        userBadges.appendChild(img);
+        userBadges.appendChild(img2);
 
         // Past events
         const eventsSection = document.querySelector(".tier-events-section");

@@ -65,8 +65,6 @@ def your_tier(db: sqlite3.Connection = Depends(get_db), current_user: dict = Dep
                 event["images"] = []
             events.append(Event(**event))
 
-    # Extract username from current_user (assuming it exists in the user table)
-    username = current_user.get("username")
     # volCount is the number of events joined
     volCount = len(events)
     # Calculate total minutes from event durations (if duration is not None)
@@ -75,7 +73,7 @@ def your_tier(db: sqlite3.Connection = Depends(get_db), current_user: dict = Dep
     total_hours = total_minutes / 60
 
     return {
-        "username": username,
+        "user": current_user,
         "events": events,
         "volCount": volCount,
         "totalHours": total_hours
