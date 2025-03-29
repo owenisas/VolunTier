@@ -136,16 +136,11 @@
         // Badges
         const userBadges = document.getElementById("userBadges");
         userBadges.innerHTML = "";
-        if (Array.isArray(data.badges)) {
-          data.badges.forEach(b => {
-            // Example: map 'gold' => badge-gold.png, etc.
-            const img = document.createElement("img");
-            img.className = "tier-badge-img";
-            img.alt = b + " badge";
-            img.src = `../assets/badge-${b}.png`;
-            userBadges.appendChild(img);
-          });
-        }
+        const img = document.createElement("img");
+        img.className = "tier-badge-img";
+        img.src = `../assets/badge2.jpg`;
+        userBadges.appendChild(img);
+        userBadges.appendChild(img);
 
         // Past events
         const eventsSection = document.querySelector(".tier-events-section");
