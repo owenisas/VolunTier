@@ -123,15 +123,14 @@
 
         // Top 3 skills
         const topSkills = document.getElementById("topSkills");
-        topSkills.innerHTML = "";
-        if (Array.isArray(data.skills)) {
-          data.skills.forEach(skill => {
-            const tag = document.createElement("span");
-            tag.className = "skill-tag";
-            tag.textContent = skill;
-            topSkills.appendChild(tag);
-          });
-        }
+        const tag = document.createElement("span");
+        tag.className = "skill-tag";
+        tag.textContent = skill;
+        topSkills.appendChild(tag);
+        const tag2 = document.createElement("span");
+        tag.className = "skill-tag";
+        tag.textContent = skill;
+        topSkills.appendChild(tag);
 
         // Badges
         const userBadges = document.getElementById("userBadges");
