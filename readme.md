@@ -14,3 +14,4 @@ Interested in learning more or have questions? Reach out to us on our website (w
 
 - **Website**: [https://volun-tier.com/](https://volun-tier.com/)
 - **Contact Person**: Justin Liao
+- **Developers**: Thomas Suen, Justin Liao
