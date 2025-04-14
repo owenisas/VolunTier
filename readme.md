@@ -5,8 +5,8 @@ Hey YC! Check out [our demo video](https://youtu.be/6PaotRqz998?si=498oF0YqON4JC
 
 ## Current Status
 
-- 🌐 **Web App**: Our platform is currently available as a web application, will complete and focus on mobile.
-- 📱 **Mobile App**: Coming soon!
+- 🌐 **Web App**: Our platform is currently available as a web application, will complete and focus on mobile - applied for YC Summer25 Grant!
+- 📱 **Mobile App**: Coming soon on US App Store, launch by end of May25!
 
 ## Contact Us
 
