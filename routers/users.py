@@ -20,7 +20,7 @@ def edit_user(
 
     # If a new username is provided and it's different, ensure it's not already taken.
     if user_edit.username and user_edit.username != current_user["username"]:
-        cursor.execute("SELECT * FROM User WHERE username = ?", (user_edit.username,))
+        cursor.execute("SELECT * FROM Users WHERE username = ?", (user_edit.username,))
         if cursor.fetchone() is not None:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Username already taken")
 
@@ -41,7 +41,7 @@ def edit_user(
     if not update_fields:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No fields provided for update")
 
-    query = f"UPDATE User SET {', '.join(update_fields)} WHERE user_id = ?"
+    query = f"UPDATE Users SET {', '.join(update_fields)} WHERE user_id = ?"
     params.append(current_user["user_id"])
     try:
         cursor.execute(query, tuple(params))
@@ -50,7 +50,7 @@ def edit_user(
         raise HTTPException(status_code=500, detail=f"Error updating user: {str(e)}")
 
     # Retrieve and return the updated user.
-    cursor.execute("SELECT * FROM User WHERE user_id = ?", (current_user["user_id"],))
+    cursor.execute("SELECT * FROM Users WHERE user_id = ?", (current_user["user_id"],))
     row = cursor.fetchone()
     if row is None:
         raise HTTPException(status_code=404, detail="User not found")
@@ -59,7 +59,7 @@ def edit_user(
 @router.get("/users/me", response_model=User)
 def me(current_user: dict = Depends(get_current_user), db: sqlite3.Connection = Depends(get_db)):
     cursor = db.cursor()
-    cursor.execute("SELECT * FROM User WHERE user_id = ?", (current_user.get("user_id"),))
+    cursor.execute("SELECT * FROM Users WHERE user_id = ?", (current_user.get("user_id"),))
     row = cursor.fetchone()
     if row is None:
         raise HTTPException(status_code=404, detail="User not found")
@@ -68,21 +68,21 @@ def me(current_user: dict = Depends(get_current_user), db: sqlite3.Connection = 
 def register(user: UserCreate, db: sqlite3.Connection = Depends(get_db)):
     cursor = db.cursor()
     # Check if email already exists.
-    cursor.execute("SELECT * FROM User WHERE email = ?", (user.email,))
+    cursor.execute("SELECT * FROM Users WHERE email = ?", (user.email,))
     if cursor.fetchone() is not None:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Email already registered")
     # Check if username already exists.
-    cursor.execute("SELECT * FROM User WHERE username = ?", (user.username,))
+    cursor.execute("SELECT * FROM Users WHERE username = ?", (user.username,))
     if cursor.fetchone() is not None:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Username already taken")
 
     cursor.execute(
-        "INSERT INTO User (username, email, hash_password, full_name, profile, profile_pic_url, age) VALUES (?, ?, ?, ?, ?, ?, ?)",
+        "INSERT INTO Users (username, email, hash_password, full_name, profile, profile_pic_url, age) VALUES (?, ?, ?, ?, ?, ?, ?)",
         (user.username, user.email, user.hash_password, user.full_name, user.profile, user.profile_pic_url, user.age)
     )
     db.commit()
     user_id = cursor.lastrowid
-    cursor.execute("SELECT * FROM User WHERE user_id = ?", (user_id,))
+    cursor.execute("SELECT * FROM Users WHERE user_id = ?", (user_id,))
     row = cursor.fetchone()
     if row is None:
         raise HTTPException(status_code=404, detail="User not found after registration")
@@ -100,7 +100,7 @@ def register(user: UserCreate, db: sqlite3.Connection = Depends(get_db)):
 @router.post("/login", response_model=TokenResponse)
 def login(login_request: LoginRequest, db: sqlite3.Connection = Depends(get_db)):
     cursor = db.cursor()
-    cursor.execute("SELECT * FROM User WHERE email = ?", (login_request.email,))
+    cursor.execute("SELECT * FROM Users WHERE email = ?", (login_request.email,))
     row = cursor.fetchone()
     if row is None:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Incorrect email or password")
@@ -115,7 +115,7 @@ def login(login_request: LoginRequest, db: sqlite3.Connection = Depends(get_db))
 @router.get("/users/{user_id}", response_model=User)
 def get_user(user_id: int, db: sqlite3.Connection = Depends(get_db)):
     cursor = db.cursor()
-    cursor.execute("SELECT * FROM User WHERE user_id = ?", (user_id,))
+    cursor.execute("SELECT * FROM Users WHERE user_id = ?", (user_id,))
     row = cursor.fetchone()
     if row is None:
         raise HTTPException(status_code=404, detail="User not found")

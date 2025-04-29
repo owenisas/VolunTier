@@ -15,6 +15,6 @@ def verify_email(token: str, db: sqlite3.Connection = Depends(get_db)):
     except Exception:
         raise HTTPException(status_code=400, detail="Invalid or expired token")
     cursor = db.cursor()
-    cursor.execute("UPDATE User SET verification = 1 WHERE user_id = ?", (user_id,))
+    cursor.execute("UPDATE Users SET verification = 1 WHERE user_id = ?", (user_id,))
     db.commit()
     return {"message": "Email verified successfully."}

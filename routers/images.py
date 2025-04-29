@@ -111,7 +111,7 @@ async def upload_profile_image(
 
     cursor = db.cursor()
     cursor.execute(
-        "UPDATE User SET profile_pic_url = ? WHERE user_id = ?",
+        "UPDATE Users SET profile_pic_url = ? WHERE user_id = ?",
         (image_url, current_user["user_id"])
     )
     db.commit()

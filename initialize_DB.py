@@ -3,7 +3,7 @@ import sqlite3
 # SQL script to create all tables
 sql_script = """
 -- User Table
-CREATE TABLE IF NOT EXISTS User (
+CREATE TABLE IF NOT EXISTS Users (
     user_id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     username CHAR(50) NOT NULL,
     email TEXT NOT NULL,
@@ -12,15 +12,26 @@ CREATE TABLE IF NOT EXISTS User (
     profile TEXT,
     profile_pic_url TEXT,
     age INTEGER,
-    verification INTEGER DEFAULT 0 -- 0: not verified, 1: school, 2: work, etc.
+    edu_verification TEXT,  --"should be it's email if verified"
+    work_verification TEXT 
+);
+-- 1. Create the connections table
+CREATE TABLE IF NOT EXISTS User_Connections (
+  user_a       INTEGER   NOT NULL,     -- smaller user_id
+  user_b       INTEGER   NOT NULL,     -- larger  user_id
+  connected_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (user_a, user_b),
+  FOREIGN KEY (user_a) REFERENCES Users(user_id)   ON DELETE CASCADE,
+  FOREIGN KEY (user_b) REFERENCES Users(user_id)   ON DELETE CASCADE,
+  CHECK (user_a < user_b)
 );
 
--- User Interests Table (each interest is represented by an integer category code)
-CREATE TABLE IF NOT EXISTS User_Interests (
-    user_id INTEGER NOT NULL,
-    interest_category INTEGER NOT NULL,
-    PRIMARY KEY (user_id, interest_category),
-    FOREIGN KEY (user_id) REFERENCES User(user_id)
+-- Event tag tables, shares the same categories as use skills
+CREATE TABLE IF NOT EXISTS Event_Tags (
+    event_id INTEGER NOT NULL,
+    category INTEGER NOT NULL,
+    PRIMARY KEY (event_id, category),
+    FOREIGN KEY (event_id) REFERENCES Events(event_id)
 );
 
 -- User Skills Table (each skill is represented by an integer category code)
@@ -28,9 +39,15 @@ CREATE TABLE IF NOT EXISTS User_Skills (
     user_id INTEGER NOT NULL,
     skill_category INTEGER NOT NULL,
     PRIMARY KEY (user_id, skill_category),
-    FOREIGN KEY (user_id) REFERENCES User(user_id)
+    FOREIGN KEY (user_id) REFERENCES Users(user_id)
 );
-
+-- User socials Table, with link
+CREATE TABLE IF NOT EXISTS User_Socials (
+    user_id INTEGER NOT NULL,
+    link TEXT NOT NULL,
+    PRIMARY KEY (user_id, link),
+    FOREIGN KEY (user_id) REFERENCES Users(user_id)
+);
 -- Enhanced Events Table with end_time
 CREATE TABLE IF NOT EXISTS Events (
     event_id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
@@ -47,10 +64,18 @@ CREATE TABLE IF NOT EXISTS Events (
     contact_methods TEXT,
     instructions TEXT,
     max_participants INTEGER,
+    is_draft INTEGER DEFAULT 1,
     duration INTEGER,  -- Duration in minutes
     status INTEGER DEFAULT 1  -- 0: ended/unavailable, 1: upcoming/active
 );
-
+CREATE TABLE IF NOT EXISTS User_XP (
+  xp_id        INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id      INTEGER NOT NULL,
+  amount       INTEGER NOT NULL,           -- positive (gain) or negative (loss)
+  reason       TEXT,                       -- e.g. 'attended_event', 'gave_feedback'
+  created_at   TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES Users(user_id) ON DELETE CASCADE
+);
 -- Event_Images Table: Multiple Images per Event
 CREATE TABLE IF NOT EXISTS Event_Images (
     image_id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -67,8 +92,9 @@ CREATE TABLE IF NOT EXISTS Event_Users (
     role TEXT DEFAULT 'participant',   -- roles can be participant, host, co-host, saved, etc.
     volunteer_state TEXT DEFAULT 'registered',  -- Additional state: registered, waitlisted, saved, etc.
     checked_in INTEGER DEFAULT 0,               -- 0: not checked in, 1: checked in
+    waitlist_position INTEGER DEFAULT NULL, 
     PRIMARY KEY (user_id, event_id),
-    FOREIGN KEY (user_id) REFERENCES User(user_id),
+    FOREIGN KEY (user_id) REFERENCES Users(user_id),
     FOREIGN KEY (event_id) REFERENCES events(event_id)
 );
 
@@ -81,7 +107,7 @@ CREATE TABLE IF NOT EXISTS Feedback (
     comment TEXT,
     hours INTEGER,                     -- Total volunteer hours
     FOREIGN KEY (event_id) REFERENCES events(event_id),
-    FOREIGN KEY (user_id) REFERENCES User(user_id)
+    FOREIGN KEY (user_id) REFERENCES Users(user_id)
 );
 
 -- Announcements Table for event-related messages

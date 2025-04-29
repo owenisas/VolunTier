@@ -17,7 +17,7 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: sqlite3.Connection
     except Exception:
         raise HTTPException(status_code=401, detail="Could not validate credentials")
     cursor = db.cursor()
-    cursor.execute("SELECT * FROM User WHERE user_id = ?", (user_id,))
+    cursor.execute("SELECT * FROM Users WHERE user_id = ?", (user_id,))
     row = cursor.fetchone()
     if row is None:
         raise HTTPException(status_code=404, detail="User not found")
@@ -32,7 +32,7 @@ def get_current_user_optional(token: Optional[str] = Depends(optional_oauth2_sch
     except Exception:
         return None
     cursor = db.cursor()
-    cursor.execute("SELECT * FROM User WHERE user_id = ?", (user_id,))
+    cursor.execute("SELECT * FROM Users WHERE user_id = ?", (user_id,))
     row = cursor.fetchone()
     if row is None:
         return None
