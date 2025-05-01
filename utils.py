@@ -23,7 +23,7 @@ def create_image_url(filename: str, folder: str, expires_minutes=1440):
         "exp": expire
     }
     token = jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
-    secure_url = f"/images/{token}"
+    secure_url = f"http://app.volun-tier.com/images/{token}"
     return secure_url
 
 def decode_image_token(token: str):
