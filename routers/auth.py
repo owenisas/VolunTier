@@ -6,9 +6,22 @@ import jwt
 from config import SECRET_KEY, ALGORITHM
 from database import get_db
 from typing import Optional
+from passlib.context import CryptContext
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login")
 optional_oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login", auto_error=False)
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+
+def hash_password(password: str) -> str:
+    """Hash a plaintext password for storing."""
+    return pwd_context.hash(password)
+
+
+def verify_password(plain_password: str, hashed_password: str) -> bool:
+    """Verify a plaintext password against the stored hash."""
+    return pwd_context.verify(plain_password, hashed_password)
+
 
 def get_current_user(token: str = Depends(oauth2_scheme), db: sqlite3.Connection = Depends(get_db)):
     try:
@@ -23,7 +36,9 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: sqlite3.Connection
         raise HTTPException(status_code=404, detail="User not found")
     return dict(row)
 
-def get_current_user_optional(token: Optional[str] = Depends(optional_oauth2_scheme), db: sqlite3.Connection = Depends(get_db)) -> Optional[dict]:
+
+def get_current_user_optional(token: Optional[str] = Depends(optional_oauth2_scheme),
+                              db: sqlite3.Connection = Depends(get_db)) -> Optional[dict]:
     if token is None:
         return None
     try:

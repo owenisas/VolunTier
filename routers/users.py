@@ -7,7 +7,7 @@ from schemas import UserCreate, User, RegisterResponse, LoginRequest, TokenRespo
 from utils import create_access_token, create_verification_token, send_verification_email
 import sqlite3
 from datetime import timedelta
-from .auth import get_current_user
+from .auth import get_current_user, hash_password, verify_password
 
 router = APIRouter()
 
@@ -103,8 +103,8 @@ def register(user: UserCreate, db: sqlite3.Connection = Depends(get_db)):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Username already taken")
 
     cursor.execute(
-        "INSERT INTO Users (username, email, hash_password, full_name, profile, profile_pic_url, age) VALUES (?, ?, ?, ?, ?, ?, ?)",
-        (user.username, user.email, user.hash_password, user.full_name, user.profile, user.profile_pic_url, user.age)
+        "INSERT INTO Users (username, email, hash_password, full_name, profile, pronouns, age) VALUES (?, ?, ?, ?, ?, ?, ?)",
+        (user.username, user.email, hash_password(user.password), user.full_name, user.profile, user.pronouns, user.age)
     )
     db.commit()
     user_id = cursor.lastrowid
@@ -130,8 +130,8 @@ def login(login_request: LoginRequest, db: sqlite3.Connection = Depends(get_db))
     row = cursor.fetchone()
     if row is None:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Incorrect email or password")
-    stored_password = row["hash_password"]
-    if stored_password != login_request.password:
+    stored_hash = row["hash_password"]
+    if not verify_password(login_request.password, stored_hash):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Incorrect email or password")
 
     access_token = create_access_token(str(row["user_id"]))

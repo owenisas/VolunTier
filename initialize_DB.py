@@ -12,6 +12,8 @@ CREATE TABLE IF NOT EXISTS Users (
     profile TEXT,
     profile_pic_url TEXT,
     age INTEGER,
+    pronouns TEXT,
+    verified_email TEXT,
     edu_verification_email TEXT,  --"should be it's email if verified"
     work_verification_email TEXT 
 );

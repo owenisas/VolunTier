@@ -8,11 +8,11 @@ from pydantic import BaseModel
 class UserCreate(BaseModel):
     username: str
     email: str
-    hash_password: str
+    password: str
     full_name: Optional[str] = None
     profile: Optional[str] = None
-    profile_pic_url: Optional[str] = None
     age: Optional[int] = None
+    pronouns: Optional[str] = None
 
 
 class User(BaseModel):
@@ -22,9 +22,11 @@ class User(BaseModel):
     full_name: Optional[str] = None
     profile: Optional[str] = None
     profile_pic_url: Optional[str] = None
-    age: Optional[int] = None
+    age: Optional[int] = None,
+    verified_email: Optional[str] = None
     edu_verification_email: Optional[str] = None
     work_verification_email: Optional[str] = None
+    pronouns: Optional[str] = None
 
     class Config:
         orm_mode = True
