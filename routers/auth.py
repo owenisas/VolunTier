@@ -6,21 +6,22 @@ import jwt
 from config import SECRET_KEY, ALGORITHM
 from database import get_db
 from typing import Optional
-from passlib.context import CryptContext
-
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login")
-optional_oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login", auto_error=False)
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+import bcrypt
 
 
 def hash_password(password: str) -> str:
-    """Hash a plaintext password for storing."""
-    return pwd_context.hash(password)
+    # bcrypt.gensalt() defaults to 12 rounds; adjust if you need faster/slower
+    salt = bcrypt.gensalt()
+    hashed = bcrypt.hashpw(password.encode("utf-8"), salt)
+    return hashed.decode("utf-8")
 
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
-    """Verify a plaintext password against the stored hash."""
-    return pwd_context.verify(plain_password, hashed_password)
+    return bcrypt.checkpw(plain_password.encode("utf-8"), hashed_password.encode("utf-8"))
+
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login")
+optional_oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login", auto_error=False)
 
 
 def get_current_user(token: str = Depends(oauth2_scheme), db: sqlite3.Connection = Depends(get_db)):

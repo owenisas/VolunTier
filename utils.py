@@ -39,7 +39,7 @@ def decode_image_token(token: str):
 import resend
 
 resend.api_key = "re_FcHh1yZ4_NjgDaVXGA9DXmySvuGRLEUHT"
-domain_name = "http://127.0.0.1:8000"
+domain_name = "http://app.volun-tier.com"
 
 
 def send_verification_email(user_email: str, token: str):
