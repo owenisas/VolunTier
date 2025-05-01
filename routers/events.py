@@ -15,69 +15,9 @@ from fastapi.security import OAuth2PasswordBearer
 
 router = APIRouter()
 
-
 from schemas import Event, EventImage  # Ensure these are imported
 from datetime import datetime
 
-
-@router.get("/tier")
-def your_tier(db: sqlite3.Connection = Depends(get_db), current_user: dict = Depends(get_current_user)):
-    """
-    Retrieves events that the current user has joined (from the Event_Users table)
-    and returns a dictionary containing the current user's username, a list of events,
-    the count of events (volCount), and the total hours computed from event durations.
-    """
-    cursor = db.cursor()
-    # Get all event IDs that the current user has joined
-    cursor.execute("SELECT event_id FROM Event_Users WHERE user_id = ?", (current_user["user_id"],))
-    joined_rows = cursor.fetchall()
-
-    if not joined_rows:
-        events = []
-    else:
-        # Extract event_ids from the result
-        event_ids = [row["event_id"] for row in joined_rows]
-        # Build the IN clause dynamically
-        placeholders = ','.join('?' for _ in event_ids)
-        query = f"SELECT * FROM events WHERE event_id IN ({placeholders}) ORDER BY time ASC"
-        cursor.execute(query, event_ids)
-        rows = cursor.fetchall()
-
-        events = []
-        for row in rows:
-            event = dict(row)
-            event_id = event.get("event_id")
-            # Retrieve the first image for this event, ordered by creation time
-            cursor.execute(
-                "SELECT image_id, image_url, created_at FROM Event_Images WHERE event_id = ? ORDER BY created_at ASC LIMIT 1",
-                (event_id,)
-            )
-            image_row = cursor.fetchone()
-            if image_row:
-                event_image = EventImage(
-                    image_id=image_row["image_id"],
-                    event_id=event_id,
-                    image_url=image_row["image_url"],
-                    created_at=image_row["created_at"]
-                )
-                event["images"] = [event_image]
-            else:
-                event["images"] = []
-            events.append(Event(**event))
-
-    # volCount is the number of events joined
-    volCount = len(events)
-    # Calculate total minutes from event durations (if duration is not None)
-    total_minutes = sum(e.duration if e.duration else 0 for e in events)
-    # Convert minutes to hours
-    total_hours = total_minutes / 60
-
-    return {
-        "user": current_user,
-        "events": events,
-        "volCount": volCount,
-        "totalHours": total_hours
-    }
 
 
 @router.get("/events/get", response_model=List[Event])
@@ -113,8 +53,6 @@ def get_events_sorted_by_time(db: sqlite3.Connection = Depends(get_db)):
             event["images"] = []
         events.append(Event(**event))
     return events
-
-
 
 
 @router.get("/events/search", response_model=List[Event])
@@ -261,9 +199,9 @@ def join_event(
 
 @router.get("/events/{event_id}", response_model=Event)
 def get_event(
-    event_id: int,
-    db: sqlite3.Connection = Depends(get_db),
-    current_user: Optional[dict] = Depends(get_current_user_optional)
+        event_id: int,
+        db: sqlite3.Connection = Depends(get_db),
+        current_user: Optional[dict] = Depends(get_current_user_optional)
 ):
     cursor = db.cursor()
 
@@ -372,3 +310,77 @@ def edit_event(
     if updated_row is None:
         raise HTTPException(status_code=404, detail="Event not found after update")
     return Event(**updated_row)
+
+
+@router.get("/me/waitlist", response_model=List[Event])
+def my_waitlisted_events(
+        db: sqlite3.Connection = Depends(get_db),
+        me: dict = Depends(get_current_user)
+):
+    """
+    Return all events where the current user is on the waitlist.
+    """
+    cursor = db.cursor()
+    # find waitlisted event IDs
+    cursor.execute(
+        "SELECT event_id FROM Event_Users WHERE user_id = ? AND volunteer_state = 'waitlisted'",
+        (me["user_id"],)
+    )
+    rows = cursor.fetchall()
+    event_ids = [r["event_id"] for r in rows]
+    if not event_ids:
+        return []
+    # fetch events
+    placeholders = ",".join(['?'] * len(event_ids))
+    cursor.execute(
+        f"SELECT * FROM Events WHERE event_id IN ({placeholders}) ORDER BY time ASC",
+        event_ids
+    )
+    events = [Event(**dict(r)) for r in cursor.fetchall()]
+    return events
+
+
+@router.get("/me/past", response_model=List[Event])
+def my_past_events(
+        db: sqlite3.Connection = Depends(get_db),
+        me: dict = Depends(get_current_user)
+):
+    """
+    Return past events the user joined (registered participants), i.e., events whose end_time is before now.
+    """
+    now = datetime.now(timezone.utc)
+    cursor = db.cursor()
+    cursor.execute(
+        """
+        SELECT e.* FROM Events e
+        JOIN Event_Users eu ON e.event_id = eu.event_id
+        WHERE eu.user_id = ? AND eu.volunteer_state = 'registered'
+          AND datetime(e.end_time) < datetime(?)
+        ORDER BY e.time DESC
+        """, (me["user_id"], now.isoformat())
+    )
+    events = [Event(**dict(r)) for r in cursor.fetchall()]
+    return events
+
+
+@router.get("/me/registered", response_model=List[Event])
+def my_registered_events(
+    db: sqlite3.Connection = Depends(get_db),
+    me: dict = Depends(get_current_user)
+):
+    """
+    Return upcoming or active events the user joined (registered participants).
+    """
+    now = datetime.now(timezone.utc)
+    cursor = db.cursor()
+    cursor.execute(
+        """
+        SELECT e.* FROM Events e
+        JOIN Event_Users eu ON e.event_id = eu.event_id
+        WHERE eu.user_id = ? AND eu.volunteer_state = 'registered'
+          AND datetime(e.time) >= datetime(?)
+        ORDER BY e.time ASC
+        """, (me["user_id"], now.isoformat())
+    )
+    events = [Event(**dict(r)) for r in cursor.fetchall()]
+    return events

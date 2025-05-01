@@ -12,8 +12,8 @@ CREATE TABLE IF NOT EXISTS Users (
     profile TEXT,
     profile_pic_url TEXT,
     age INTEGER,
-    edu_verification TEXT,  --"should be it's email if verified"
-    work_verification TEXT 
+    edu_verification_email TEXT,  --"should be it's email if verified"
+    work_verification_email TEXT 
 );
 -- 1. Create the connections table
 CREATE TABLE IF NOT EXISTS User_Connections (

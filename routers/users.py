@@ -1,4 +1,6 @@
 # routers/users.py
+from typing import List
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from database import get_db
 from schemas import UserCreate, User, RegisterResponse, LoginRequest, TokenResponse, UserEdit
@@ -8,6 +10,30 @@ from datetime import timedelta
 from .auth import get_current_user
 
 router = APIRouter()
+
+
+
+@router.get("/stats", response_model=dict)
+def my_participation_stats(
+    db: sqlite3.Connection = Depends(get_db),
+    me: dict = Depends(get_current_user)
+):
+    """
+    Return total events participated (registered) and total volunteer hours based on event durations.
+    """
+    cursor = db.cursor()
+    # Count registered participations
+    cursor.execute(
+        "SELECT COUNT(*) AS total_events, COALESCE(SUM(e.duration), 0) AS total_minutes"
+        " FROM Event_Users eu"
+        " JOIN Events e ON eu.event_id = e.event_id"
+        " WHERE eu.user_id = ? AND eu.volunteer_state = 'registered'",
+        (me["user_id"],)
+    )
+    row = cursor.fetchone()
+    total_events = row["total_events"]
+    total_hours = row["total_minutes"] / 60
+    return {"total_events": total_events, "total_hours": total_hours}
 
 
 @router.put("/users/edit", response_model=User)
