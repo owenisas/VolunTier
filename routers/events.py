@@ -20,6 +20,71 @@ from datetime import datetime
 
 
 
+@router.get("/myevents/waitlist", response_model=List[Event])
+def get_events_waitlist(
+    db: sqlite3.Connection = Depends(get_db),
+    current_user: dict = Depends(get_current_user)
+):
+    """
+    Return all events where the current user is on the waitlist.
+    """
+    cursor = db.cursor()
+    cursor.execute(
+        "SELECT event_id FROM Event_Users WHERE user_id = ? AND volunteer_state = 'waitlisted'",
+        (current_user["user_id"],)
+    )
+    rows = cursor.fetchall()
+    event_ids = [r["event_id"] for r in rows]
+    if not event_ids:
+        return []
+    placeholders = ",".join("?" for _ in event_ids)
+    cursor.execute(
+        f"SELECT * FROM events WHERE event_id IN ({placeholders}) ORDER BY time ASC",
+        event_ids
+    )
+    events = []
+    for row in cursor.fetchall():
+        event = dict(row)
+        event_id = event["event_id"]
+        cursor.execute(
+            "SELECT image_id, image_url, created_at FROM Event_Images WHERE event_id = ? ORDER BY created_at ASC",
+            (event_id,)
+        )
+        image_rows = cursor.fetchall()
+        event["images"] = [EventImage(**dict(ir)) for ir in image_rows]
+        events.append(Event(**event))
+    return events
+
+@router.get("/myevents", response_model=List[Event])
+def get_events_joined(
+    db: sqlite3.Connection = Depends(get_db),
+    current_user: dict = Depends(get_current_user)
+):
+    """
+    Return all events where the current user is a registered participant.
+    """
+    cursor = db.cursor()
+    cursor.execute(
+        """
+        SELECT e.* FROM events e
+        JOIN Event_Users eu ON e.event_id = eu.event_id
+        WHERE eu.user_id = ? AND eu.volunteer_state = 'registered'
+        ORDER BY e.time ASC
+        """, (current_user["user_id"],)
+    )
+    events = []
+    for row in cursor.fetchall():
+        event = dict(row)
+        event_id = event["event_id"]
+        cursor.execute(
+            "SELECT image_id, image_url, created_at FROM Event_Images WHERE event_id = ? ORDER BY created_at ASC",
+            (event_id,)
+        )
+        image_rows = cursor.fetchall()
+        event["images"] = [EventImage(**dict(ir)) for ir in image_rows]
+        events.append(Event(**event))
+    return events
+
 @router.get("/events/get", response_model=List[Event])
 def get_events_sorted_by_time(db: sqlite3.Connection = Depends(get_db)):
     """

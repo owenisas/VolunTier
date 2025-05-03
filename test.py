@@ -8,7 +8,7 @@ def test_register():
     user_data = {
         "username": "testuserkokokk",
         "email": "justcs123only@gmail.com",
-        "hash_password": "testpassword",  # In production, use hashed passwords.
+        "password": "testpassword",  # In production, use hashed passwords.
         "full_name": "Test User",
         "profile": "This is a test profile",
         "age": 25
