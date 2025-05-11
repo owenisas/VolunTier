@@ -244,14 +244,15 @@ def join_event(
     cursor = db.cursor()
     # Check if user already has a role in this event.
     cursor.execute(
-        "SELECT role FROM Event_Users WHERE event_id = ? AND user_id = ?",
+        "SELECT role, volunteer_state FROM Event_Users WHERE event_id = ? AND user_id = ?",
         (event_id, current_user["user_id"])
     )
     row = cursor.fetchone()
     if row:
         return {
-            "message": f"You already joined this event with role: {row['role']}",
-            "role": row["role"]
+            "message": f"You already joined this event with role: {row['role']} (state: {row['volunteer_state']})",
+            "role": row["role"],
+            "volunteer_state": row["volunteer_state"]
         }
 
     # Retrieve event details to check max_participants.
@@ -264,27 +265,43 @@ def join_event(
         raise HTTPException(status_code=404, detail="Event not found")
 
     max_participants = event_row["max_participants"]
-    if max_participants is not None:
-        # Count current participants in the event.
+    # Count current registered participants in the event.
+    cursor.execute(
+        "SELECT COUNT(*) as count FROM Event_Users WHERE event_id = ? AND volunteer_state = 'registered'",
+        (event_id,)
+    )
+    count_row = cursor.fetchone()
+    current_count = count_row["count"] if count_row else 0
+
+    if max_participants is not None and current_count >= max_participants:
+        # Count current waitlisted users
         cursor.execute(
-            "SELECT COUNT(*) as count FROM Event_Users WHERE event_id = ?",
+            "SELECT COUNT(*) as waitlist_count FROM Event_Users WHERE event_id = ? AND volunteer_state = 'waitlisted'",
             (event_id,)
         )
-        count_row = cursor.fetchone()
-        current_count = count_row["count"] if count_row else 0
-        if current_count >= max_participants:
-            raise HTTPException(
-                status_code=400,
-                detail="Event is full, cannot join."
-            )
+        waitlist_row = cursor.fetchone()
+        waitlist_position = (waitlist_row["waitlist_count"] if waitlist_row else 0) + 1
 
-    # If event is not full, add the user as a participant.
+        # Add user to waitlist
+        cursor.execute(
+            "INSERT INTO Event_Users (user_id, event_id, role, volunteer_state) VALUES (?, ?, ?, ?)",
+            (current_user["user_id"], event_id, "participant", "waitlisted")
+        )
+        db.commit()
+        return {
+            "message": "Event is full. You have been added to the waitlist.",
+            "role": "participant",
+            "volunteer_state": "waitlisted",
+            "waitlist_position": waitlist_position
+        }
+
+    # If event is not full, add the user as a registered participant.
     cursor.execute(
-        "INSERT INTO Event_Users (user_id, event_id, role) VALUES (?, ?)",
-        (current_user["user_id"], event_id)
+        "INSERT INTO Event_Users (user_id, event_id, role, volunteer_state) VALUES (?, ?, ?, ?)",
+        (current_user["user_id"], event_id, "participant", "registered")
     )
     db.commit()
-    return {"message": "You have successfully joined the event.", "role": "participant"}
+    return {"message": "You have successfully joined the event.", "role": "participant", "volunteer_state": "registered"}
 
 
 @router.get("/events/{event_id}", response_model=Event)
