@@ -188,7 +188,7 @@ def create_event(event: EventCreate, current_user: dict = Depends(get_current_us
                 event.instructions,
                 event.max_participants,
                 event.duration,
-                int(event.status)
+                1
             )
         )
         db.commit()
