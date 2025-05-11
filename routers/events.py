@@ -1,7 +1,7 @@
 # routers/events.py
 from fastapi import APIRouter, Depends, HTTPException
 from database import get_db
-from schemas import EventCreate, Event, EventImage
+from schemas import EventCreate, Event, EventImage, User
 import sqlite3
 from routers.users import router as user_router  # if needed for dependency
 import jwt
@@ -471,5 +471,58 @@ def my_past_events(
     )
     events = [Event(**dict(r)) for r in cursor.fetchall()]
     return events
+
+@router.post("/events/{event_id}/checkin/{user_id}", response_model=dict)
+def checkin_user(
+    event_id: int,
+    user_id: int,
+    db: sqlite3.Connection = Depends(get_db),
+    current_user: dict = Depends(get_current_user)
+):
+    cursor = db.cursor()
+    # Check if the user is registered for the event
+    cursor.execute(
+        """
+        SELECT * FROM Event_Users
+        WHERE event_id = ? AND user_id = ? AND volunteer_state = 'registered'
+        """,
+        (event_id, user_id)
+    )
+    row = cursor.fetchone()
+    if not row:
+        raise HTTPException(status_code=400, detail="User is not registered for this event.")
+
+    # Update checked_in state
+    cursor.execute(
+        """
+        UPDATE Event_Users
+        SET checked_in = 1
+        WHERE event_id = ? AND user_id = ?
+        """,
+        (event_id, user_id)
+    )
+    db.commit()
+    return {"message": "User checked in successfully."}
+
+@router.get("/events/{event_id}/users", response_model=List[User])
+def get_joined_users(
+    event_id: int,
+    db: sqlite3.Connection = Depends(get_db),
+    current_user: dict = Depends(get_current_user)
+):
+    """
+    Return a list of users who are registered (not waitlisted) for the event.
+    """
+    cursor = db.cursor()
+    cursor.execute(
+        """
+        SELECT u.* FROM User u
+        JOIN Event_Users eu ON u.user_id = eu.user_id
+        WHERE eu.event_id = ? AND eu.volunteer_state = 'registered'
+        """,
+        (event_id,)
+    )
+    users = [User(**dict(row)) for row in cursor.fetchall()]
+    return users
 
 

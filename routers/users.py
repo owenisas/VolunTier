@@ -90,6 +90,7 @@ def me(current_user: dict = Depends(get_current_user), db: sqlite3.Connection = 
     if row is None:
         raise HTTPException(status_code=404, detail="User not found")
     return User(**row)
+
 @router.post("/register", response_model=RegisterResponse)
 def register(user: UserCreate, db: sqlite3.Connection = Depends(get_db)):
     cursor = db.cursor()
@@ -146,3 +147,11 @@ def get_user(user_id: int, db: sqlite3.Connection = Depends(get_db)):
     if row is None:
         raise HTTPException(status_code=404, detail="User not found")
     return User(**row)
+
+@router.get("/me/profile_image", response_model=dict)
+def get_my_profile_image(current_user: dict = Depends(get_current_user)):
+    """
+    Returns the profile image URL of the current user.
+    """
+    profile_image_url = current_user.get("profile_pic_url")
+    return {"profile_image_url": profile_image_url}
