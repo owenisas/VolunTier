@@ -19,28 +19,52 @@ from schemas import Event, EventImage  # Ensure these are imported
 from datetime import datetime
 
 
-
-@router.get("/myevents/waitlist", response_model=List[Event])
-def get_events_waitlist(
+@router.get("/host/events", response_model=List[Event])
+def get_host(
     db: sqlite3.Connection = Depends(get_db),
     current_user: dict = Depends(get_current_user)
 ):
-    """
-    Return all events where the current user is on the waitlist.
-    """
     cursor = db.cursor()
     cursor.execute(
-        "SELECT event_id FROM Event_Users WHERE user_id = ? AND volunteer_state = 'waitlisted'",
-        (current_user["user_id"],)
+        """
+        SELECT e.* FROM events e
+        JOIN Event_Users eu ON e.event_id = eu.event_id
+        WHERE eu.user_id = ?
+          AND eu.role = 'organizer'
+          AND e.organizer = ?
+          AND e.is_draft = 0
+        ORDER BY e.time ASC
+        """, (current_user["user_id"], current_user.get("full_name"))
     )
-    rows = cursor.fetchall()
-    event_ids = [r["event_id"] for r in rows]
-    if not event_ids:
-        return []
-    placeholders = ",".join("?" for _ in event_ids)
+    events = []
+    for row in cursor.fetchall():
+        event = dict(row)
+        event_id = event["event_id"]
+        cursor.execute(
+            "SELECT image_id, image_url, created_at FROM Event_Images WHERE event_id = ? ORDER BY created_at ASC",
+            (event_id,)
+        )
+        image_rows = cursor.fetchall()
+        event["images"] = [EventImage(**dict(ir)) for ir in image_rows]
+        events.append(Event(**event))
+    return events
+
+@router.get("/host/drafts", response_model=List[Event])
+def get_host_drafts(
+    db: sqlite3.Connection = Depends(get_db),
+    current_user: dict = Depends(get_current_user)
+):
+    cursor = db.cursor()
     cursor.execute(
-        f"SELECT * FROM events WHERE event_id IN ({placeholders}) ORDER BY time ASC",
-        event_ids
+        """
+        SELECT e.* FROM events e
+        JOIN Event_Users eu ON e.event_id = eu.event_id
+        WHERE eu.user_id = ?
+          AND eu.role = 'organizer'
+          AND e.organizer = ?
+          AND e.is_draft = 1
+        ORDER BY e.time ASC
+        """, (current_user["user_id"], current_user.get("full_name"))
     )
     events = []
     for row in cursor.fetchall():
@@ -92,7 +116,7 @@ def get_events_sorted_by_time(db: sqlite3.Connection = Depends(get_db)):
     and attaches the first image (if available) as a list of EventImage.
     """
     cursor = db.cursor()
-    cursor.execute("SELECT * FROM events WHERE status = 1 ORDER BY time ASC LIMIT 10")
+    cursor.execute("SELECT * FROM events WHERE status = 1 AND is_draft = 0 ORDER BY time ASC LIMIT 10")
     rows = cursor.fetchall()
     events = []
     for row in rows:
@@ -169,9 +193,9 @@ def create_event(event: EventCreate, current_user: dict = Depends(get_current_us
             """
             INSERT INTO events (
                 time, end_time, title, details, organizer, organization_name, event_link, location,
-                certificate, requirements, contact_methods, instructions, max_participants, duration, status
+                certificate, requirements, contact_methods, instructions, max_participants, duration, status, is_draft
             )
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """,
             (
                 event.time.isoformat(),
@@ -188,7 +212,8 @@ def create_event(event: EventCreate, current_user: dict = Depends(get_current_us
                 event.instructions,
                 event.max_participants,
                 event.duration,
-                1
+                1,
+                int(event.is_draft)
             )
         )
         db.commit()
@@ -281,23 +306,19 @@ def get_event(
     # Fetch associated images
     cursor.execute("SELECT * FROM Event_Images WHERE event_id = ?", (event_id,))
     image_rows = cursor.fetchall()
-
-    if image_rows:
-        event_images = [EventImage(**dict(row)) for row in image_rows]
-    else:
-        event_images = None  # Return None if no images
+    event_images = [EventImage(**dict(row)) for row in image_rows] if image_rows else []
 
     event_data["images"] = event_images
 
-    # Existing logic for contact_methods and status update
+    # Update status if event has ended
     event_end_time = datetime.fromisoformat(event_data["end_time"])
-    now = now = datetime.now(timezone.utc)
+    now = datetime.now(timezone.utc)
     if now > event_end_time and event_data["status"] == 1:
         cursor.execute("UPDATE events SET status = 0 WHERE event_id = ?", (event_id,))
         db.commit()
         event_data["status"] = 0
 
-    # Privacy handling
+    # Privacy handling for contact_methods
     if not current_user:
         event_data.pop("contact_methods", None)
     else:
@@ -377,35 +398,42 @@ def edit_event(
     return Event(**updated_row)
 
 
-@router.get("/me/waitlist", response_model=List[Event])
-def my_waitlisted_events(
-        db: sqlite3.Connection = Depends(get_db),
-        me: dict = Depends(get_current_user)
+@router.get("/myevents/waitlist", response_model=List[Event])
+def get_events_waitlist(
+    db: sqlite3.Connection = Depends(get_db),
+    current_user: dict = Depends(get_current_user)
 ):
     """
     Return all events where the current user is on the waitlist.
     """
     cursor = db.cursor()
-    # find waitlisted event IDs
     cursor.execute(
         "SELECT event_id FROM Event_Users WHERE user_id = ? AND volunteer_state = 'waitlisted'",
-        (me["user_id"],)
+        (current_user["user_id"],)
     )
     rows = cursor.fetchall()
     event_ids = [r["event_id"] for r in rows]
     if not event_ids:
         return []
-    # fetch events
-    placeholders = ",".join(['?'] * len(event_ids))
+    placeholders = ",".join("?" for _ in event_ids)
     cursor.execute(
-        f"SELECT * FROM Events WHERE event_id IN ({placeholders}) ORDER BY time ASC",
+        f"SELECT * FROM events WHERE event_id IN ({placeholders}) ORDER BY time ASC",
         event_ids
     )
-    events = [Event(**dict(r)) for r in cursor.fetchall()]
+    events = []
+    for row in cursor.fetchall():
+        event = dict(row)
+        event_id = event["event_id"]
+        cursor.execute(
+            "SELECT image_id, image_url, created_at FROM Event_Images WHERE event_id = ? ORDER BY created_at ASC",
+            (event_id,)
+        )
+        image_rows = cursor.fetchall()
+        event["images"] = [EventImage(**dict(ir)) for ir in image_rows]
+        events.append(Event(**event))
     return events
 
-
-@router.get("/me/past", response_model=List[Event])
+@router.get("/myevents/past", response_model=List[Event])
 def my_past_events(
         db: sqlite3.Connection = Depends(get_db),
         me: dict = Depends(get_current_user)
@@ -428,24 +456,3 @@ def my_past_events(
     return events
 
 
-@router.get("/me/registered", response_model=List[Event])
-def my_registered_events(
-    db: sqlite3.Connection = Depends(get_db),
-    me: dict = Depends(get_current_user)
-):
-    """
-    Return upcoming or active events the user joined (registered participants).
-    """
-    now = datetime.now(timezone.utc)
-    cursor = db.cursor()
-    cursor.execute(
-        """
-        SELECT e.* FROM Events e
-        JOIN Event_Users eu ON e.event_id = eu.event_id
-        WHERE eu.user_id = ? AND eu.volunteer_state = 'registered'
-          AND datetime(e.time) >= datetime(?)
-        ORDER BY e.time ASC
-        """, (me["user_id"], now.isoformat())
-    )
-    events = [Event(**dict(r)) for r in cursor.fetchall()]
-    return events
