@@ -14,18 +14,19 @@ router = APIRouter()
 
 
 # Endpoint to serve an image from a given path.
-@router.get("/images/{token}")
-def get_image(token: str):
+@router.get("/images/{filename}")
+def get_image(filename: str):
     try:
-        payload = decode_image_token(token)
-        folder = payload["folder"]
-        filename = payload["filename"]
-
-        file_path = os.path.join("images", folder, filename)
-        if not os.path.exists(file_path):
+        # Check if the file exists in either event or profile folders
+        event_path = os.path.join("images", "event", filename)
+        profile_path = os.path.join("images", "profile", filename)
+        
+        if os.path.exists(event_path):
+            return FileResponse(event_path)
+        elif os.path.exists(profile_path):
+            return FileResponse(profile_path)
+        else:
             raise HTTPException(status_code=404, detail="Image not found")
-
-        return FileResponse(file_path)
 
     except Exception as e:
         raise HTTPException(status_code=403, detail=str(e))
@@ -66,7 +67,7 @@ async def upload_event_images(
             f.write(contents)
 
         # Generate secure URL
-        image_url = create_image_url(unique_filename, "event")
+        image_url = "http://app.volun-tier.com/images/" + unique_filename
 
         # Store in database
         cursor.execute(
@@ -107,7 +108,7 @@ async def upload_profile_image(
     with open(file_path, "wb") as f:
         f.write(await file.read())
 
-    image_url = create_image_url(unique_filename, "profile")
+    image_url = "http://app.volun-tier.com/images/" + unique_filename
 
     cursor = db.cursor()
     cursor.execute(
