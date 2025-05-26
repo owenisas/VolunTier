@@ -41,7 +41,7 @@ def get_host(
         event = dict(row)
         event_id = event["event_id"]
         cursor.execute(
-            "SELECT image_id, image_url, created_at FROM Event_Images WHERE event_id = ? ORDER BY created_at ASC",
+            "SELECT * FROM Event_Images WHERE event_id = ? ORDER BY created_at ASC",
             (event_id,)
         )
         image_rows = cursor.fetchall()
@@ -71,7 +71,7 @@ def get_host_drafts(
         event = dict(row)
         event_id = event["event_id"]
         cursor.execute(
-            "SELECT image_id, image_url, created_at FROM Event_Images WHERE event_id = ? ORDER BY created_at ASC",
+            "SELECT * FROM Event_Images WHERE event_id = ? ORDER BY created_at ASC",
             (event_id,)
         )
         image_rows = cursor.fetchall()
@@ -101,7 +101,7 @@ def get_events_joined(
         event = dict(row)
         event_id = event["event_id"]
         cursor.execute(
-            "SELECT image_id, image_url, created_at FROM Event_Images WHERE event_id = ? ORDER BY created_at ASC",
+            "SELECT * FROM Event_Images WHERE event_id = ? ORDER BY created_at ASC",
             (event_id,)
         )
         image_rows = cursor.fetchall()
@@ -442,7 +442,7 @@ def get_events_waitlist(
         event = dict(row)
         event_id = event["event_id"]
         cursor.execute(
-            "SELECT image_id, image_url, created_at FROM Event_Images WHERE event_id = ? ORDER BY created_at ASC",
+            "SELECT * FROM Event_Images WHERE event_id = ? ORDER BY created_at ASC",
             (event_id,)
         )
         image_rows = cursor.fetchall()
