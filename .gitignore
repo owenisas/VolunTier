@@ -2,6 +2,7 @@
 app_database.db
 __pycache__/
 .venv/
+venv/
 .env
 .idea/
 .vscode/
