@@ -90,6 +90,7 @@ class Event(BaseModel):
     title: str
     details: str
     images: List[EventImage] = []
+    organizer_id: Optional[int] = None
     organizer: Optional[str] = None
     organization_name: Optional[str] = None
     event_link: Optional[str] = None

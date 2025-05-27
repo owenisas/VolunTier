@@ -346,7 +346,13 @@ def get_event(
         role_row = cursor.fetchone()
         if not role_row or role_row["role"] != "organizer":
             event_data.pop("contact_methods", None)
-
+    cursor.execute("SELECT user_id FROM Event_Users WHERE event_id = ? AND role = ?",
+                   (event_id, "organizer"))
+    organizer_row = cursor.fetchone()
+    if not organizer_row or organizer_row["user_id"]:
+        pass
+    else:
+        event_data[""] = organizer_row["user_id"]
     return Event(**event_data)
 
 
