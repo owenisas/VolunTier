@@ -352,7 +352,7 @@ def get_event(
     if not organizer_row or organizer_row["user_id"]:
         pass
     else:
-        event_data[""] = organizer_row["user_id"]
+        event_data["organizer_id"] = organizer_row["user_id"]
     return Event(**event_data)
 
 

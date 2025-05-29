@@ -61,6 +61,9 @@ def add_connection(other_id: int, db: sqlite3.Connection = Depends(get_db), me=D
     db.commit()
     return {"message": "Connected successfully."}
 
+@router.get("/connections/{other_id}", response_model=List[User])
+#return list of users in connection
+
 
 @router.delete("/connections/{other_id}", status_code=status.HTTP_204_NO_CONTENT)
 def remove_connection(other_id: int, db: sqlite3.Connection = Depends(get_db), me=Depends(get_current_user)):
