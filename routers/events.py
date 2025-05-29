@@ -349,10 +349,7 @@ def get_event(
     cursor.execute("SELECT user_id FROM Event_Users WHERE event_id = ? AND role = ?",
                    (event_id, "organizer"))
     organizer_row = cursor.fetchone()
-    if not organizer_row or organizer_row["user_id"]:
-        pass
-    else:
-        event_data["organizer_id"] = organizer_row["user_id"]
+    event_data["organizer_id"] = organizer_row["user_id"] if organizer_row else None
     return Event(**event_data)
 
 
