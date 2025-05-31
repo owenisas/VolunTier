@@ -1,6 +1,6 @@
 # main.py
 from fastapi import FastAPI
-from routers import users, events, verification, images, connections
+from routers import users, events, verification, images, connections, screenshots
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from datetime import datetime
 import sqlite3
@@ -22,6 +22,7 @@ app.include_router(events.router)
 app.include_router(verification.router)
 app.include_router(images.router)
 app.include_router(connections.router)
+app.include_router(screenshots.router)
 
 if __name__ == "__main__":
     import uvicorn
